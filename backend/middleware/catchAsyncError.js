@@ -1,4 +1,5 @@
-module.exports = (theFunc) => (req,res,next) => {
+//This is an arrow function returning another arrow function.
+module.exports = (theFunc) => (req,res,next) => { 
     Promise.resolve(theFunc(req,res,next)).catch(next);
 };
 

@@ -16,8 +16,6 @@ const sendMail = async(options) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log("MAIL:", process.env.SMPT_MAIL);
-console.log("PASS:", process.env.SMPT_PASSWORD);
 };
 
 module.exports = sendMail;

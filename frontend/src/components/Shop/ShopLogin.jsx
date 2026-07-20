@@ -16,12 +16,13 @@ const ShopLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post(`${server}/shop/login-shop`, {
+    await axios.post(`${server}/shop/shop-login`, {
       email,
       password
     }, {withCredentials: true})
     .then((res) => {
       toast.success("Login successfully!");
+      navigate("/dashboard");
       window.location.reload(true);
     }).catch((err) => {
       toast.error(err.response.data.message);

@@ -249,7 +249,7 @@ const ShopCreate = () => {
             {/* Not having account? */}
             <div className={`${styles.noramlFlex} w-full`}>
               <h4>Already have an account?</h4>
-              <Link to="/login-shop" className="text-blue-600 pl-2">
+              <Link to="/shop-login" className="text-blue-600 pl-2">
                 Sign In
               </Link>
             </div>

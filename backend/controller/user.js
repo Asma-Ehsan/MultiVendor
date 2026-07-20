@@ -151,3 +151,830 @@ router.get("/logout",isAuthenticated, catchAsyncErrors(async(req, res, next) => 
 }))
 
 module.exports = router;
+
+/*
+===============================================================================
+CONTROLLER/USER.JS NOTES
+===============================================================================
+
+PURPOSE OF controller/user.js
+----------------------------
+
+This file contains all user-related routes (controllers).
+
+Examples:
+- User Registration
+- Email Activation
+- Login
+- Logout
+- Load Current User
+- Profile Update
+- Password Update
+etc.
+
+Flow:
+
+Frontend
+    |
+    ▼
+Route Request
+    |
+    ▼
+controller/user.js
+    |
+    ├────────► Model (MongoDB)
+    ├────────► JWT
+    ├────────► Multer
+    ├────────► Send Mail
+    ├────────► Authentication Middleware
+    └────────► Response
+
+
+===============================================================================
+REGISTRATION FLOW (IMPORTANT)
+===============================================================================
+
+User fills registration form
+        |
+        ▼
+POST /create-user
+        |
+        ▼
+upload.single("file")
+        |
+        ▼
+Profile Image Saved in uploads/
+        |
+        ▼
+Read req.body
+        |
+        ▼
+Check if email already exists
+        |
+        ├────────► Yes
+        │              |
+        │              ▼
+        │      Delete uploaded image
+        │              |
+        │              ▼
+        │      Return Error
+        │
+        ▼ No
+Create normal JavaScript user object
+        |
+        ▼
+Create Activation JWT
+        |
+        ▼
+Create Activation URL
+        |
+        ▼
+Send Email
+        |
+        ▼
+Registration finished
+(User is NOT saved in MongoDB yet)
+
+
+===============================================================================
+IMPORTANT CONCEPT
+User Object is NOT saved yet
+===============================================================================
+
+During registration:
+
+const user = {
+    name,
+    email,
+    password,
+    avatar
+}
+
+This is ONLY a normal JavaScript object.
+
+It is NOT:
+
+❌ MongoDB Document
+❌ Mongoose Document
+
+It only exists temporarily in memory.
+
+MongoDB still has NO user.
+
+The actual database insertion happens only after email verification.
+
+
+===============================================================================
+WHY CREATE ACTIVATION TOKEN?
+===============================================================================
+
+Since user is not yet stored in MongoDB,
+
+we need somewhere to temporarily keep the user information.
+
+Instead of saving into database,
+
+the backend stores the user object inside a JWT.
+
+createActivationToken(user)
+
+↓
+
+jwt.sign(user, ACTIVATION_SECRET)
+
+↓
+
+Returns:
+
+eyJhbGciOiJIUzI1NiIs...
+
+
+This token contains:
+
+{
+    name,
+    email,
+    password,
+    avatar,
+    iat,
+    exp
+}
+
+
+===============================================================================
+WHY CREATE ACTIVATION URL?
+===============================================================================
+
+activationToken
+
+↓
+
+ABC123XYZ
+
+
+activationUrl
+
+↓
+
+http://localhost:3000/activation/ABC123XYZ
+
+
+The email contains this URL.
+
+User clicks this link to verify the account.
+
+
+===============================================================================
+FRONTEND + BACKEND ACTIVATION FLOW
+===============================================================================
+
+BACKEND
+
+Create user object
+        |
+        ▼
+Create activation JWT
+        |
+        ▼
+Send activation email
+
+-------------------------------------
+
+USER
+
+Clicks activation link
+
+http://localhost:3000/activation/ABC123XYZ
+
+-------------------------------------
+
+FRONTEND
+
+React Router
+
+<Route
+ path="/activation/:activation_token"
+/>
+
+↓
+
+useParams()
+
+↓
+
+activation_token = "ABC123XYZ"
+
+↓
+
+axios.post(
+    /user/activation
+)
+
+Body:
+
+{
+ activation_token
+}
+
+-------------------------------------
+
+BACKEND
+
+Receives activation_token
+
+↓
+
+jwt.verify()
+
+↓
+
+Extract user information
+
+↓
+
+User.create()
+
+↓
+
+User saved into MongoDB
+
+↓
+
+Generate Login JWT
+
+↓
+
+Send Cookie
+
+
+===============================================================================
+IMPORTANT CONFUSION #1
+How does jwt.verify() work if user is NOT in MongoDB?
+===============================================================================
+
+Answer:
+
+jwt.verify() NEVER checks MongoDB.
+
+It only checks the JWT itself.
+
+It performs these checks:
+
+1. Is token signed with correct secret?
+
+2. Has token been modified?
+
+3. Has token expired?
+
+If everything is valid,
+
+it returns the original payload stored inside the JWT.
+
+Example:
+
+jwt.sign(user, SECRET)
+
+↓
+
+Token
+
+↓
+
+jwt.verify(token, SECRET)
+
+↓
+
+Returns:
+
+{
+    name,
+    email,
+    password,
+    avatar
+}
+
+No database query happens here.
+
+
+===============================================================================
+IMPORTANT CONFUSION #2
+Does jwt.verify() compare received token with the original token?
+===============================================================================
+
+NO.
+
+Backend NEVER stores the activation token.
+
+After sending the email,
+
+backend forgets the token.
+
+There is NO code like:
+
+savedToken = activationToken
+
+or
+
+ActivationToken.create(...)
+
+Nothing is stored.
+
+Instead,
+
+jwt.verify()
+
+recalculates the token signature using the same secret.
+
+If calculated signature matches the signature inside token,
+
+the token is authentic.
+
+Otherwise,
+
+verification fails.
+
+
+===============================================================================
+JWT SIGNATURE FLOW
+===============================================================================
+
+jwt.sign(user, SECRET)
+
+↓
+
+Payload
++
+SECRET
+
+↓
+
+Digital Signature Created
+
+↓
+
+Token Sent
+
+--------------------------------
+
+Later
+
+jwt.verify(token, SECRET)
+
+↓
+
+Extract Payload
+
+↓
+
+Recalculate Signature
+
+↓
+
+Signature Matches?
+
+YES
+
+↓
+
+Return Payload
+
+NO
+
+↓
+
+Throw Error
+
+
+===============================================================================
+IMPORTANT CONFUSION #3
+Why check User.findOne(email) AFTER jwt.verify()?
+===============================================================================
+
+jwt.verify()
+
+DOES NOT check database.
+
+It only verifies JWT.
+
+After verification,
+
+backend manually checks MongoDB:
+
+User.findOne({email})
+
+Purpose:
+
+To make sure user doesn't already exist.
+
+This is completely separate from JWT verification.
+
+
+===============================================================================
+ACTIVATION ROUTE
+===============================================================================
+
+POST /user/activation
+
+Purpose:
+
+1. Receive activation token
+
+2. Verify token
+
+3. Extract user information
+
+4. Check duplicate email
+
+5. Save user into MongoDB
+
+6. Automatically login user
+
+7. Send login JWT cookie
+
+
+===============================================================================
+TWO DIFFERENT JWT TOKENS
+===============================================================================
+
+1)
+
+Activation JWT
+
+Created By:
+
+createActivationToken()
+
+Purpose:
+
+Temporarily stores user information until email verification.
+
+Lifetime:
+
+5 Minutes
+
+--------------------------------------------------
+
+2)
+
+Login JWT
+
+Created By:
+
+user.getJwtToken()
+
+inside
+
+sendToken()
+
+Purpose:
+
+Keeps user logged in.
+
+Stored inside cookies.
+
+Lifetime:
+
+JWT_EXPIRES (7d in this project)
+
+
+These are TWO completely different JWTs.
+
+
+===============================================================================
+catchAsyncErrors vs try-catch
+===============================================================================
+
+catchAsyncErrors
+
+already catches rejected promises and thrown errors.
+
+Example:
+
+router.post(
+    "...",
+    catchAsyncErrors(async(...)=>{
+
+    })
+)
+
+Inside this async function,
+
+errors are automatically forwarded to:
+
+next(error)
+
+↓
+
+middleware/error.js
+
+
+Therefore,
+
+using another
+
+try{
+
+}
+catch(){
+
+}
+
+inside the same function is generally redundant.
+
+Many developers either:
+
+✔ use catchAsyncErrors
+
+OR
+
+✔ use try-catch
+
+Using both usually isn't necessary.
+
+In this project,
+
+the author used both, but catchAsyncErrors alone would be enough.
+
+
+===============================================================================
+LOGIN
+===============================================================================
+
+Login Flow
+
+Email + Password
+
+↓
+
+Find User
+
+↓
+
+comparePassword()
+
+↓
+
+Generate Login JWT
+
+↓
+
+Store Cookie
+
+↓
+
+User Logged In
+
+
+===============================================================================
+GET USER (USER PERSISTENCE)
+===============================================================================
+
+Purpose:
+
+Keeps user logged in after page refresh.
+
+Problem:
+
+React state is cleared after refresh.
+
+Example:
+
+Before Refresh
+
+user = {
+ name:"Asma"
+}
+
+After Refresh
+
+user = null
+
+Browser STILL has the authentication cookie.
+
+React asks backend:
+
+GET /user/getuser
+
+Browser automatically sends cookie.
+
+Backend:
+
+Cookie
+
+↓
+
+isAuthenticated
+
+↓
+
+jwt.verify()
+
+↓
+
+Find user
+
+↓
+
+Return user
+
+React stores user again.
+
+User appears logged in again.
+
+
+===============================================================================
+IMPORTANT CONFUSION #4
+How does user persistence work?
+===============================================================================
+
+User persistence DOES NOT mean
+
+saving user in MongoDB.
+
+User is already stored in MongoDB.
+
+Persistence means:
+
+Keeping the user logged in across page refreshes or browser restarts (until the cookie expires).
+
+Flow:
+
+Login
+
+↓
+
+Cookie Stored
+
+↓
+
+Refresh Page
+
+↓
+
+React state lost
+
+↓
+
+React calls /getuser
+
+↓
+
+Cookie sent automatically
+
+↓
+
+Backend verifies cookie
+
+↓
+
+Returns user
+
+↓
+
+React restores user state
+
+
+===============================================================================
+IMPORTANT CONFUSION #5
+How does /getuser know which user?
+===============================================================================
+
+Request
+
+↓
+
+Cookie
+
+↓
+
+isAuthenticated
+
+↓
+
+jwt.verify()
+
+↓
+
+decoded.id
+
+↓
+
+User.findById(decoded.id)
+
+↓
+
+req.user
+
+↓
+
+Controller returns user
+
+
+The browser identifies itself by sending the JWT cookie.
+The backend extracts the user's ID from that JWT and fetches the corresponding user from MongoDB.
+
+
+===============================================================================
+WHERE IS /getuser CALLED?
+===============================================================================
+
+Usually inside frontend:
+
+useEffect()
+
+Redux Action
+
+Context Provider
+
+App.jsx
+
+Search frontend for:
+
+getuser
+
+or
+
+loadUser
+
+or
+
+/user/getuser
+
+or
+
+axios.get(...)
+
+Example:
+
+useEffect(()=>{
+    axios.get(
+        `${server}/user/getuser`,
+        {
+            withCredentials:true
+        }
+    );
+},[]);
+
+
+===============================================================================
+IMPORTANT
+===============================================================================
+
+Authentication Cookie
+
+↓
+
+Browser automatically sends it with every request
+
+ONLY IF
+
+Frontend request contains:
+
+withCredentials: true
+
+and
+
+Backend CORS contains:
+
+credentials: true
+
+Without these,
+
+req.cookies.token
+
+will be undefined.
+
+
+===============================================================================
+FILES CONNECTED TO controller/user.js
+===============================================================================
+
+controller/user.js
+
+│
+
+├──── model/user.js
+│      Database operations
+│
+├──── multer.js
+│      Upload images
+│
+├──── sendMail.js
+│      Send activation email
+│
+├──── jwtToken.js
+│      Create login JWT + cookie
+│
+├──── auth.js
+│      Verify login cookie
+│
+├──── ErrorHandler.js
+│      Create custom errors
+│
+├──── catchAsyncErrors.js
+│      Catch async errors
+│
+└──── error.js
+       Sends error response
+
+===============================================================================*/

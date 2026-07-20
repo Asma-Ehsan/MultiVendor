@@ -11,7 +11,7 @@ const ShopLoginPage = () => {
     if(isSeller === true){
       navigate(`/shop/${seller._id}`)
     }
-  },[])
+  },[isSeller])
   return (
     <div>
       <ShopLogin/>

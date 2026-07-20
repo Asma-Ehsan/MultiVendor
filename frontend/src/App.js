@@ -43,6 +43,7 @@ const App = () => {
             <ProfilePage/>
           </ProtectedRoute>
         }/>
+        
         {/* shop Routes */}
 
         <Route path="/shop-create" element={<ShopCreatePage/>}/>

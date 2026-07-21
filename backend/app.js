@@ -32,8 +32,11 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 //import routes
 const user = require("./controller/user");
 const shop = require("./controller/shop");
+const product = require("./controller/product");
+
 app.use("/api/v2/user", user);
 app.use("/api/v2/shop", shop);
+app.use("/api/v2/product", product);
 
 //This means : Whenever any error occurs anywhere in the application, send it to this middleware
 app.use(ErrorHandler);

@@ -33,10 +33,12 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 const user = require("./controller/user");
 const shop = require("./controller/shop");
 const product = require("./controller/product");
+const event = require("./controller/event");
 
 app.use("/api/v2/user", user);
 app.use("/api/v2/shop", shop);
 app.use("/api/v2/product", product);
+app.use("/api/v2/event", event);
 
 //This means : Whenever any error occurs anywhere in the application, send it to this middleware
 app.use(ErrorHandler);

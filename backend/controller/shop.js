@@ -106,7 +106,7 @@ router.post("/activation", catchAsyncErrors(async(req, res, next) => {
 }));
 
 //login shop
-router.post("/login-shop", catchAsyncErrors(async(req, res, next) => {
+router.post("/shop-login", catchAsyncErrors(async(req, res, next) => {
     try {
         const {email, password} = req.body;
         if(!email || !password) return next(new ErrorHandler("Please provide the all fileds", 400));

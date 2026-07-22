@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {getAllProductsShop} from "../../redux/actions/product"
+import {deleteProduct, getAllProductsShop} from "../../redux/actions/product"
 import { Link } from 'react-router-dom';
 import { AiOutlineDelete, AiOutlineEye } from 'react-icons/ai';
 import Loader from "../Layout/Loader";
@@ -15,6 +15,11 @@ const AllProducts = () => {
     useEffect(() => {
         dispatch(getAllProductsShop(seller._id));
     },[dispatch])
+
+    const handleDelete = (id) => {
+        dispatch(deleteProduct(id));
+        window.location.reload();
+    }
    
     const columns = [
         {field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7},
@@ -22,7 +27,7 @@ const AllProducts = () => {
         {field: "price", headerName: "Price", minWidth: 100, flex: 0.6},
         {field: "Stock", headerName: "Stock",  type: "number", minWidth: 80, flex: 0.5},
         { field: "sold", headerName: "Sold out", type: "number", minWidth: 130, flex: 0.6,},
-        { field: "Preview", headerName: "", type: "number", minWidth: 100, flex: 0.8, sortable: false,
+        { field: "Preview", headerName: "Preview", type: "number", minWidth: 100, flex: 0.8, sortable: false,
             renderCell: (params) => {
                 const d = params.row.name;
                 const product_name = d.replace(/\s+/g, "-");
@@ -37,17 +42,18 @@ const AllProducts = () => {
                 )
             }
         },
-        { field: "Delete", headerName: "", type: "number", minWidth: 120, flex: 0.8, sortable: false,
+        { field: "Delete", headerName: "Delete", type: "number", minWidth: 120, flex: 0.8, sortable: false,
             renderCell: (params) => {
                 const d = params.row.name;
                 const product_name = d.replace(/\s+/g, "-");
                 return (
                     <>
                     
-                    <Button>
+                    <Button 
+                    onClick={() => handleDelete(params.id)}
+                    >
                         <AiOutlineDelete size={20}/>
                     </Button>
-                   
                     </>
                 )
             }
@@ -59,7 +65,7 @@ const AllProducts = () => {
         row.push({
             id: item._id,
             name: item.name,
-            price: "US$" + item.discountPrice,
+            price: "US$ " + item.discountPrice,
             Stock: item.stock,
             sold: 10,
         })
@@ -76,6 +82,11 @@ const AllProducts = () => {
         rows = {row}
         columns = {columns}
         pageSizeOptions={[10]}
+        initialState={{
+            pagination: {
+                paginationModel: { pageSize: 10, page: 0 },
+            },
+        }}
         disableSelectionOnClick
         autoHeight
             />

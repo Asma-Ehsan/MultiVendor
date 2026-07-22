@@ -45,6 +45,26 @@ export const productReducer = createReducer(initialState, (builder) => {
             // state.success = false;
         },
     )
+
+    //delete product of a shop
+    .addCase(
+        "deleteProductRequest", (state) => {
+            state.isLoading = true;
+        },
+    )
+    .addCase(
+        "deleteProductSuccess", (state, action) => {
+            state.isLoading = false;
+            state.message = action.payload; //message will come in res of delete controller
+        },
+    )
+    .addCase(
+        "deleteProductFailed", (state, action) => {
+            state.isLoading = false;
+            state.error = action.payload;
+        },
+    )
+
    .addCase(
     "clearErrors", (state)  => {
         state.error = null;

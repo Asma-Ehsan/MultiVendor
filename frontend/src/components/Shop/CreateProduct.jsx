@@ -1,33 +1,62 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { categoriesData } from '../../static/data';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { categoriesData } from "../../static/data";
 import { AiOutlinePlusCircle } from "react-icons/ai";
-
+import { createProduct } from "../../redux/actions/product";
+import { toast } from "react-toastify";
 
 const CreateProduct = () => {
-    const {seller} = useSelector((state) => state.seller);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    
-    const [images, setImages] = useState([]);
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("");
-    const [tags, setTags] = useState("");
-    const [originalPrice, setOriginalPrice] = useState();
-    const [discountPrice, setDiscountPrice] = useState();
-    const [stock, setStock] = useState();
+  const { seller } = useSelector((state) => state.seller);
+  const { success, error } = useSelector((state) => state.products);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const handleSubmit = (e) => {
-      e.preventDefault();
-    }
-    const handleImageChange = (e) => {
-      e.preventDefault();
+  const [images, setImages] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [tags, setTags] = useState("");
+  const [originalPrice, setOriginalPrice] = useState();
+  const [discountPrice, setDiscountPrice] = useState();
+  const [stock, setStock] = useState();
 
-      let files = Array.from(e.target.files);
-      setImages((prevImages) => [...prevImages, ...files]);
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
     }
+    if (success) {
+      toast.success("Product created successfully!");
+      navigate("/dashboard");
+      window.location.reload();
+    }
+  }, [dispatch, error, success]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const newForm = new FormData();
+
+    images.forEach((image) => {
+      newForm.append("images", image);
+    });
+    //the names in " " are those which we declared in models
+    newForm.append("name", name);
+    newForm.append("description", description);
+    newForm.append("category", category);
+    newForm.append("tags", tags);
+    newForm.append("originalPrice", originalPrice);
+    newForm.append("discountPrice", discountPrice);
+    newForm.append("stock", stock);
+    newForm.append("shopId", seller._id);
+    dispatch(createProduct(newForm)); // we are dispatching our createProduct when we have all the data of newForm
+  };
+  const handleImageChange = (e) => {
+    e.preventDefault();
+
+    let files = Array.from(e.target.files);
+    setImages((prevImages) => [...prevImages, ...files]);
+  };
   return (
     <div className="w-[90%] 800px:w-[50%] bg-white  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
       <h5 className="text-[30px] font-Poppins text-center">Create Product</h5>
@@ -75,14 +104,12 @@ const CreateProduct = () => {
             onChange={(e) => setCategory(e.target.value)}
           >
             <option value="Choose a category">Choose a category</option>
-            {
-              categoriesData && 
+            {categoriesData &&
               categoriesData.map((i) => (
                 <option value={i.title} key={i.title}>
-                {i.title}
+                  {i.title}
                 </option>
-              ))
-            }
+              ))}
           </select>
         </div>
         <br />
@@ -154,13 +181,15 @@ const CreateProduct = () => {
             <label htmlFor="upload">
               <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
             </label>
-            {
-            images && images.map((i) => (
-              <img src={URL.createObjectURL(i)} key={i} alt=""
-              className='h-[120px] w-[120px] object-cover m-2'
-              />
-            ))
-          }
+            {images &&
+              images.map((i) => (
+                <img
+                  src={URL.createObjectURL(i)}
+                  key={i}
+                  alt=""
+                  className="h-[120px] w-[120px] object-cover m-2"
+                />
+              ))}
           </div>
           <br />
           <div>
@@ -173,7 +202,7 @@ const CreateProduct = () => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default CreateProduct
+export default CreateProduct;

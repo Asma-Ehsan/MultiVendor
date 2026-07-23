@@ -2,16 +2,16 @@ import axios from "axios";
 import { server } from "../../server";
 
 // create event
-export const createevent = (data) => async (dispatch) => {
+export const createevent = (newForm) => async (dispatch) => {
   try {
     dispatch({
       type: "eventCreateRequest",
     });
 
-    const { d } = await axios.post(`${server}/event/create-event`, data);
+    const { data } = await axios.post(`${server}/event/create-event`, newForm);
     dispatch({
       type: "eventCreateSuccess",
-      payload: d.event,
+      payload: data.product,
     });
   } catch (error) {
     dispatch({

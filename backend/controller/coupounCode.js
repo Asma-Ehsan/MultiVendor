@@ -2,7 +2,6 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 const Shop = require("../model/shop");
 const ErrorHandler = require("../utils/ErrorHandler");
 const { isSeller } = require("../middleware/auth");
-const fs = require("fs");
 
 const express = require("express");
 const CoupounCode = require("../model/coupounCode");
@@ -13,7 +12,7 @@ router.post("/create-coupoun-code", isSeller, catchAsyncError(async(req, res, ne
     try {
         const isCoupounCodeExists = await CoupounCode.find({name: req.body.name});
 
-        if(isCoupounCodeExists) return next(new ErrorHandler("Coupoun Code already exists!", 400));
+        if(isCoupounCodeExists.length !== 0) return next(new ErrorHandler("Coupoun Code already exists!", 400));
 
         const coupounCode = await CoupounCode.create(req.body);
 
@@ -25,3 +24,5 @@ router.post("/create-coupoun-code", isSeller, catchAsyncError(async(req, res, ne
         return next(new ErrorHandler(error, 400));
     }
 }))
+
+module.exports = router

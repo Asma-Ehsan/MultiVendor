@@ -23,11 +23,21 @@ const AllCoupons = () => {
   const [value, setValue] = useState(null);
   const { seller } = useSelector((state) => state.seller);
   const { products } = useSelector((state) => state.products);
+
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getAllProductsShop(seller._id));
-  }, [dispatch]);
+;  useEffect(() => {
+    setIsLoading(true);
+    axios.get(`${server}/coupon/get-coupon/${seller._id}`, {
+      withCredentials:true,
+    }).then((res) => {
+      setIsLoading(false);
+      console.log(res.data);
+      setCoupouns(res.data.couponCodes || []);
+    }).catch((error) =>{
+      setIsLoading(false);
+    })
+  }, [dispatch])
 
   const handleDelete = (id) => {
     dispatch(deleteProduct(id));
@@ -43,9 +53,11 @@ const AllCoupons = () => {
       maxAmount,
       selectedProducts,
       value,
-      shop: seller,
+      shopId: seller._id,
     }, {withCredentials: true}).then((res) => {
-      console.log(res.data)
+      toast.success("Coupon code created successfully!");
+      setOpen(false);
+      window.location.reload();
     }).catch((error) => {
       toast.error(error.response.data.message);
     })
@@ -55,41 +67,6 @@ const AllCoupons = () => {
     { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
     { field: "name", headerName: "Name", minWidth: 180, flex: 1.4 },
     { field: "price", headerName: "Price", minWidth: 100, flex: 0.6 },
-    {
-      field: "Stock",
-      headerName: "Stock",
-      type: "number",
-      minWidth: 80,
-      flex: 0.5,
-    },
-    {
-      field: "sold",
-      headerName: "Sold out",
-      type: "number",
-      minWidth: 130,
-      flex: 0.6,
-    },
-    {
-      field: "Preview",
-      headerName: "Preview",
-      type: "number",
-      minWidth: 100,
-      flex: 0.8,
-      sortable: false,
-      renderCell: (params) => {
-        const d = params.row.name;
-        const product_name = d.replace(/\s+/g, "-");
-        return (
-          <>
-            <Link to={`/product/${product_name}`}>
-              <Button>
-                <AiOutlineEye size={20} />
-              </Button>
-            </Link>
-          </>
-        );
-      },
-    },
     {
       field: "Delete",
       headerName: "Delete",
@@ -112,13 +89,12 @@ const AllCoupons = () => {
   ];
 
   const row = [];
-  products &&
-    products.forEach((item) => {
+  coupouns &&
+    coupouns.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
-        price: "US$ " + item.discountPrice,
-        Stock: item.stock,
+        price: item.value + "%",
         sold: 10,
       });
     });

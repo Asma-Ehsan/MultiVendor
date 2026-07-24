@@ -25,4 +25,23 @@ router.post("/create-coupoun-code", isSeller, catchAsyncError(async(req, res, ne
     }
 }))
 
+//get all coupons of a shop
+router.get("/get-coupon/:id", isSeller, catchAsyncError(async(req,res,next) => {
+    try {
+        const couponCodes = await CoupounCode.find(
+            {
+                shopId: req.seller.id,//in DB we have a shop object and inside shop object we have id
+        }); // if we use findById(req.params.id) then it"ll send object and find({id: req.params.id}) will send an array and we need array
+
+        console.log(couponCodes)
+
+        res.status(201).json({
+            success: true,
+            couponCodes,
+        })
+    } catch (error) {
+        return next(new ErrorHandler(error, 400));
+    }
+}))
+
 module.exports = router

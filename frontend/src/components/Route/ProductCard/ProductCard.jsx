@@ -15,6 +15,8 @@ const ProductCard = ({ data }) => {
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
 
+  if(!data || !data.image_Url || data.image_Url.length === 0) return null;
+
   // from this name will make "iphone 14 pro max" to "iphone-14-pro-max" means adding "-" in url for SEO friendly
   const d = data.name;
   const product_name = d.replace(/\s+/g, "-");
@@ -71,14 +73,14 @@ const ProductCard = ({ data }) => {
           <div className="py-2 flex items-center justify-between">
             <div className="flex">
               <h5 className={`${styles.productDiscountPrice}`}>
-                {data.price === 0 ? data.price : data.discount_price}$
+                {data.originalPrice === 0 ? data.originalPrice : data.discountPrice}$
               </h5>
               <h4 className={`${styles.price}`}>
-                {data.price ? data.price + "S" : null}
+                {data.originalPrice ? data.originalPrice + "S" : null}
               </h4>
             </div>
             <span className="font-[400] text-[17px] text-[#68d284]">
-              {data.total_sell} sold
+              {data?.sold_out} sold
             </span>
           </div>
         </Link>

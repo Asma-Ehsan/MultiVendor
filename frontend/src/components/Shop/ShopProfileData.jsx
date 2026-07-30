@@ -1,12 +1,22 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
-import styles from '../../styles/styles';
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import styles from "../../styles/styles";
 import ProductCard from "../Route/ProductCard/ProductCard";
-import Ratings from "../Products/Ratings.jsx";
-import { productData } from '../../static/data.js';
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsShop } from "../../redux/actions/product";
+import Ratings from "../Products/Ratings";
+import { getAllEventsShop } from "../../redux/actions/event";
 
-const ShopProfileData = ({isOwner}) => {
+const ShopProfileData = ({ isOwner }) => {
+  const { products } = useSelector((state) => state.products);
+  const { events } = useSelector((state) => state.events);
+  const { id } = useParams();
   const [active, setActive] = useState(1);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllProductsShop(id));
+  }, [dispatch]);
 
   return (
     <div className="w-full">
@@ -57,26 +67,28 @@ const ShopProfileData = ({isOwner}) => {
       <br />
       {active === 1 && (
         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
-          {
-              productData && 
-              productData.map((i, index) => (
-                <ProductCard data={i} key={index} isShop = {true} />
-              ))
-            }
-         
+          {products &&
+            products.map((i, index) => {
+              const transformed = {
+                ...i,
+                image_Url: i.images.map((filename) => ({
+                  url: `http://localhost:8000/uploads/${filename}`,
+                })),
+              };
+              return (
+                <ProductCard data={transformed} key={index} isShop={true} />
+              );
+            })}
         </div>
       )}
 
       {active === 2 && (
         <div className="w-full">
-          <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
-          </div>
-          
-         
+          <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0"></div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ShopProfileData
+export default ShopProfileData;

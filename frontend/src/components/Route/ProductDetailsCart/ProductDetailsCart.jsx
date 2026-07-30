@@ -32,7 +32,7 @@ const ProductDetailsCart = ({ setOpen, data }) => {
                 <img src={data.image_Url[0].url} alt="" />
                 <div className="flex">
                   <img
-                    src={data.shop.shop_avatar.url}
+                    src={data?.shop?.avatar?.url}
                     alt=""
                     className="w-[50px] h-[50px] rounded-full mr-2 "
                   />

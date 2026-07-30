@@ -4,14 +4,11 @@ import styles from "../../styles/styles";
 import ProductCard from "../Route/ProductCard/ProductCard";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
-import Ratings from "../Products/Ratings";
-import { getAllEventsShop } from "../../redux/actions/event";
 
 const ShopProfileData = ({ isOwner }) => {
   const { products } = useSelector((state) => state.products);
-  const { events } = useSelector((state) => state.events);
-  const { id } = useParams();
   const [active, setActive] = useState(1);
+  const { id } = useParams();
   const dispatch = useDispatch();
 
   useEffect(() => {

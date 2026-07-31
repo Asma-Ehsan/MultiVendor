@@ -10,12 +10,13 @@ import {
   AiOutlineStar,
 } from "react-icons/ai";
 import ProductDetailsCart from "../ProductDetailsCart/ProductDetailsCart.jsx"
+import { backend_url } from "../../../server.js";
 
 const ProductCard = ({ data }) => {
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
 
-  if(!data || !data.image_Url || data.image_Url.length === 0) return null;
+  if(!data) return null;
 
   // from this name will make "iphone 14 pro max" to "iphone-14-pro-max" means adding "-" in url for SEO friendly
   const d = data.name;
@@ -27,7 +28,7 @@ const ProductCard = ({ data }) => {
         <div className="flex justify-end"></div>
         <Link to={`/product/${product_name}`}>
           <img
-            src={data.image_Url[0].url}
+            src={data.images && data.images[0] ? `${backend_url}uploads/${data.images[0]}` : ""}
             alt=""
             className="w-full h-[170px] object-contain"
           />

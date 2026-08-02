@@ -8,11 +8,13 @@ import {loadSeller, loadUser} from "./redux/actions/user"
 import ProtectedRoute from "./routes/ProtectedRoute.js";
 import {ShopHomePage} from "./ShopRoutes.js"
 import SellerProtectedRoute from "./routes/SellerProtectedRoute"
+import { getAllProducts } from "./redux/actions/product.js";
 
 const App = () => {
   useEffect(() => {
    Store.dispatch(loadUser());
    Store.dispatch(loadSeller());
+   Store.dispatch(getAllProducts());
   },[])
   return (
     <BrowserRouter>

@@ -17,7 +17,7 @@ const ProductDetails = ({ data }) => {
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
 
-    const { products } = useSelector((state) => state.products);
+  const { products } = useSelector((state) => state.products);
   // const { id } = useParams();
   const dispatch = useDispatch();
 
@@ -181,7 +181,7 @@ const ProductDetails = ({ data }) => {
             </div>
           </div>
 
-          <ProductDetailsInfo data={data} products = {products}/>
+          <ProductDetailsInfo data={data} products={products}/>
           <br />
           <br />
         </div>
@@ -190,7 +190,7 @@ const ProductDetails = ({ data }) => {
   );
 };
 
-const ProductDetailsInfo = ({ data, products }) => {
+const ProductDetailsInfo = ({ data, products}) => {
   const [active, setActive] = useState(1);
 
   // CHANGED: use the same shop avatar logic in the seller info section

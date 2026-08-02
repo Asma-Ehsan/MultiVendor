@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../../styles/styles";
 import {
@@ -8,12 +8,24 @@ import {
   AiOutlineShoppingCart,
 } from "react-icons/ai";
 import { backend_url } from "../../server";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsShop } from "../../redux/actions/product";
 
 const ProductDetails = ({ data }) => {
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
+
+    const { products } = useSelector((state) => state.products);
+  // const { id } = useParams();
+  const dispatch = useDispatch();
+
+  console.log(data);
+
+  useEffect(() => {
+    dispatch(getAllProductsShop(data?.shop?._id));
+  }, [dispatch]);
 
   const decrementCount = () => {
     if (count > 1) setCount(count - 1);
@@ -169,7 +181,7 @@ const ProductDetails = ({ data }) => {
             </div>
           </div>
 
-          <ProductDetailsInfo data={data} />
+          <ProductDetailsInfo data={data} products = {products}/>
           <br />
           <br />
         </div>
@@ -178,7 +190,7 @@ const ProductDetails = ({ data }) => {
   );
 };
 
-const ProductDetailsInfo = ({ data }) => {
+const ProductDetailsInfo = ({ data, products }) => {
   const [active, setActive] = useState(1);
 
   // CHANGED: use the same shop avatar logic in the seller info section
@@ -260,7 +272,7 @@ const ProductDetailsInfo = ({ data }) => {
                 Joined on: <span className="font-[500]">{data?.shop?.createdAt?.slice(0,10)}</span>
               </h5>
               <h5 className="font-[600] pt-3">
-                Total Products: <span className="font-[500]">1,2345</span>
+                Total Products: <span className="font-[500]"> {products?.length || 0 }</span>
               </h5>
               <h5 className="font-[600] pt-3">
                 Total Reviews: <span className="font-[500]">131</span>

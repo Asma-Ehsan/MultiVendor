@@ -3,7 +3,6 @@ import Header from "../components/Layout/Header";
 import Footer from "../components/Layout/Footer";
 import ProductDetails from "../components/Product/ProductDetails";
 import { useParams } from "react-router-dom";
-import { productData } from "../static/data";
 import SuggestedProduct from "../components/Product/SuggestedProduct";
 import { useSelector } from "react-redux";
 

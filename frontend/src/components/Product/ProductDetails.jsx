@@ -272,7 +272,7 @@ const ProductDetailsInfo = ({ data, products}) => {
                 Joined on: <span className="font-[500]">{data?.shop?.createdAt?.slice(0,10)}</span>
               </h5>
               <h5 className="font-[600] pt-3">
-                Total Products: <span className="font-[500]"> {products?.length || 0 }</span>
+                Total Products: <span className="font-[500]"> {products && products.length }</span>
               </h5>
               <h5 className="font-[600] pt-3">
                 Total Reviews: <span className="font-[500]">131</span>

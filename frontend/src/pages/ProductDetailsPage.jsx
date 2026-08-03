@@ -12,6 +12,7 @@ const ProductDetailsPage = () => {
   const [data, setData] = useState(null);
   // useParam wil get the product name with "-" : "iphone-14-pro-max" but in productData it is stored without "-", so to replace "-" from " "
   useEffect(() => {
+    window.scrollTo(0,0);
     const productName = name.replace(/-/g, " ");
     const data = allProducts && allProducts.find((i) => i.name === productName);
     setData(data);

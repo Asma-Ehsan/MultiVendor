@@ -24,8 +24,10 @@ const ProductDetails = ({ data }) => {
   console.log(data);
 
   useEffect(() => {
-    dispatch(getAllProductsShop(data?.shop?._id));
-  }, [dispatch]);
+    if (data?.shop?._id) {
+      dispatch(getAllProductsShop(data.shop._id));
+    }
+  }, [dispatch, data?.shop?._id]);
 
   const decrementCount = () => {
     if (count > 1) setCount(count - 1);

@@ -18,10 +18,7 @@ const ProductDetails = ({ data }) => {
   const navigate = useNavigate();
 
   const { products } = useSelector((state) => state.products);
-  // const { id } = useParams();
   const dispatch = useDispatch();
-
-  console.log(data);
 
   useEffect(() => {
     if (data?.shop?._id) {
@@ -104,6 +101,7 @@ const ProductDetails = ({ data }) => {
                   </h3>
                 </div>
 
+{/* increment decrement button */}
                 <div>
                   <div className="flex items-center justify-between mt-12 pr-3">
                     <div className="flex items-center">
@@ -146,6 +144,7 @@ const ProductDetails = ({ data }) => {
                   </div>
                 </div>
 
+{/* add to cart button */}
                 <div
                   className={`${styles.button} !mt-6 rounded-[4px] !h-11 flex items-center`}
                 >
@@ -154,17 +153,20 @@ const ProductDetails = ({ data }) => {
                   </span>
                 </div>
 
+{/* seller info */}
                 <div className="flex items-center pt-8">
                   {/* CHANGED: show seller avatar from the backend shop object */}
+                  <Link to = {`/shop/preview/${data?.shop._id}`}>
                   <img
                     src={shopAvatar || "https://via.placeholder.com/50"}
                     alt=""
                     className="w-[50px] h-[50px] mr-2 rounded-full"
                   />
+                  </Link>
                   <div className="pr-8">
-                    <h3 className={`${styles.shop_name} pb-1 pt-1`}>
+                    <Link to = {`/shop/preview/${data?.shop._id}`} ><h3 className={`${styles.shop_name} pb-1 pt-1`}>
                       {data?.shop?.name || "Seller"}
-                    </h3>
+                    </h3></Link>
                     <h5 className="pb-3 text-[15px]">
                       (4/5) Ratings
                     </h5>
@@ -249,15 +251,19 @@ const ProductDetailsInfo = ({ data, products}) => {
           <div className="w-full 800px:w-[50%]">
             <div className="flex items-center">
               {/* CHANGED: show seller avatar from the backend shop object */}
+              <Link to = {`/shop/preview/${data?.shop._id}`}>
               <img
                 src={shopAvatar}
                 alt=""
                 className="w-[50px] h-[50px] rounded-full"
               />
+              </Link>
               <div className="pl-3">
+                <Link to = {`/shop/preview/${data?.shop._id}`}>
                 <h3 className={`${styles.shop_name}`}>
                   {data?.shop?.name || "Seller"}
                 </h3>
+                </Link>
                 <h5 className="p2-3 text-[15px]">
                   ({data?.shop?.ratings || "4.5"}) Ratings
                 </h5>

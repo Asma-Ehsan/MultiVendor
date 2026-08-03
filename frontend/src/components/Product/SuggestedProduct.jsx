@@ -8,10 +8,20 @@ const SuggestedProduct = ({data}) => {
     const [productData, setProductData] = useState();
 
     //filter the products as per category
-    useEffect(() => {
-        const d = allProducts && allProducts.filter((i) => i.category === data.category);
-       setProductData(d);
-    }, [])
+    // useEffect(() => {
+    //     const d = allProducts && allProducts.filter((i) => i.category === data.category);
+    //    setProductData(d);
+    // }, []);
+      
+        useEffect(() => {
+          const d =
+            allProducts &&
+            allProducts.filter(
+              (i) => i.category === data.category && i._id !== data._id // exclude current product
+            );
+          setProductData(d);
+        }, [allProducts, data]); // re-run when the viewed product changes
+      
   return (
     <div>
      {

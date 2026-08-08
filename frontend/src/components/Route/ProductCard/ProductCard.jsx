@@ -26,6 +26,7 @@ const ProductCard = ({ data }) => {
     <>
       <div className="w-full h-[370] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
         <div className="flex justify-end"></div>
+        {/* Product images */}
         <Link to={`/product/${product_name}`}>
           <img
             src={data.images && data.images[0] ? `${backend_url}uploads/${data.images[0]}` : ""}
@@ -33,6 +34,8 @@ const ProductCard = ({ data }) => {
             className="w-full h-[170px] object-contain"
           />
         </Link>
+
+        {/* Shop info */}
         <Link to={`/shop/preview/${data?.shop._id}`}>
           <h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>
         </Link>

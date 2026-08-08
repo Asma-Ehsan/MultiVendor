@@ -3,7 +3,7 @@ import { RxCross1 } from "react-icons/rx";
 import { IoBagHandleOutline } from "react-icons/io5";
 import { HiMinus, HiPlus } from "react-icons/hi";
 import styles from "../../styles/styles";
-import { data, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { backend_url } from "../../server";
 import { addToCart, removeFromCart } from "../../redux/actions/cart";
@@ -27,7 +27,7 @@ const Cart = ({ setOpenCart }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10">
+    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10 overflow-y-scroll">
       <div className="fixed top-0 right-0 min-h-full w-[25%] bg-white flex flex-col justify-between shadow-sm ">
         {cart && cart.length === 0 ? (
           <div className="w-full h-screen flex items-center justify-center">
@@ -42,7 +42,7 @@ const Cart = ({ setOpenCart }) => {
           </div>
         ) : (
           <>
-            <div>
+            <div className="overflow-y-scroll h-[90vh]">
               {/* Cross Icon */}
               <div className="flex w-full justify-end pt-5 pr-5 ">
                 <RxCross1
@@ -54,7 +54,7 @@ const Cart = ({ setOpenCart }) => {
               {/* Item length */}
               <div className={`${styles.noramlFlex} p-4`}>
                 <IoBagHandleOutline size={25} />
-                <h5 className="pl-2 text-[20px] font-[500px] ">3 items</h5>
+                <h5 className="pl-2 text-[20px] font-[500px] ">{cart.length} items</h5>
               </div>
 
               {/* Cart single items */}

@@ -118,7 +118,7 @@ router.post("/login-user", catchAsyncErrors(async(req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error.message, 500))
     }
-}))
+}));
 
 //load user (user persistence)
 router.get("/getuser", isAuthenticated, catchAsyncErrors(async (req, res, next) => {
@@ -132,7 +132,7 @@ router.get("/getuser", isAuthenticated, catchAsyncErrors(async (req, res, next) 
     } catch (error) {
         return next(new ErrorHandler(error.message, 500))
     }
-}))
+}));
 
 //log out
 router.get("/logout",isAuthenticated, catchAsyncErrors(async(req, res, next) => {
@@ -147,6 +147,38 @@ router.get("/logout",isAuthenticated, catchAsyncErrors(async(req, res, next) => 
     })
     } catch (error) {
         return next(new ErrorHandler(error.message, 500))     
+    }
+}));
+
+//update user info
+router.put("/update-user-info", isAuthenticated, catchAsyncErrors(async(req, res, next) => {
+    try {
+        const { email, password, phoneNumber, name} = req.body;
+        const user = await User.findOne({email}).select("+password");
+        
+        if(!user) {
+            return  next(new ErrorHandler("User not found!", 400));  
+        }
+        
+        const isPasswordValid = await user.comparePassword(password);
+        
+        if(!isPasswordValid){
+            return  next(new ErrorHandler("Please provide the correct information", 500)); 
+        }
+
+        user.name = name;
+        user.email = email;
+        user.phoneNumber = phoneNumber;
+        
+        await user.save();
+
+        return res.status(201).json({
+            success: true,
+            user,
+        })
+
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500));  
     }
 }))
 

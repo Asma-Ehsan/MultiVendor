@@ -34,14 +34,11 @@ export const updateUserInformation = (email, password, phoneNumber, name) => asy
   try {
     dispatch({ type: "UpdateUserInfoRequest" });
 
-    const { data } = await axios.get(`${server}/user/update-user-info`, {
-      email,
-      password,
-      phoneNumber,
-      name,
-    }, {
-      withCredentials: true,
-    });
+    const { data } = await axios.put(
+      `${server}/user/update-user-info`,
+      { email, password, phoneNumber, name },   // body
+      { withCredentials: true }                  // config
+    );
     dispatch({ type: "UpdateUserInfoSuccess", payload: data.user });
   } catch (error) {
     dispatch({ type: "UpdateUserInfoFail", payload: error.response.data.message });

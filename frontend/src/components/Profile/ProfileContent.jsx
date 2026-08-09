@@ -1,25 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AiOutlineArrowRight,
   AiOutlineCamera,
   AiOutlineDelete,
 } from "react-icons/ai";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "../../styles/styles";
 import { Link } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import { MdOutlineTrackChanges } from "react-icons/md";
+import { updateUserInformation } from "../../redux/actions/user";
+import {toast} from "react-toastify";
 
 const ProfileContent = ({ active }) => {
-  const { user } = useSelector((state) => state.user);
+  const { user, error } = useSelector((state) => state.user);
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
+  const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber ? user.phoneNumber : "");
   const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if(error){
+      toast.error(error);
+    }
+  }, [error])
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    dispatch(updateUserInformation(email, password, phoneNumber, name));
   };
 
   if (!user) return null;

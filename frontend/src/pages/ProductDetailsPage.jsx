@@ -8,15 +8,14 @@ import { useSelector } from "react-redux";
 
 const ProductDetailsPage = () => {
   const { allProducts } = useSelector((state) => state.products);
-  const { name } = useParams();
+  const { id } = useParams();
   const [data, setData] = useState(null);
   // useParam wil get the product name with "-" : "iphone-14-pro-max" but in productData it is stored without "-", so to replace "-" from " "
   useEffect(() => {
     window.scrollTo(0,0);
-    const productName = name.replace(/-/g, " ");
-    const data = allProducts && allProducts.find((i) => i.name === productName);
+    const data = allProducts && allProducts.find((i) => i._id === id);
     setData(data);
-  }, [allProducts, name]);
+  }, [allProducts, id]);
   return (
     <div>
       <Header />

@@ -23,10 +23,6 @@ const ProductCard = ({ data }) => {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
 
-  // from this name will make "iphone 14 pro max" to "iphone-14-pro-max" means adding "-" in url for SEO friendly
-  const d = data.name;
-  const product_name = d.replace(/\s+/g, "-");
-
   useEffect(() => {
     if (!data) return null;
     if (data && wishlist && wishlist.find((i) => i._id === data._id)) {
@@ -66,7 +62,7 @@ const ProductCard = ({ data }) => {
       <div className="w-full h-[370] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
         <div className="flex justify-end"></div>
         {/* Product images */}
-        <Link to={`/product/${product_name}`}>
+        <Link to={`/product/${data._id}`}>
           <img
             src={data.images && data.images[0] ? `${backend_url}uploads/${data.images[0]}` : ""}
             alt=""
@@ -78,7 +74,7 @@ const ProductCard = ({ data }) => {
         <Link to={`/shop/preview/${data?.shop._id}`}>
           <h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>
         </Link>
-        <Link to={`/product/${product_name}`}>
+        <Link to={`/product/${data._id}`}>
           <h4 className="pb-3 font-[500]">
             {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}
           </h4>

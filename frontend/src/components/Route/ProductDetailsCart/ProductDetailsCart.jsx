@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import styles from "../../../styles/styles";
 import {
@@ -11,9 +11,11 @@ import { backend_url } from "../../../server";
 import { useDispatch, useSelector } from "react-redux";
 import {toast} from 'react-toastify';
 import { addToCart } from "../../../redux/actions/cart";
+import { addToWishlist, removeFromWishlist } from "../../../redux/actions/wishlist";
 
 const ProductDetailsCart = ({ setOpen, data }) => {
   const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const dispatch = useDispatch();
@@ -27,6 +29,16 @@ const ProductDetailsCart = ({ setOpen, data }) => {
   const incrementCount = () => {
     setCount(count + 1);
   };
+
+  const removeFromWishListHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  }
+
+  const addToWIshListHandler = (data) => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  }
 
   const addToCartHandler = (id) => {
     const isItemExists = cart && cart.find((i) => i._id === id);
@@ -42,6 +54,14 @@ const ProductDetailsCart = ({ setOpen, data }) => {
       }
     }
   }
+
+  useEffect(() => {
+    if(data && wishlist && wishlist.find((i) => i._id === data._id)){
+      setClick(true);
+    }else{
+      setClick(false)
+    }
+  }, [wishlist, data]);
 
   return (
     <div className="bg-[#fff]">
@@ -100,6 +120,7 @@ const ProductDetailsCart = ({ setOpen, data }) => {
 
               {/* Right Side */}
               <div className="w-full 800px:[50%] pt-5 pl-[5px] pr-[5px]">
+
                 {/* Product info */}
                 <h1 className={`${styles.productTitle} text-[20px]`}>
                   {data.name}
@@ -115,6 +136,7 @@ const ProductDetailsCart = ({ setOpen, data }) => {
                 </div>
 
                 <div className="flex items-center justify-between mt-12 pr-3">
+                
                   {/* " + " and " - "" buttons */}
                   <div className="flex items-center">
                     <button
@@ -133,13 +155,14 @@ const ProductDetailsCart = ({ setOpen, data }) => {
                       +
                     </button>
                   </div>
+                
                   {/* Heart icons */}
                   <div>
                     {click ? (
                       <AiFillHeart
                         size={30}
                         className="cursor-pointer"
-                        onClick={() => setClick(!click)}
+                        onClick={() => removeFromWishListHandler(data)}
                         color={click ? "red" : "#333"}
                         title="Remove from wishlist"
                       />
@@ -147,7 +170,7 @@ const ProductDetailsCart = ({ setOpen, data }) => {
                       <AiOutlineHeart
                         size={30}
                         className="cursor-pointer"
-                        onClick={() => setClick(!click)}
+                        onClick={() => addToWIshListHandler(data)}
                         color={click ? "red" : "#333"}
                         title="Add to wishlist"
                       />

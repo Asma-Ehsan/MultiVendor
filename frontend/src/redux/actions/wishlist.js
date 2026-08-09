@@ -1,7 +1,7 @@
 // add to wishlist
 export const addToWishlist = (data) => async (dispatch, getState) => {
     dispatch({
-        type: "addToWishlistt",
+        type: "addToWishlist",
         payload: data, //data is the product's data which is added in to the cart
     });
 

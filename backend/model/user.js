@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
 //  Hash password (PRE SAVE HOOK)
 userSchema.pre("save", async function (next){
   if(!this.isModified("password")){ //If password is NOT changed, skip hashing
-    next(); 
+    return; 
   }
 
   this.password = await bcrypt.hash(this.password, 10);

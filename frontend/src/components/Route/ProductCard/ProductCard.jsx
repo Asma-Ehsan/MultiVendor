@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../../../styles/styles";
 import {
@@ -11,16 +11,37 @@ import {
 } from "react-icons/ai";
 import ProductDetailsCart from "../ProductDetailsCart/ProductDetailsCart.jsx"
 import { backend_url } from "../../../server.js";
+import { useDispatch, useSelector } from "react-redux";
+import { addToWishlist, removeFromWishlist } from "../../../redux/actions/wishlist.js";
 
 const ProductCard = ({ data }) => {
+  const {wishlist} = useSelector((state) => state.wishlist);
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
-
-  if(!data) return null;
+  const dispatch = useDispatch();
 
   // from this name will make "iphone 14 pro max" to "iphone-14-pro-max" means adding "-" in url for SEO friendly
   const d = data.name;
   const product_name = d.replace(/\s+/g, "-");
+
+  useEffect(() => {
+    if (!data) return null;
+    if (data && wishlist && wishlist.find((i) => i._id === data._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+  }, [wishlist, data]);
+
+  const removeFromWishListHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  }
+
+  const addToWIshListHandler = (data) => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  }
 
   return (
     <>
@@ -95,7 +116,7 @@ const ProductCard = ({ data }) => {
             <AiFillHeart
               size={22}
               className="cursor-pointer absolute right-2 top-5"
-              onClick={() => setClick(!click)}
+              onClick={() => removeFromWishListHandler(data)}
               color={click ? "red" : "#333"}
               title="Remove from wishlist"
             />
@@ -103,7 +124,7 @@ const ProductCard = ({ data }) => {
             <AiOutlineHeart
               size={22}
               className="cursor-pointer absolute right-2 top-5"
-              onClick={() => setClick(!click)}
+              onClick={() =>  addToWIshListHandler(data)}
               color={click ? "red" : "#333"}
               title="Add to wishlist"
             />

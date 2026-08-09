@@ -27,6 +27,7 @@ export const userReducer = createReducer(initialState, (builder) => {
         .addCase("UpdateUserInfoSuccess", (state, action) => {
             state.loading = false;
             state.user = action.payload;
+            state.error = null;
         })
         .addCase("UpdateUserInfoFail", (state, action) => {
             state.loading = false;

@@ -27,3 +27,23 @@ export const loadSeller = () => async (dispatch) => {
     dispatch({ type: "LoadSellerFail", payload: error.response.data.message });
   }
 };
+
+
+//user update information 
+export const updateUserInformation = (email, password, phoneNumber, name) => async (dispatch, action) => {
+  try {
+    dispatch({ type: "UpdateUserInfoRequest" });
+
+    const { data } = await axios.get(`${server}/user.update-user-info`, {
+      email,
+      password,
+      phoneNumber,
+      name,
+    }, {
+      withCredentials: true,
+    });
+    dispatch({ type: "UpdateUserInfoSuccess", payload: data.user });
+  } catch (error) {
+    dispatch({ type: "UpdateUserInfoFail", payload: error.response.data.message });
+  }
+}

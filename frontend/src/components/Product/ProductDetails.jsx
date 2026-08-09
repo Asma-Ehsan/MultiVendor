@@ -10,14 +10,22 @@ import {
 import { backend_url } from "../../server";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../redux/actions/wishlist";
+import { toast } from "react-toastify";
+import { addToCart } from "../../redux/actions/cart";
 
 const ProductDetails = ({ data }) => {
+  const { products } = useSelector((state) => state.products);
+  const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
+
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
-
-  const { products } = useSelector((state) => state.products);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -34,16 +42,49 @@ const ProductDetails = ({ data }) => {
     setCount(count + 1);
   };
 
+  useEffect(() => {
+    if (data && wishlist && wishlist.find((i) => i._id === data._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+  }, [wishlist, data]);
+
   const handleMessageSubmit = () => {
     navigate("/inbox?conversation=509763bcjxoou0w");
   };
+
+  const removeFromWishListHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  };
+
+  const addToWIshListHandler = (data) => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  };
+
+  const addToCartHandler = (id) => {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+    if(isItemExists){
+      toast.error("Item already in cart!");
+    }else{
+      if(data.stock < count){
+        toast.error("Product stock is limited");
+      }else{
+        const cartData = { ...data, qty: count};
+        dispatch(addToCart(cartData));
+        toast.success("Items added o cart successfully!");
+      }
+    }
+  }
 
   // CHANGED: build real image URLs from the backend upload folder
   const getImageUrl = (image) => {
     if (!image) return "";
     if (typeof image === "string") {
       if (image.startsWith("http")) return image;
-      return `${backend_url}uploads/${image}`;
+      return `${backend_url}uploads/${data.images}`;
     }
     return "";
   };
@@ -51,9 +92,12 @@ const ProductDetails = ({ data }) => {
   // CHANGED: read product images from the backend shape (data.images)
   const productImages = (data?.images || []).map(getImageUrl);
   const mainImage = productImages[select] || productImages[0] || "";
+  console.log("productImages: ", productImages);
+  console.log("mainImage: ", mainImage);
 
   // CHANGED: read seller avatar from the shop object returned by the backend
-  const shopAvatar = data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";
+  const shopAvatar =
+    data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";
 
   return (
     <div className="bg-white">
@@ -79,7 +123,9 @@ const ProductDetails = ({ data }) => {
                         src={image}
                         alt=""
                         className={`h-[80px] w-[80px] object-cover cursor-pointer ${
-                          select === index ? "border-2 border-teal-500" : "border"
+                          select === index
+                            ? "border-2 border-teal-500"
+                            : "border"
                         }`}
                         onClick={() => setSelect(index)}
                       />
@@ -90,6 +136,7 @@ const ProductDetails = ({ data }) => {
 
               {/* Right Side */}
               <div className="w-full 800px:w-[50%] pt-5">
+                {/* Product Info */}
                 <h1 className={`${styles.productTitle}`}>{data.name}</h1>
                 <p>{data.description}</p>
                 <div className="flex pt-3">
@@ -97,11 +144,13 @@ const ProductDetails = ({ data }) => {
                     {data.discountPrice ?? data.discount_price ?? 0}$
                   </h4>
                   <h3 className={`${styles.price}`}>
-                    {data.originalPrice ?? data.price ? data.originalPrice ?? data.price + "$" : null}
+                    {data.originalPrice ?? data.price
+                      ? data.originalPrice ?? data.price + "$"
+                      : null}
                   </h3>
                 </div>
 
-{/* increment decrement button */}
+                {/* increment decrement button */}
                 <div>
                   <div className="flex items-center justify-between mt-12 pr-3">
                     <div className="flex items-center">
@@ -121,13 +170,13 @@ const ProductDetails = ({ data }) => {
                         +
                       </button>
                     </div>
-
+                    {/* Heart Icon */}
                     <div>
                       {click ? (
                         <AiFillHeart
                           size={30}
                           className="cursor-pointer"
-                          onClick={() => setClick(!click)}
+                          onClick={() => removeFromWishListHandler(data)}
                           color={click ? "red" : "#333"}
                           title="Remove from wishlist"
                         />
@@ -135,7 +184,7 @@ const ProductDetails = ({ data }) => {
                         <AiOutlineHeart
                           size={30}
                           className="cursor-pointer"
-                          onClick={() => setClick(!click)}
+                          onClick={() => addToWIshListHandler(data)}
                           color={click ? "red" : "#333"}
                           title="Add to wishlist"
                         />
@@ -144,32 +193,33 @@ const ProductDetails = ({ data }) => {
                   </div>
                 </div>
 
-{/* add to cart button */}
+                {/* add to cart button */}
                 <div
                   className={`${styles.button} !mt-6 rounded-[4px] !h-11 flex items-center`}
+                  onClick={() => addToCartHandler(data._id)}
                 >
                   <span className="text-white flex items-center">
                     Add to cart <AiOutlineShoppingCart className="ml-1" />{" "}
                   </span>
                 </div>
 
-{/* seller info */}
+                {/* seller info */}
                 <div className="flex items-center pt-8">
                   {/* CHANGED: show seller avatar from the backend shop object */}
-                  <Link to = {`/shop/preview/${data?.shop._id}`}>
-                  <img
-                    src={shopAvatar || "https://via.placeholder.com/50"}
-                    alt=""
-                    className="w-[50px] h-[50px] mr-2 rounded-full"
-                  />
+                  <Link to={`/shop/preview/${data?.shop._id}`}>
+                    <img
+                      src={shopAvatar || "https://via.placeholder.com/50"}
+                      alt=""
+                      className="w-[50px] h-[50px] mr-2 rounded-full"
+                    />
                   </Link>
                   <div className="pr-8">
-                    <Link to = {`/shop/preview/${data?.shop._id}`} ><h3 className={`${styles.shop_name} pb-1 pt-1`}>
-                      {data?.shop?.name || "Seller"}
-                    </h3></Link>
-                    <h5 className="pb-3 text-[15px]">
-                      (4/5) Ratings
-                    </h5>
+                    <Link to={`/shop/preview/${data?.shop._id}`}>
+                      <h3 className={`${styles.shop_name} pb-1 pt-1`}>
+                        {data?.shop?.name || "Seller"}
+                      </h3>
+                    </Link>
+                    <h5 className="pb-3 text-[15px]">(4/5) Ratings</h5>
                   </div>
 
                   <div
@@ -185,7 +235,7 @@ const ProductDetails = ({ data }) => {
             </div>
           </div>
 
-          <ProductDetailsInfo data={data} products={products}/>
+          <ProductDetailsInfo data={data} products={products} />
           <br />
           <br />
         </div>
@@ -194,11 +244,12 @@ const ProductDetails = ({ data }) => {
   );
 };
 
-const ProductDetailsInfo = ({ data, products}) => {
+const ProductDetailsInfo = ({ data, products }) => {
   const [active, setActive] = useState(1);
 
   // CHANGED: use the same shop avatar logic in the seller info section
-  const shopAvatar = data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";
+  const shopAvatar =
+    data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";
 
   return (
     <div className="bg-[#f5f6fb] px-3 800px:px-10 py-2 rounded">
@@ -210,7 +261,9 @@ const ProductDetailsInfo = ({ data, products}) => {
           >
             Product Details
           </h5>
-          {active === 1 ? <div className={`${styles.active_indicator}`} /> : null}
+          {active === 1 ? (
+            <div className={`${styles.active_indicator}`} />
+          ) : null}
         </div>
         <div className="relative">
           <h5
@@ -219,7 +272,9 @@ const ProductDetailsInfo = ({ data, products}) => {
           >
             Product Reviews
           </h5>
-          {active === 2 ? <div className={`${styles.active_indicator}`} /> : null}
+          {active === 2 ? (
+            <div className={`${styles.active_indicator}`} />
+          ) : null}
         </div>
         <div className="relative">
           <h5
@@ -228,7 +283,9 @@ const ProductDetailsInfo = ({ data, products}) => {
           >
             Seller Information
           </h5>
-          {active === 3 ? <div className={`${styles.active_indicator}`} /> : null}
+          {active === 3 ? (
+            <div className={`${styles.active_indicator}`} />
+          ) : null}
         </div>
       </div>
 
@@ -251,18 +308,18 @@ const ProductDetailsInfo = ({ data, products}) => {
           <div className="w-full 800px:w-[50%]">
             <div className="flex items-center">
               {/* CHANGED: show seller avatar from the backend shop object */}
-              <Link to = {`/shop/preview/${data?.shop._id}`}>
-              <img
-                src={shopAvatar}
-                alt=""
-                className="w-[50px] h-[50px] rounded-full"
-              />
+              <Link to={`/shop/preview/${data?.shop._id}`}>
+                <img
+                  src={shopAvatar}
+                  alt=""
+                  className="w-[50px] h-[50px] rounded-full"
+                />
               </Link>
               <div className="pl-3">
-                <Link to = {`/shop/preview/${data?.shop._id}`}>
-                <h3 className={`${styles.shop_name}`}>
-                  {data?.shop?.name || "Seller"}
-                </h3>
+                <Link to={`/shop/preview/${data?.shop._id}`}>
+                  <h3 className={`${styles.shop_name}`}>
+                    {data?.shop?.name || "Seller"}
+                  </h3>
                 </Link>
                 <h5 className="p2-3 text-[15px]">
                   ({data?.shop?.ratings || "4.5"}) Ratings
@@ -277,10 +334,17 @@ const ProductDetailsInfo = ({ data, products}) => {
           <div className="w-full 800px:w-[50%] mt-5 800px:mt-0 800px:flex flex-col items-end">
             <div className="text-left">
               <h5 className="font-[600]">
-                Joined on: <span className="font-[500]">{data?.shop?.createdAt?.slice(0,10)}</span>
+                Joined on:{" "}
+                <span className="font-[500]">
+                  {data?.shop?.createdAt?.slice(0, 10)}
+                </span>
               </h5>
               <h5 className="font-[600] pt-3">
-                Total Products: <span className="font-[500]"> {products && products.length }</span>
+                Total Products:{" "}
+                <span className="font-[500]">
+                  {" "}
+                  {products && products.length}
+                </span>
               </h5>
               <h5 className="font-[600] pt-3">
                 Total Reviews: <span className="font-[500]">131</span>

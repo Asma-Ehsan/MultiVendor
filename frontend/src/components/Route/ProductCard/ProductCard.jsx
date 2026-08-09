@@ -13,9 +13,12 @@ import ProductDetailsCart from "../ProductDetailsCart/ProductDetailsCart.jsx"
 import { backend_url } from "../../../server.js";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist, removeFromWishlist } from "../../../redux/actions/wishlist.js";
+import { addToCart } from "../../../redux/actions/cart.js";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ data }) => {
   const {wishlist} = useSelector((state) => state.wishlist);
+  const { cart } = useSelector((state) => state.cart);
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
@@ -41,6 +44,21 @@ const ProductCard = ({ data }) => {
   const addToWIshListHandler = (data) => {
     setClick(!click);
     dispatch(addToWishlist(data));
+  }
+
+  const addToCartHandler = (id) => {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+        if(isItemExists){
+          toast.error("Item already in cart!");
+        }else{
+          if(data.stock < 1){
+            toast.error("Product stock is limited");
+          }else{
+            const cartData = { ...data, qty: 1};
+            dispatch(addToCart(cartData));
+            toast.success("Items added o cart successfully!");
+          }
+        }
   }
 
   return (
@@ -141,6 +159,7 @@ const ProductCard = ({ data }) => {
             className="cursor-pointer absolute right-2 top-24"
             color="#44"
             title="Add to cart"
+            onClick={() => addToCartHandler(data._id)}
             />
             {open ? (
               <ProductDetailsCart setOpen= {setOpen} data= {data} />

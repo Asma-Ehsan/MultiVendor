@@ -34,7 +34,7 @@ export const updateUserInformation = (email, password, phoneNumber, name) => asy
   try {
     dispatch({ type: "UpdateUserInfoRequest" });
 
-    const { data } = await axios.get(`${server}/user.update-user-info`, {
+    const { data } = await axios.get(`${server}/user/update-user-info`, {
       email,
       password,
       phoneNumber,

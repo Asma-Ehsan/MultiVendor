@@ -84,7 +84,7 @@ const ProductDetails = ({ data }) => {
     if (!image) return "";
     if (typeof image === "string") {
       if (image.startsWith("http")) return image;
-      return `${backend_url}uploads/${data.images}`;
+      return `${backend_url}uploads/${data.images[0]}`;
     }
     return "";
   };

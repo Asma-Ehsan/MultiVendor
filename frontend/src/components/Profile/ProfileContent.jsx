@@ -11,26 +11,54 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import { MdOutlineTrackChanges } from "react-icons/md";
 import { updateUserInformation } from "../../redux/actions/user";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
+import { server } from "../../server";
+import axios from "axios";
 
 const ProfileContent = ({ active }) => {
   const { user, error } = useSelector((state) => state.user);
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
-  const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber ? user.phoneNumber : "");
+  const [phoneNumber, setPhoneNumber] = useState(
+    user && user.phoneNumber ? user.phoneNumber : ""
+  );
   const [password, setPassword] = useState("");
+  const [avatar, setAvatar] = useState(null);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(error){
+    if (error) {
       toast.error(error);
     }
-  }, [error])
+  }, [error]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(updateUserInformation(email, password, phoneNumber, name));
+  };
+
+  const handleImage = async (e) => {
+    const file = e.target.files[0];
+    setAvatar(file);
+
+    const formData = new FormData();
+
+    formData.append("image", e.target.files[0]);
+
+    await axios
+      .put(`${server}/user/update-avatar`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      })
+      .then((response) => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        toast.error(error);
+      });
   };
 
   if (!user) return null;
@@ -47,7 +75,15 @@ const ProfileContent = ({ active }) => {
                 alt={user?.name}
               />
               <div className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[5px] right-[5px]">
-                <AiOutlineCamera />
+                <input
+                  type="file"
+                  id="image"
+                  className="hidden"
+                  onChange={handleImage}
+                />
+                <label htmlFor="image">
+                  <AiOutlineCamera />
+                </label>
               </div>
             </div>
           </div>
@@ -149,8 +185,6 @@ const ProfileContent = ({ active }) => {
           <Address />
         </div>
       )}
-
-
     </div>
   );
 };

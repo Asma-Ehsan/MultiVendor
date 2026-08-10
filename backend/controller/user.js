@@ -180,6 +180,44 @@ router.put("/update-user-info", isAuthenticated, catchAsyncErrors(async(req, res
     } catch (error) {
         return next(new ErrorHandler(error.message, 500));  
     }
+}));
+
+//update user avatar
+router.put("/update-avatar", isAuthenticated, upload.single("image"), catchAsyncErrors(async(req, res, next) => {
+    try {
+        //we are accessing previous user bcz we need to delete the previous avatar of user from uploads folder
+        const existUser = await User.findById(req.user.id); // we are using isAuthenticated, taht's why we can access req.user.id otherwise it returns undefined
+
+        // Extract the file name from the avatar object
+        const avatarUrl = existUser.avatar.url; //Get the url of avatar
+        const avatarFileName = path.basename(avatarUrl); //Extract the filename from the URL
+
+        //construct the file path
+        const existAvatarPath = path.join(__dirname, "../uploads", avatarFileName);
+        if(fs.existsSync(existAvatarPath)){
+            try {
+                fs.unlinkSync(existAvatarPath);
+                console.log("previous avatar deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting avatar:", err);
+            }
+        }else{
+            console.warn("Avatar file does not exist:", existAvatarPath);
+        }
+
+        const filename = req.file.filename;
+        const fileUrl = `http://localhost:8000/uploads/${filename}`;
+
+        const user = await User.findByIdAndUpdate(req.user.id, {avatar: {public_id: filename, url: fileUrl}}, {new: true});
+
+        res.status(200).json({
+            success:true,
+            user,
+        })
+
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500));      
+    }
 }))
 
 module.exports = router;

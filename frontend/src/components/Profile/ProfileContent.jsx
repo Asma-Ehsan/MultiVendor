@@ -10,7 +10,11 @@ import { Link } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
 import { MdOutlineTrackChanges } from "react-icons/md";
-import { updateUserInformation } from "../../redux/actions/user";
+import {
+  deleteUserAddress,
+  updateUserAddress,
+  updateUserInformation,
+} from "../../redux/actions/user";
 import { toast } from "react-toastify";
 import { server } from "../../server";
 import axios from "axios";
@@ -18,7 +22,9 @@ import { RxCross1 } from "react-icons/rx";
 import { Country, State } from "country-state-city";
 
 const ProfileContent = ({ active }) => {
-  const { user, error } = useSelector((state) => state.user);
+  const { user, error, successMessage } = useSelector(
+    (state) => state.user,
+  );
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState(
@@ -32,8 +38,13 @@ const ProfileContent = ({ active }) => {
   useEffect(() => {
     if (error) {
       toast.error(error);
+      dispatch({ type: "clearErrors" });
     }
-  }, [error]);
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch({ type: "clearMessages" });
+    }
+  }, [error, successMessage]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -523,17 +534,29 @@ const Address = () => {
     if (addressType === "" || country === "" || city === "") {
       toast.error("Please fill all the required fields");
     } else {
+      dispatch(
+        updateUserAddress(country, city, address1, address2, addressType),
+      );
+      setOpen(false);
+      setCountry("");
+      setCity("");
+      setAddress1("");
+      setAddress2("");
+      setZipCode(null);
+      setAddressType("");
     }
   };
+
+  const handleDelete = (item) => {
+   dispatch(deleteUserAddress(item._id)) 
+  }
   return (
     <div className="w-full px-5">
-
       {/* Card to add new address */}
       {open && (
         <div className="fixed w-full h-screen bg-[#0000004b] top-0 left-0 flex items-center justify-center ">
           <div className="w-[35%] h-[80vh] bg-white rounded shadow relative overflow-y-scroll">
             <div className="w-full flex justify-end p-3">
-
               {/* Cross icon */}
               <RxCross1
                 size={30}
@@ -613,7 +636,7 @@ const Address = () => {
                   </div>
 
                   {/* Address 2 */}
-                   <div className="w-full pb-2">
+                  <div className="w-full pb-2">
                     <label className="block pb-2">Address 2</label>
                     <input
                       type="text"
@@ -623,9 +646,9 @@ const Address = () => {
                       onChange={(e) => setAddress2(e.target.value)}
                     />
                   </div>
-                  
+
                   {/* Zip code */}
-                   <div className="w-full pb-2">
+                  <div className="w-full pb-2">
                     <label className="block pb-2">Zip Code</label>
                     <input
                       type="number"
@@ -663,8 +686,7 @@ const Address = () => {
                   </div>
 
                   {/* Submit button */}
-                   <div className="w-full pb-2">
-                    <label className="block pb-2">Address 1</label>
+                  <div className="w-full pb-2">
                     <input
                       type="submit"
                       className={`${styles.input} mt-5 cursor-pointer`}
@@ -690,20 +712,43 @@ const Address = () => {
         </div>
       </div>
       <br />
-      <div className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10">
-        <div className="flex items-center">
-          <h5 className="pl-5 font-[600]">Default</h5>
-        </div>
-        <div className="flex items-center pl-8">
-          <h6>219 DHA, Lahore</h6>
-        </div>
-        <div className="flex items-center pl-8">
-          <h6>(92) 32160756890</h6>
-        </div>
-        <div className="min-w-[10%] flex items-center justify-between pl-8">
-          <AiOutlineDelete size={25} className="cursor-pointer" />
-        </div>
-      </div>
+      {user &&
+        user.addresses.map((item, index) => (
+          <div
+            className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10"
+            key={index}
+          >
+            {/* Address Type */}
+            <div className="flex items-center">
+              <h5 className="pl-5 font-[600]">{item.addressType}</h5>
+            </div>
+            {/* Addresses */}
+            <div className="flex items-center pl-8">
+              <h6>
+                {item.address1} {item.address2}{" "}
+              </h6>
+            </div>
+            {/* Phone Number */}
+            <div className="flex items-center pl-8">
+              <h6>{user.phoneNumber}</h6>
+            </div>
+            {/* Delete icon */}
+            <div className="min-w-[10%] flex items-center justify-between pl-8">
+              <AiOutlineDelete
+                size={25}
+                className="cursor-pointer"
+                onClick={() => handleDelete(item)}
+              />
+            </div>
+          </div>
+        ))}
+        {
+          user && user.addresses.length === 0 && (
+            <h5
+            className="text-center pt-8 text-[18px]"
+            >You not have saved any address </h5>
+          )
+        }
     </div>
   );
 };

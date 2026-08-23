@@ -35,7 +35,7 @@ export const userReducer = createReducer(initialState, (builder) => {
         })
 
         // update user address
-        .addCase("UpdateUserAddressReques", (state) => {
+        .addCase("UpdateUserAddressRequest", (state) => {
             state.loading = true;
         })
         .addCase("UpdateUserAddressSuccess", (state, action) => {

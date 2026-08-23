@@ -28,7 +28,6 @@ export const loadSeller = () => async (dispatch) => {
   }
 };
 
-
 //user update information 
 export const updateUserInformation = (email, password, phoneNumber, name) => async (dispatch, action) => {
   try {
@@ -43,4 +42,20 @@ export const updateUserInformation = (email, password, phoneNumber, name) => asy
   } catch (error) {
     dispatch({ type: "UpdateUserInfoFail", payload: error.response.data.message });
   }
-}
+};
+
+//update user address 
+export const updateUserAddress = (country, city, address1, address2, addressType) => async (dispatch, action) => {
+  try {
+    dispatch({ type: "UpdateUserAddressRequest" });
+
+    const { data } = await axios.put(
+      `${server}/user/update-user-addresses`,
+      { country, city, address1, address2, addressType },   // body
+      { withCredentials: true }                  // config
+    );
+    dispatch({ type: "UpdateUserAddressSuccess", payload: data.user });
+  } catch (error) {
+    dispatch({ type: "UpdateUserAddressFail", payload: error.response.data.message });
+  }
+};

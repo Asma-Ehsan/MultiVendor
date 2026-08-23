@@ -218,6 +218,29 @@ router.put("/update-avatar", isAuthenticated, upload.single("image"), catchAsync
     } catch (error) {
         return next(new ErrorHandler(error.message, 500));      
     }
+}));
+
+// update user address
+router.put("/update-user-addresses", isAuthenticated, catchAsyncErrors(async(req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id);
+        const sameTypeAddress = user.addresses.find((address) => address.addressType === req.body.addressType);
+        if(sameTypeAddress) return next(new ErrorHandler(`${req.body.addressType} address already exists`));
+        const existAddress = user.addresses.find(address => address._id === req.body._id);
+        if(existAddress){
+            Object.assign(existAddress, req.body);
+        }else{
+            // add the new address to the array
+            user.addresses.push(req.body);
+        }
+        await user.save();
+        res.status(200).json({
+            success: true,
+            user,
+        })
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500));  
+    }
 }))
 
 module.exports = router;

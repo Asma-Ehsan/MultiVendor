@@ -730,7 +730,7 @@ const Address = () => {
             </div>
             {/* Phone Number */}
             <div className="flex items-center pl-8">
-              <h6>{user.phoneNumber}</h6>
+              <h6>{user && user.phoneNumber}</h6>
             </div>
             {/* Delete icon */}
             <div className="min-w-[10%] flex items-center justify-between pl-8">

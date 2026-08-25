@@ -22,9 +22,7 @@ import { RxCross1 } from "react-icons/rx";
 import { Country, State } from "country-state-city";
 
 const ProfileContent = ({ active }) => {
-  const { user, error, successMessage } = useSelector(
-    (state) => state.user,
-  );
+  const { user, error, successMessage } = useSelector((state) => state.user);
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState(
@@ -192,10 +190,10 @@ const ProfileContent = ({ active }) => {
         </div>
       )}
 
-      {/* Payment Methods */}
+      {/* ChangePassword */}
       {active === 6 && (
         <div>
-          <PaymentMethod />
+          <ChangePassword />
         </div>
       )}
 
@@ -472,34 +470,69 @@ const TrackOrder = () => {
   );
 };
 
-const PaymentMethod = () => {
+const ChangePassword = () => {
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const passwordChangeHandler = async (e) => {
+    e.preventDefault();
+    await axios.put(
+      `${server}user/update-password`,
+      { oldPassword, newPassword, confirmPassword },
+      { withCredentials: true },
+    ).then((res) => {
+      console.log(res.data);
+    })
+  };
+
   return (
     <div className="w-full px-5">
-      <div className="flex w-full items-center justify-between">
-        <h1 className="text-[25px] font-[600] text-[#000000ba] pb-2">
-          Payment Methods
-        </h1>
-        <div className={`${styles.button} !rounded-md`}>
-          <span className="text-[#fff]"> Add new</span>
-        </div>
-      </div>
-      <br />
-      <div className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10">
-        <div className="flex items-center">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUqvF69wKti76NKhdFPoQTycTo9Kw4qfdOYQ&s"
-            alt=""
-            className="h-[50px]"
-          />
-          <h5 className="pl-5 font-[600]">Asma Ehsan</h5>
-        </div>
-        <div className="flex items-center pl-8">
-          <h6>1234 **** *** ****</h6>
-          <h5 className="pl-6">08/2027</h5>
-        </div>
-        <div className="min-w-[10%] flex items-center justify-between pl-8">
-          <AiOutlineDelete size={25} className="cursor-pointer" />
-        </div>
+      <h1 className="block text-[25px] text-center font-[600] text-[#000000ba] pb-2">
+        Change Password
+      </h1>
+      <div className="w-full">
+        <form
+          onSubmit={passwordChangeHandler}
+          className="flex flex-col items-center"
+        >
+          <div className=" w-[100%] 800px:w-[50%] mt-5">
+            <label className="block pb-2">Enter your old password</label>
+            <input
+              type="password"
+              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              required
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+            />
+          </div>
+          <div className=" w-[100%] 800px:w-[50%] mt-2">
+            <label className="block pb-2">Enter your new password</label>
+            <input
+              type="password"
+              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              required
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+          </div>
+          <div className=" w-[100%] 800px:w-[50%] mt-2">
+            <label className="block pb-2">Enter your confirm password</label>
+            <input
+              type="password"
+              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <input
+              className={`w-[95%] h-[40px] border border-[#3a24db] text-center text-[#3a24db] rounded-[3px] mt-8 cursor-pointer`}
+              required
+              value="Update"
+              type="submit"
+            />
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -548,8 +581,8 @@ const Address = () => {
   };
 
   const handleDelete = (item) => {
-   dispatch(deleteUserAddress(item._id)) 
-  }
+    dispatch(deleteUserAddress(item._id));
+  };
   return (
     <div className="w-full px-5">
       {/* Card to add new address */}
@@ -742,13 +775,11 @@ const Address = () => {
             </div>
           </div>
         ))}
-        {
-          user && user.addresses.length === 0 && (
-            <h5
-            className="text-center pt-8 text-[18px]"
-            >You not have saved any address </h5>
-          )
-        }
+      {user && user.addresses.length === 0 && (
+        <h5 className="text-center pt-8 text-[18px]">
+          You not have saved any address{" "}
+        </h5>
+      )}
     </div>
   );
 };

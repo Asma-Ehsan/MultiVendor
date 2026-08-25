@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LoginPage, SignupPage, ActivationPage, HomePage, ProductsPage, BestSellingPage, EventsPage, FAQPage, ProductDetailsPage, ProfilePage, ShopCreatePage, SellerActivationPage, ShopLoginPage } from "./routes/Routes.js";
-import {ShopDashboardPage, ShopCreateProduct, ShopAllProduct, ShopCreateEvents, ShopAllEvents, ShopAllCoupouns, ShopPreviewPage} from "./routes/ShopRoutes"
+import { LoginPage, SignupPage, ActivationPage, HomePage, ProductsPage, BestSellingPage, EventsPage, FAQPage, ProductDetailsPage, ProfilePage, ShopCreatePage, SellerActivationPage, ShopLoginPage, CheckoutPage} from "./routes/Routes.js";
+import {ShopDashboardPage, ShopCreateProduct, ShopAllProduct, ShopCreateEvents, ShopAllEvents, ShopAllCoupouns, ShopPreviewPage,} from "./routes/ShopRoutes"
 import {ToastContainer} from 'react-toastify';
 import Store from "./redux/stores";
 import {loadSeller, loadUser} from "./redux/actions/user"
@@ -33,11 +33,11 @@ const App = () => {
         <Route path="/best-selling" element={<BestSellingPage/>}/>
         <Route path="/events" element={<EventsPage/>}/>
         <Route path="/faq" element={<FAQPage/>}/>
-        {/* <Route path="/checkout" element={
+        <Route path="/checkout" element={
           <ProtectedRoute>
             <CheckoutPage/>
           </ProtectedRoute>
-        }/> */}
+        }/>
         {/* Payment Page  */}
         {/* Order Success Page */}
         <Route path="/profile" element={

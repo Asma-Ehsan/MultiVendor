@@ -477,13 +477,21 @@ const ChangePassword = () => {
 
   const passwordChangeHandler = async (e) => {
     e.preventDefault();
-    await axios.put(
-      `${server}user/update-password`,
-      { oldPassword, newPassword, confirmPassword },
-      { withCredentials: true },
-    ).then((res) => {
-      console.log(res.data);
-    })
+    await axios
+      .put(
+        `${server}/user/update-user-password`,
+        { oldPassword, newPassword, confirmPassword },
+        { withCredentials: true },
+      )
+      .then((response) => {
+        toast.success(response.data.message);
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
   };
 
   return (

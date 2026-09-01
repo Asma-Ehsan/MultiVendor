@@ -2,7 +2,7 @@ import styles from "../../styles/styles";
 const CheckoutSteps = ({ active }) => {
   return (
     <div className="w-full flex justify-center">
-      <div className="w-[90%] 800px:[50%] flex items-center flex-wrap ">
+      <div className="w-[90%] 800px:w-[50%] flex items-center flex-wrap ">
         {/* Shipping element */}
         <div className={`${styles.noramlFlex}`}>
           {/* Shipping button */}

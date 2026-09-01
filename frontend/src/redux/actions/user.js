@@ -45,13 +45,13 @@ export const updateUserInformation = (email, password, phoneNumber, name) => asy
 };
 
 //update user address 
-export const updateUserAddress = (country, city, address1, address2, addressType) => async (dispatch, action) => {
+export const updateUserAddress = (country, city, address1, address2,zipCode, addressType) => async (dispatch, action) => {
   try {
     dispatch({ type: "UpdateUserAddressRequest" });
 
     const { data } = await axios.put(
       `${server}/user/update-user-addresses`,
-      { country, city, address1, address2, addressType },   // body
+      { country, city, address1, address2, zipCode, addressType },   // body
       { withCredentials: true }                  // config
     );
     dispatch({ type: "UpdateUserAddressSuccess", payload: {successMessage: "User address updated successfully!", user: data.user} });

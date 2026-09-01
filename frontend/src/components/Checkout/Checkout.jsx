@@ -53,11 +53,12 @@ const Checkout = () => {
           <CartData
           // handleSubmit={handleSubmit}
             // totalPrice={totalPrice}
-            // shipping={shipping}
-            // subTotalPrice={subTotalPrice}
             couponCode={couponCode}
             setCouponCode={setCouponCode}
             // discountPercentenge={discountPercentenge}
+            couponCodeData = {couponCodeData}
+            setCouponCodeData = {setCouponCodeData}
+            cart = {cart}
           />
         </div>
       </div>

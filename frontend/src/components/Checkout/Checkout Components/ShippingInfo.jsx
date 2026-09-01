@@ -71,7 +71,7 @@ const ShippingInfo = ({
             />
           </div>
         </div>
-
+        {/* country */}
         <div className="w-full flex pb-3">
           <div className="w-[50%]">
             <label className="block pb-2">Country</label>
@@ -89,6 +89,8 @@ const ShippingInfo = ({
                 ))}
             </select>
           </div>
+
+          {/* city */}
           <div className="w-[50%]">
             <label className="block pb-2">City</label>
             <select
@@ -109,6 +111,7 @@ const ShippingInfo = ({
           </div>
         </div>
 
+        {/* address 1 */}
         <div className="w-full flex pb-3">
           <div className="w-[50%]">
             <label className="block pb-2">Address1</label>
@@ -120,6 +123,8 @@ const ShippingInfo = ({
               className={`${styles.input} !w-[95%]`}
             />
           </div>
+
+          {/* address 2 */}
           <div className="w-[50%]">
             <label className="block pb-2">Address2</label>
             <input
@@ -133,6 +138,32 @@ const ShippingInfo = ({
         </div>
         <div></div>
       </form>
+
+      {/* Choose from saved address */}
+      <h5
+      className="text-[18px] cursor-pointer inline-block"
+      onClick={() => setUserInfo(!userInfo)}
+      >
+        Choose from saved address
+      </h5>
+      {
+        userInfo && (
+          <div>
+            {
+              user && user.addresses.map((item, index) => (
+                <div className="w-full flex mt-1">
+                  <input type="checkbox" 
+                  className="mr-3"
+                  value={item.addressType}
+                  onClick={() => setAddress1(item.address1) || setAddress2(item.address2) || setZipCode(item.zipCode) || setCountry(item.country) || setCity(item.city)}
+                  />
+                  <h2>{item.addressType}</h2>
+                </div>
+              ))
+            }
+          </div>
+        )
+      }
     </div>
   );
 };

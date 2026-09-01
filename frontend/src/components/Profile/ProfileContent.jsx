@@ -576,7 +576,7 @@ const Address = () => {
       toast.error("Please fill all the required fields");
     } else {
       dispatch(
-        updateUserAddress(country, city, address1, address2, addressType),
+        updateUserAddress(country, city, address1, address2, zipCode, addressType),
       );
       setOpen(false);
       setCountry("");
@@ -756,7 +756,7 @@ const Address = () => {
       {user &&
         user.addresses.map((item, index) => (
           <div
-            className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10"
+            className="w-full bg-white h-[70px] rounded-[4px] flex items-center mt-3 px-3 shadow justify-between pr-10"
             key={index}
           >
             {/* Address Type */}

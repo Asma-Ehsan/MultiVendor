@@ -2,14 +2,9 @@ import styles from '../../../styles/styles'
 import axios from "axios";
 import {server} from "../../../server"
 import { toast } from "react-toastify";
-import { useState } from 'react';
 
-const CartData = ({couponCode,setCouponCode, couponCodeData, setCouponCodeData, cart}) => {
+const CartData = ({totalPrice, discountPercentage,  couponCode,setCouponCode, couponCodeData,  setDiscountPrice, setCouponCodeData, cart, shipping, subTotalPrice}) => {
 
-  const [discountPrice, setDiscountPrice] = useState(null)
-  const subTotalPrice = cart.reduce((acc,item) => acc + item.qty * item.discountPrice, 0);
-  
-  const shipping = subTotalPrice * 0.1;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,10 +30,6 @@ const CartData = ({couponCode,setCouponCode, couponCodeData, setCouponCodeData, 
       }
     })
   }
-
-  const discountPercentage = couponCodeData ? discountPrice : "";
-
-  const totalPrice = couponCodeData ? (subTotalPrice + shipping - discountPercentage).toFixed(2) : (subTotalPrice + shipping).toFixed(2);
 
   return (
      <div className="w-full bg-[#fff] rounded-md p-5 pb-8">

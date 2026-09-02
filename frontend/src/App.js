@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginPage, SignupPage, ActivationPage, HomePage, ProductsPage, BestSellingPage, EventsPage, FAQPage, ProductDetailsPage, ProfilePage, ShopCreatePage, SellerActivationPage, ShopLoginPage, CheckoutPage, PaymentPage} from "./routes/Routes.js";
 import {ShopDashboardPage, ShopCreateProduct, ShopAllProduct, ShopCreateEvents, ShopAllEvents, ShopAllCoupouns, ShopPreviewPage,} from "./routes/ShopRoutes"
@@ -10,16 +10,45 @@ import {ShopHomePage} from "./ShopRoutes.js"
 import SellerProtectedRoute from "./routes/SellerProtectedRoute"
 import { getAllProducts } from "./redux/actions/product.js";
 import { getAllEvents } from "./redux/actions/event.js";
+import axios from "axios";
+import { server } from "./server.js";
+import {Elements} from "@stripe/react-stripe-js";
+import {loadStripe} from "@stripe/stripe-js";
 
 const App = () => {
+  const [stripeApikey, setStripeApikey] = useState("");
+  async function getStipeApikey() {
+     try {
+    const { data } = await axios.get(`${server}/payment/stripeapikey`);
+    setStripeApikey(data?.stripeApikey || "");
+  } catch (error) {
+    console.error("Stripe key fetch failed:", error);
+  }
+  }
   useEffect(() => {
    Store.dispatch(loadUser());
    Store.dispatch(loadSeller());
    Store.dispatch(getAllProducts());
    Store.dispatch(getAllEvents());
+   getStipeApikey();
   },[])
+
   return (
     <BrowserRouter>
+    {stripeApikey && (
+      <Elements stripe={loadStripe(stripeApikey)}>
+        <Routes>
+         <Route
+              path="/payment"
+              element={
+                <ProtectedRoute>
+                  <PaymentPage />
+                </ProtectedRoute>
+              }
+          />
+        </Routes>
+      </Elements>
+    )}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -38,15 +67,7 @@ const App = () => {
             <CheckoutPage/>
           </ProtectedRoute>
         }/>
-        {/* Payment Page  */}
-         <Route
-              path="/payment"
-              element={
-                <ProtectedRoute>
-                  <PaymentPage />
-                </ProtectedRoute>
-              }
-            />
+       
         {/* Order Success Page */}
         <Route path="/profile" element={
           <ProtectedRoute>

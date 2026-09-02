@@ -24,3 +24,5 @@ router.get("/stripeapikey", catchAsyncError(async(req,res,next) => {
         stripeApikey: process.env.STRIPE_API_KEY,
     })
 }))
+
+module.exports = router;

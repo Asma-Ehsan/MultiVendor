@@ -29,6 +29,27 @@ export const orderReducer = createReducer(initialState, (builder) => {
         },
     )
 
+    //get all orders of a shop
+    .addCase(
+        "getAllOrdersShopRequest", (state) => {
+            state.isLoading = true;
+        },
+    )
+    .addCase(
+        "getAllOrdersShopSuccess", (state, action) => {
+            state.isLoading = false;
+            state.orders = action.payload; //state.product means our data in actions
+            // state.success = true;
+        },
+    )
+    .addCase(
+        "getAllOrdersShopFailed", (state, action) => {
+            state.isLoading = false;
+            state.error = action.payload; //state.product means our data in actions
+            // state.success = false;
+        },
+    )
+
    .addCase(
     "clearErrors", (state)  => {
         state.error = null;

@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../../styles/styles";
+import { CardCvcElement, CardExpiryElement, CardNumberElement } from "@stripe/react-stripe-js";
 
-const PaymentInfo = () => {
+const PaymentInfo = ({
+  user,
+  open,
+  setOpen,
+  onApprove,
+  createOrder,
+  paymentHandler,
+  cashOnDeliveryHandler,
+}) => {
   const [select, setSelect] = useState(1);
   const navigate = useNavigate();
 
-  const paymentHandler = (e) => {
-    e.preventDefault();
-    navigate("/order/success/fdbxf9848");
-  };
   return (
     <div className="w-full 800px:w-[95%] bg-[#fff] rounded-md p-5 pb-8">
       {/* Select Buttons */}
@@ -33,28 +38,87 @@ const PaymentInfo = () => {
           <div className="w-full flex border-b">
             <form className="w-full" onSubmit={paymentHandler}>
               <div className="flex w-full pb-3 gap-3">
-                {/* Card Number */}
+                {/* Name on Card */}
                 <div className="w-[50%]">
-                  <label className="block pb-2">Card Number</label>
-                  <input required className={`${styles.input}`} />
+                  <label className="block pb-2">Name on Card</label>
+                  <input
+                    required
+                    placeholder={user && user.name}
+                    className={`${styles.input} !w-[95%] text-[#444]`}
+                    value={user && user.name}
+                  />
                 </div>
                 {/* Expire date */}
-                 <div className="w-[50%]">
+                <div className="w-[50%]">
                   <label className="block pb-2">Exp Date</label>
-                  <input required className={`${styles.input}`} />
+                  <CardExpiryElement
+                    className={`${styles.input}`}
+                    options={{
+                      style: {
+                        base: {
+                          fontSize: "16px",
+                          lineHeight: 1.5,
+                          color: "#444",
+                        },
+                        empty: {
+                          color: "#3a120a",
+                          backgroundColor: "transparent",
+                          "::placeholder": {
+                            color: "#444",
+                          },
+                        },
+                      },
+                    }}
+                  />
                 </div>
               </div>
 
               <div className="flex w-full pb-3 gap-3">
-                {/* Name on Card */}
+                {/* Card Number */}
                 <div className="w-[50%]">
-                  <label className="block pb-2">Name on Card</label>
-                  <input required className={`${styles.input}`} />
+                  <label className="block pb-2">Card Number</label>
+                  <CardNumberElement
+                    className={`${styles.input} !h-[35px] !w-[95%]`}
+                    options={{
+                      style: {
+                        base: {
+                          fontSize: "16px",
+                          lineHeight: 1.5,
+                          color: "#444",
+                        },
+                        empty: {
+                          color: "#3a120a",
+                          backgroundColor: "transparent",
+                          "::placeholder": {
+                            color: "#444",
+                          },
+                        },
+                      },
+                    }}
+                  />
                 </div>
                 {/* Billing Address */}
                 <div className="w-[50%]">
-                  <label className="block pb-2">Billing Address</label>
-                  <input required className={`${styles.input}`} />
+                  <label className="block pb-2">CVV</label>
+                  <CardCvcElement
+                    className={`${styles.input} !h-[35px]`}
+                    options={{
+                      style: {
+                        base: {
+                          fontSize: "16px",
+                          lineHeight: 1.5,
+                          color: "#444",
+                        },
+                        empty: {
+                          color: "#3a120a",
+                          backgroundColor: "transparent",
+                          "::placeholder": {
+                            color: "#444",
+                          },
+                        },
+                      },
+                    }}
+                  />
                 </div>
               </div>
 
@@ -81,11 +145,11 @@ const PaymentInfo = () => {
             ) : null}
           </div>
           <h4 className="text-[18px] pl-2 font-[600] text-[#000000b1]">
-           Pay with Paypal
+            Pay with Paypal
           </h4>
         </div>
 
-       {select === 2 ? (
+        {select === 2 ? (
           <div className="w-full flex border-b">
             <form className="w-full" onSubmit={paymentHandler}>
               <div className="flex w-full pb-3">
@@ -105,7 +169,7 @@ const PaymentInfo = () => {
         ) : null}
       </div>
 
-       <br />
+      <br />
       {/* cash on delivery */}
       <div>
         <div className="flex w-full pb-5 border-b mb-2">
@@ -121,11 +185,12 @@ const PaymentInfo = () => {
             Cash on Delivery
           </h4>
         </div>
-                {select === 3 ? (
+        {select === 3 ? (
           <div className="w-full flex">
-            <form className="w-full"
-            //  onSubmit={cashOnDeliveryHandler}
-             >
+            <form
+              className="w-full"
+              //  onSubmit={cashOnDeliveryHandler}
+            >
               <input
                 type="submit"
                 value="Confirm"

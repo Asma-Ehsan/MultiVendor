@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LoginPage, SignupPage, ActivationPage, HomePage, ProductsPage, BestSellingPage, EventsPage, FAQPage, ProductDetailsPage, ProfilePage, ShopCreatePage, SellerActivationPage, ShopLoginPage, CheckoutPage, PaymentPage} from "./routes/Routes.js";
+import { LoginPage, SignupPage, ActivationPage, HomePage, ProductsPage, BestSellingPage, EventsPage, FAQPage, ProductDetailsPage, ProfilePage, ShopCreatePage, SellerActivationPage, ShopLoginPage, CheckoutPage, PaymentPage, OrderSuccessPage,} from "./routes/Routes.js";
 import {ShopDashboardPage, ShopCreateProduct, ShopAllProduct, ShopCreateEvents, ShopAllEvents, ShopAllCoupouns, ShopPreviewPage,} from "./routes/ShopRoutes"
 import {ToastContainer} from 'react-toastify';
 import Store from "./redux/stores";
@@ -67,8 +67,7 @@ const App = () => {
             <CheckoutPage/>
           </ProtectedRoute>
         }/>
-       
-        {/* Order Success Page */}
+        <Route path="/order/success" element={<OrderSuccessPage />} />
         <Route path="/profile" element={
           <ProtectedRoute>
             <ProfilePage/>

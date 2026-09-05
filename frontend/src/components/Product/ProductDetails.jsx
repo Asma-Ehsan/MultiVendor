@@ -92,9 +92,6 @@ const ProductDetails = ({ data }) => {
   // CHANGED: read product images from the backend shape (data.images)
   const productImages = (data?.images || []).map(getImageUrl);
   const mainImage = productImages[select] || productImages[0] || "";
-  console.log("productImages: ", productImages);
-  console.log("mainImage: ", mainImage);
-
   // CHANGED: read seller avatar from the shop object returned by the backend
   const shopAvatar =
     data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";

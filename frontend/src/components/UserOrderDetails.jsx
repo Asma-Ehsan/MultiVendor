@@ -32,13 +32,15 @@ const OrderDetails = () => {
       rating,
       comment,
       productId: selectedItem._id,
+      orderId: id // id means order id which it gets from params
     }, {withCredentials: true}).then((res) => {
       toast.success(res.data.message);
+      dispatch(getAllOrdersOfUser(user._id));
       setComment("");
       setRating(null);
       setOpen(false);
     }).catch((error) => {
-      toast.error(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
     })
   }
 
@@ -77,14 +79,14 @@ const OrderDetails = () => {
                 US$ {item.discountPrice} x {item.qty}
               </h5>
             </div>
-            {data?.status === "Delivered" && (
+            {!item.isReviewed && data?.status === "Delivered" ? (
               <div
                 className={`${styles.button} text-[#fff]`}
                 onClick={() => setOpen(true) || setSelectedItem(item)}
               >
                 Write a review
               </div>
-            )}
+            ) : null}
           </div>
         ))}
 

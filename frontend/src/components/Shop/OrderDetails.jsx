@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../../styles/styles";
 import { BsFillBagFill } from "react-icons/bs";
 import { Link, useParams } from "react-router-dom";
@@ -7,7 +7,7 @@ import { getAllOrdersOfShop } from "../../redux/actions/order";
 import { backend_url } from "../../server";
 
 const OrderDetails = () => {
-  const { orders, isLoading } = useSelector((state) => state.order);
+  const { orders } = useSelector((state) => state.order);
   const { seller } = useSelector((state) => state.seller);
   const dispatch = useDispatch();
   const [status, setStatus] = useState("");
@@ -87,7 +87,7 @@ const OrderDetails = () => {
         </div>
         <div className="w-full 800px:w-[40%]">
           <h4 className="text-[20px]">Payment Info: </h4>
-          <h4 className="text-[20px]">Status: {data?.paymentInfo?.status} </h4>
+           <h4 className="text-[20px]">Status: {data?.paymentInfo?.status ? data?.paymentInfo?.status : "Not Paid"} </h4>
         </div>
       </div>
       <br />

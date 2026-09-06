@@ -2,16 +2,22 @@ import React, { useEffect, useState } from "react";
 import { BsFillBagFill } from "react-icons/bs";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { backend_url } from "../server";
+import { backend_url, server } from "../server";
 import { getAllOrdersOfUser } from "../redux/actions/order";
 import styles from "../styles/styles";
-
+import { RxCross1 } from "react-icons/rx";
+import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const OrderDetails = () => {
   const { orders } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const [status, setStatus] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [rating, setRating] = useState(1);
+  const [comment, setComment] = useState("");
   const { id } = useParams();
 
   useEffect(() => {
@@ -20,9 +26,22 @@ const OrderDetails = () => {
 
   const data = orders && orders.find((item) => item._id === id);
 
-  const orderUpdateHandler = (e) => {
-    console.log("Clicked");
+  const reviewHandler = async(e) => {
+    await axios.put(`${server}/product/create-new-review`, {
+      user,
+      rating,
+      comment,
+      productId: selectedItem._id,
+    }, {withCredentials: true}).then((res) => {
+      toast.success(res.data.message);
+      setComment("");
+      setRating(null);
+      setOpen(false);
+    }).catch((error) => {
+      toast.error(error);
+    })
   }
+
   return (
     <div className={`py-4 min-h-screen ${styles.section}`}>
       {/* Order Details */}
@@ -58,15 +77,88 @@ const OrderDetails = () => {
                 US$ {item.discountPrice} x {item.qty}
               </h5>
             </div>
-            {
-                data?.status === "Delivered" && (
-                    <div className={`${styles.button} text-[#fff]`}>
-                        Write a review
-                    </div>
-                )
-            }
+            {data?.status === "Delivered" && (
+              <div
+                className={`${styles.button} text-[#fff]`}
+                onClick={() => setOpen(true) || setSelectedItem(item)}
+              >
+                Write a review
+              </div>
+            )}
           </div>
         ))}
+
+      {/* review popup */}
+      {open && (
+        <div className="w-full fixed top-0 left-0 h-screen bg-[#0005] z-50 flex items-center justify-center">
+          <div className="w-[50%] h-min bg-white shadow rounded-md p-3">
+            <div className="w-full flex justify-end p-3">
+              <RxCross1
+                size={30}
+                onClick={() => setOpen(false)}
+                className="cursor-pointer"
+              />
+            </div>
+            <h2 className="text-[30px] font-[500] font-Poppins text-center">
+              Give a Review
+            </h2>
+            <br />
+            <div className="w-full flex">
+              <img
+                src={`${backend_url}uploads/${selectedItem?.images[0]}`}
+                alt=""
+                className="w-[80px] h-[80px] rounded-sm"
+              />
+              <div>
+                <div className="pl-3 text-[20px]">{selectedItem?.name}</div>
+                <h4 className="pl-3 text-[19px] text-[#00000091]">
+                  US$ {selectedItem?.discountPrice} x {selectedItem?.qty}
+                </h4>
+              </div>
+            </div>
+
+            <br />
+            <br />
+
+            {/* ratings */}
+            <h5 className="pl-3 text-[20px] font-[500]">
+              Give a Rating <span className="text-red-500">*</span>
+            </h5>
+            <div className="flex w-full ml-2 pt-1">
+              {[1, 2, 3, 4, 5].map((i) =>
+                rating >= i ? (
+                  <AiFillStar
+                    key={i}
+                    className="cursor-pointer"
+                    color="rgb(246, 186, 0)"
+                    size={25}
+                    onClick={() => setRating(i)}
+                  />
+                ) : (
+                  <AiOutlineStar
+                    key={i}
+                    className="cursor-pointer"
+                    color="rgb(246, 186, 0)"
+                    size={25}
+                    onClick={() => setRating(i)}
+                  />
+                ),
+              )}
+            </div>
+            <br />
+            <div className="w-full ml-3">
+              <label className="block text-[20px] font-[500]">
+                Write a comment <span className="font-[400] text-[16px] text-[#00000052]">(optional)</span>
+              </label>
+              <textarea name="comment" id="" cols={20} rows={5} placeholder="How was your Product? write your experience about it...." className="mt-2 w-[95%] border p-2 outline-none" 
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              ></textarea>
+            </div>
+            <div className={`${styles.button} text-white text-[20px] ml-3`} onClick={rating > 1 ? reviewHandler : null }>Submit</div>
+          </div>
+        </div>
+      )}
       <div className="border-t w-full text-right">
         <h5 className="pt-3 text-[18px]">
           Total Price: <strong>US$ {data?.totalPrice}</strong>{" "}
@@ -88,14 +180,17 @@ const OrderDetails = () => {
         </div>
         <div className="w-full 800px:w-[40%]">
           <h4 className="text-[20px]">Payment Info: </h4>
-          <h4 className="text-[20px]">Status: {data?.paymentInfo?.status ? data?.paymentInfo?.status : "Not Paid"} </h4>
+          <h4 className="text-[20px]">
+            Status:{" "}
+            {data?.paymentInfo?.status
+              ? data?.paymentInfo?.status
+              : "Not Paid"}{" "}
+          </h4>
         </div>
       </div>
       <br />
-      <Link to = "/">
-      <div className={`${styles.button} text-white`}>
-        Send Message
-      </div>
+      <Link to="/">
+        <div className={`${styles.button} text-white`}>Send Message</div>
       </Link>
       <br />
       <br />

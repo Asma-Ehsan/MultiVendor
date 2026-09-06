@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import styles from "../../styles/styles";
 import { BsFillBagFill } from "react-icons/bs";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllOrdersOfShop } from "../../redux/actions/order";
-import { backend_url } from "../../server";
+import { backend_url, server } from "../../server";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const OrderDetails = () => {
   const { orders } = useSelector((state) => state.order);
@@ -12,6 +14,7 @@ const OrderDetails = () => {
   const dispatch = useDispatch();
   const [status, setStatus] = useState("");
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getAllOrdersOfShop(seller._id));
@@ -19,9 +22,21 @@ const OrderDetails = () => {
 
   const data = orders && orders.find((item) => item._id === id);
 
-  const orderUpdateHandler = (e) => {
-    console.log("Clicked");
-  }
+  const orderUpdateHandler = async (e) => {
+    await axios
+      .put(
+        `${server}/order/update-order-status/${id}`,
+        { status },
+        { withCredentials: true },
+      )
+      .then((res) => {
+        toast.success("Order Updated!");
+        navigate("/dashboard-orders")
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  };
   return (
     <div className={`py-4 min-h-screen ${styles.section}`}>
       {/* Order Details and Order List */}
@@ -87,17 +102,25 @@ const OrderDetails = () => {
         </div>
         <div className="w-full 800px:w-[40%]">
           <h4 className="text-[20px]">Payment Info: </h4>
-           <h4 className="text-[20px]">Status: {data?.paymentInfo?.status ? data?.paymentInfo?.status : "Not Paid"} </h4>
+          <h4 className="text-[20px]">
+            Status:{" "}
+            {data?.paymentInfo?.status
+              ? data?.paymentInfo?.status
+              : "Not Paid"}{" "}
+          </h4>
         </div>
       </div>
       <br />
       <br />
       <h4 className="pt-3 text-[20px] font-[600]">Order Status:</h4>
-      <select value={status} onChange={(e) => setStatus(e.target.value)}
-        className="w-[200px] mt-2 border h-[35px] rounded-[5px]">
+      <select
+        value={status}
+        onChange={(e) => setStatus(e.target.value)}
+        className="w-[200px] mt-2 border h-[35px] rounded-[5px]"
+      >
         {[
           "Processing",
-          "Tranferred to delivery partner",
+          "Transferred to delivery partner",
           "Shipping",
           "Received",
           "On the way",
@@ -106,7 +129,7 @@ const OrderDetails = () => {
           .slice(
             [
               "Processing",
-              "Tranferred to delivery partner",
+              "Transferred to delivery partner",
               "Shipping",
               "Received",
               "On the way",
@@ -119,9 +142,11 @@ const OrderDetails = () => {
             </option>
           ))}
       </select>
-      <div  className={`${styles.button} !bg-[#fce1e6] !rounded-[4px] text-[#e94560] font-[600] h-[45px] text-[18px]`} 
-      onClick={orderUpdateHandler}>
-          Update Status
+      <div
+        className={`${styles.button} !bg-[#fce1e6] !rounded-[4px] text-[#e94560] font-[600] h-[45px] text-[18px]`}
+        onClick={orderUpdateHandler}
+      >
+        Update Status
       </div>
     </div>
   );

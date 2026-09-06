@@ -43,6 +43,7 @@ const OrderDetails = () => {
       toast.error(error.response?.data?.message || "Something went wrong");
     })
   }
+  console.log("Review product ID:", selectedItem?._id);
 
   return (
     <div className={`py-4 min-h-screen ${styles.section}`}>

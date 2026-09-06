@@ -108,11 +108,14 @@ router.put("/create-new-review",isAuthenticated, catchAsyncError(async(req, res,
     const {user, rating, comment, productId, orderId} = req.body;
     const product = await Product.findById(productId);
 
+    if (!product) return next(new ErrorHandler("Product not found with this id", 404));
+
     const review = {
       user, rating, comment, productId,
     }
     
-    const isReviewed = product.reviews.find((rev) => rev.user._id === req.user._id);
+    const isReviewed = product.reviews.find((rev) => rev.user._id.toString() === req.user._id.toString());
+    
     if(isReviewed){
       product.reviews.forEach((rev) => {
         if(rev.user._id === req.user._id){

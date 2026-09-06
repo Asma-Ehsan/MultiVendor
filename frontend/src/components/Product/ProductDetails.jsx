@@ -66,18 +66,18 @@ const ProductDetails = ({ data }) => {
 
   const addToCartHandler = (id) => {
     const isItemExists = cart && cart.find((i) => i._id === id);
-    if(isItemExists){
+    if (isItemExists) {
       toast.error("Item already in cart!");
-    }else{
-      if(data.stock < count){
+    } else {
+      if (data.stock < count) {
         toast.error("Product stock is limited");
-      }else{
-        const cartData = { ...data, qty: count};
+      } else {
+        const cartData = { ...data, qty: count };
         dispatch(addToCart(cartData));
         toast.success("Items added o cart successfully!");
       }
     }
-  }
+  };
 
   // CHANGED: build real image URLs from the backend upload folder
   const getImageUrl = (image) => {
@@ -141,8 +141,8 @@ const ProductDetails = ({ data }) => {
                     {data.discountPrice ?? data.discount_price ?? 0}$
                   </h4>
                   <h3 className={`${styles.price}`}>
-                    {data.originalPrice ?? data.price
-                      ? data.originalPrice ?? data.price + "$"
+                    {(data.originalPrice ?? data.price)
+                      ? (data.originalPrice ?? data.price + "$")
                       : null}
                   </h3>
                 </div>
@@ -295,8 +295,19 @@ const ProductDetailsInfo = ({ data, products }) => {
       ) : null}
 
       {active === 2 ? (
-        <div className="w-full justify-center min-h-[40vh] flex items-center">
-          <p>No Reviews yet!</p>
+        <div className="w-full justify-center min-h-[40vh] flex flex-col items-center">
+          {data &&
+            data.reviews.map((item, index) => (
+              <div className="w-full flex my-2">
+                <img src={`${backend_url}uploads/${item?.user?.avatar?.url}`} alt="" />
+                {console.log(item)}
+              </div>
+            ))}
+          <div className="flex w-full justify-center">
+            {data && data.reviews.length === 0 && (
+              <h5>No Reviews have for this product!</h5>
+            )}
+          </div>
         </div>
       ) : null}
 

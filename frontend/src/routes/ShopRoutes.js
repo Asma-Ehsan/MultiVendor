@@ -8,6 +8,7 @@ import ShopPreviewPage from "../pages/Shop/ShopPreviewPage"
 import ShopAllOrders from "../pages/Shop/ShopAllOrders"
 import ShopOrderDetails from "../pages/Shop/ShopOrderDetails"
 import ShopAllRefunds from "../pages/Shop/ShopAllRefunds"
+import ShopSettingsPage from "../pages/Shop/ShopSettingsPage"
 
 export {
     ShopDashboardPage,
@@ -20,5 +21,6 @@ export {
     ShopAllOrders,
     ShopOrderDetails,
     ShopAllRefunds,
+    ShopSettingsPage,
 }
  

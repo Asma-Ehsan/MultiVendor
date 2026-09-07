@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist, removeFromWishlist } from "../../../redux/actions/wishlist.js";
 import { addToCart } from "../../../redux/actions/cart.js";
 import { toast } from "react-toastify";
+import Ratings from "../../Product/Ratings.jsx";
 
 const ProductCard = ({ data }) => {
   const {wishlist} = useSelector((state) => state.wishlist);
@@ -81,31 +82,7 @@ const ProductCard = ({ data }) => {
 
           {/* rating stars */}
           <div className="flex">
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-            <AiFillStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
-            <AiOutlineStar
-              className="mr-2 cursor-pointer"
-              color="#F6BA00"
-              size={20}
-            />
+            <Ratings rating = {data?.ratings}/>
           </div>
 
           {/* price and no.of solds */}

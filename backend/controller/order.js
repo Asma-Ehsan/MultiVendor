@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncError");
 const ErrorHandler = require("../utils/ErrorHandler");
-const { isAuthenticated } = require("../middleware/auth");
+const { isAuthenticated, isSeller } = require("../middleware/auth");
 const Order = require("../model/order");
 const Product = require("../model/product");
 const catchAsyncError = require("../middleware/catchAsyncError");
@@ -105,7 +105,7 @@ router.put("/update-order-status/:id", catchAsyncErrors(async(req, res, next) =>
     }
 }));
 
-// give a refund 
+// give a refund (user side)
 router.put("/order-refund/:id", catchAsyncErrors(async(req, res, next) => {
     try {
         const order = await Order.findById(req.params.id);
@@ -125,5 +125,40 @@ router.put("/order-refund/:id", catchAsyncErrors(async(req, res, next) => {
          return next(new ErrorHandler(error.message, 500));
     }
 }));
+
+// accept the refund (seller)
+router.put("/order-refund-success/:id", isSeller, catchAsyncErrors(async(req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        
+        if(!order) return next(new ErrorHandler("Order not found with this Id!"))
+        
+        order.status = req.body.status;
+
+        await order.save();
+
+        res.status(200).json({
+            sucess: true,
+            message: "Order refund Successfully!"
+        })
+
+        if(req.body.status === "Refund Success"){
+            order.cart.forEach(async(o) => {
+                await updateProduct(o._id, o.qty);
+            })
+        }
+        
+        async function updateProduct(id, qty) {
+            const product = await Product.findById(id);
+            product.stock += qty;
+            product.sold_out -= qty;
+
+            await product.save({validateBeforeSave: false});
+        }
+        
+    } catch (error) {
+         return next(new ErrorHandler(error.message, 500));
+    }
+}))
 
 module.exports = router;

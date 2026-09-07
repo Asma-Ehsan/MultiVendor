@@ -165,7 +165,73 @@ router.get("/get-shop-info/:id", catchAsyncErrors(async(req, res, next) => {
     } catch (error) {
         return next(new ErrorHandler(error.message, 500))  
     }
-}))
+}));
+
+//update shop profile picture
+router.put("/update-shop-avatar", isSeller, upload.single("image"), catchAsyncErrors(async(req, res, next) => {
+    try {
+        //we are accessing previous user bcz we need to delete the previous avatar of user from uploads folder
+        const existUser = await Shop.findById(req.seller._id); // we are using isAuthenticated, taht's why we can access req.user.id otherwise it returns undefined
+
+        // Extract the file name from the avatar object
+        const avatarUrl = existUser.avatar.url; //Get the url of avatar
+        const avatarFileName = path.basename(avatarUrl); //Extract the filename from the URL
+
+        //construct the file path
+        const existAvatarPath = path.join(__dirname, "../uploads", avatarFileName);
+        if(fs.existsSync(existAvatarPath)){
+            try {
+                fs.unlinkSync(existAvatarPath);
+                console.log("previous avatar deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting avatar:", err);
+            }
+        }else{
+            console.warn("Avatar file does not exist:", existAvatarPath);
+        }
+
+        const filename = req.file.filename;
+        const fileUrl = `http://localhost:8000/uploads/${filename}`;
+
+        const seller = await Shop.findByIdAndUpdate(req.seller._id, {avatar: {public_id: filename, url: fileUrl}}, {new: true});
+
+        res.status(200).json({
+            success:true,
+            seller,
+        })
+
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500));      
+    }
+}));
+
+//update seller info
+router.put("/update-seller-info", isSeller, catchAsyncErrors(async(req, res, next) => {
+    try {
+        const { name, description, address, phoneNumber, zipCode} = req.body;
+        const shop = await Shop.findById(req.seller._id);
+        
+        if(!shop) {
+            return next(new ErrorHandler("User not found!", 400));  
+        }
+
+        shop.name = name;
+        shop.description = description;
+        shop.address = address;
+        shop.phoneNumber = phoneNumber;
+        shop.zipCode = zipCode;
+        
+        await shop.save();
+
+        return res.status(201).json({
+            success: true,
+            shop,
+        })
+
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500));  
+    }
+}));
 
 
 module.exports = router;

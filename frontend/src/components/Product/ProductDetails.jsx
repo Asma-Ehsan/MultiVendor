@@ -16,6 +16,7 @@ import {
 } from "../../redux/actions/wishlist";
 import { toast } from "react-toastify";
 import { addToCart } from "../../redux/actions/cart";
+import Ratings from "./Ratings";
 
 const ProductDetails = ({ data }) => {
   const { products } = useSelector((state) => state.products);
@@ -95,6 +96,12 @@ const ProductDetails = ({ data }) => {
   // CHANGED: read seller avatar from the shop object returned by the backend
   const shopAvatar =
     data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";
+
+  const totalReviewsLength = products && products.reduce((acc , product) => acc + product.reviews.length, 0);
+
+  const totalRatings = products && products.reduce((acc, product) => acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),0);
+
+  const averageRating = (totalRatings / totalReviewsLength).toFixed(1) || 0;
 
   return (
     <div className="bg-white">
@@ -216,7 +223,7 @@ const ProductDetails = ({ data }) => {
                         {data?.shop?.name || "Seller"}
                       </h3>
                     </Link>
-                    <h5 className="pb-3 text-[15px]">(4/5) Ratings</h5>
+                    <h5 className="pb-3 text-[15px]">({averageRating}/5) Ratings</h5>
                   </div>
 
                   <div
@@ -232,7 +239,8 @@ const ProductDetails = ({ data }) => {
             </div>
           </div>
 
-          <ProductDetailsInfo data={data} products={products} />
+          <ProductDetailsInfo data={data} products={products} totalReviewsLength = {totalReviewsLength}
+          averageRating = {averageRating} />
           <br />
           <br />
         </div>
@@ -241,7 +249,7 @@ const ProductDetails = ({ data }) => {
   );
 };
 
-const ProductDetailsInfo = ({ data, products }) => {
+const ProductDetailsInfo = ({ data, products, totalReviewsLength, averageRating}) => {
   const [active, setActive] = useState(1);
 
   // CHANGED: use the same shop avatar logic in the seller info section
@@ -295,12 +303,22 @@ const ProductDetailsInfo = ({ data, products }) => {
       ) : null}
 
       {active === 2 ? (
-        <div className="w-full justify-center min-h-[40vh] flex flex-col items-center">
+        <div className="w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll">
           {data &&
             data.reviews.map((item, index) => (
               <div className="w-full flex my-2">
-                <img src={`${backend_url}uploads/${item?.user?.avatar?.url}`} alt="" />
-                {console.log(item)}
+                <img
+                  src={item?.user?.avatar?.url}
+                  alt=""
+                  className="w-[50px] h-[50px] rounded-full"
+                />
+                <div className="pl-2">
+                  <div className="w-full flex items-center">
+                    <h1 className="font-[500] mr-4">{item?.user?.name}</h1>
+                    <Ratings rating={data?.ratings} />
+                  </div>
+                  <p>{item?.comment}</p>
+                </div>
               </div>
             ))}
           <div className="flex w-full justify-center">
@@ -330,7 +348,7 @@ const ProductDetailsInfo = ({ data, products }) => {
                   </h3>
                 </Link>
                 <h5 className="p2-3 text-[15px]">
-                  ({data?.shop?.ratings || "4.5"}) Ratings
+                  ({averageRating})/5 Ratings
                 </h5>
               </div>
             </div>
@@ -355,7 +373,7 @@ const ProductDetailsInfo = ({ data, products }) => {
                 </span>
               </h5>
               <h5 className="font-[600] pt-3">
-                Total Reviews: <span className="font-[500]">131</span>
+                Total Reviews: <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
                 <div

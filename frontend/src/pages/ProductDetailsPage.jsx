@@ -15,8 +15,6 @@ const ProductDetailsPage = () => {
   const [searchParams] = useSearchParams();
   const eventData = searchParams.get("isEvent");
 
-  console.log(eventData);
-
   // useParam wil get the product name with "-" : "iphone-14-pro-max" but in productData it is stored without "-", so to replace "-" from " "
   useEffect(() => {
     if (eventData !== null) {

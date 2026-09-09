@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import styles from "../../styles/styles";
 import {server} from "../../server"
 import axios from "axios"
 import Loader from "../Layout/Loader"
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsShop } from "../../redux/actions/product";
 
 const ShopInfo = ({ isOwner }) => {
+  const { products } = useSelector((state) => state.products);
   // const { seller } = useSelector((state) => state.seller);
   const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-    const { id } = useParams();
+  const { id } = useParams();
+  const dispatch = useDispatch();
 
 
   useEffect(() => {
+    dispatch(getAllProductsShop(id));
     setIsLoading(true);
     axios.get(`${server}/shop/get-shop-info/${id}`).then((res) => {
       setData(res.data.shop);
@@ -27,6 +32,13 @@ const ShopInfo = ({ isOwner }) => {
     await axios.get(`${server}/shop/logout`, {withCredentials: true});
     window.location.reload();
   };
+
+  const totalReviewsLength = products && products.reduce((acc , product) => acc + product.reviews.length, 0);
+
+  const totalRatings = products && products.reduce((acc, product) => acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),0);
+
+  const averageRating = (totalRatings / totalReviewsLength).toFixed(1) || 0;
+
 
   return (
  <>
@@ -58,11 +70,11 @@ const ShopInfo = ({ isOwner }) => {
         </div>
         <div className="p-3">
           <h5 className="font-[600]">Total Products</h5>
-          <h4 className="text-[#000000a6]">1</h4>
+          <h4 className="text-[#000000a6]">{products && products.length}</h4>
         </div>
         <div className="p-3">
           <h5 className="font-[600]">Shop Ratings</h5>
-          <h4 className="text-[#000000b0]">/5</h4>
+          <h4 className="text-[#000000b0]">{averageRating}/5</h4>
         </div>
         <div className="p-3">
           <h5 className="font-[600]">Joined On</h5>

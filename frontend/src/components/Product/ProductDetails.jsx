@@ -7,7 +7,7 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { backend_url } from "../../server";
+import { backend_url, server } from "../../server";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import {
@@ -17,10 +17,13 @@ import {
 import { toast } from "react-toastify";
 import { addToCart } from "../../redux/actions/cart";
 import Ratings from "./Ratings";
+import axios from "axios";
 
 const ProductDetails = ({ data }) => {
   const { products } = useSelector((state) => state.products);
   const { cart } = useSelector((state) => state.cart);
+  const { seller } = useSelector((state) => state.seller);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const { wishlist } = useSelector((state) => state.wishlist);
 
   const [count, setCount] = useState(1);
@@ -51,8 +54,23 @@ const ProductDetails = ({ data }) => {
     }
   }, [wishlist, data]);
 
-  const handleMessageSubmit = () => {
-    navigate("/inbox?conversation=509763bcjxoou0w");
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data._id + user._id;
+      const userId = user._id;
+      const sellerId = data.shop._id;
+      await axios.post(`${server}/conversation/create-new-conversation`, {
+        groupTitle,
+        userId,
+        sellerId,
+      }).then((res) => {
+        navigate(`/conversation/${res.data.conversation._id}`);
+      }).catch((error) => {
+        toast.error(error.response.data.message);
+      })
+    } else {
+      toast.error("Please login to create a conversation");
+    }
   };
 
   const removeFromWishListHandler = (data) => {
@@ -97,9 +115,17 @@ const ProductDetails = ({ data }) => {
   const shopAvatar =
     data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";
 
-  const totalReviewsLength = products && products.reduce((acc , product) => acc + product.reviews.length, 0);
+  const totalReviewsLength =
+    products &&
+    products.reduce((acc, product) => acc + product.reviews.length, 0);
 
-  const totalRatings = products && products.reduce((acc, product) => acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),0);
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0,
+    );
 
   const averageRating = (totalRatings / totalReviewsLength).toFixed(1) || 0;
 
@@ -223,7 +249,9 @@ const ProductDetails = ({ data }) => {
                         {data?.shop?.name || "Seller"}
                       </h3>
                     </Link>
-                    <h5 className="pb-3 text-[15px]">({averageRating}/5) Ratings</h5>
+                    <h5 className="pb-3 text-[15px]">
+                      ({averageRating}/5) Ratings
+                    </h5>
                   </div>
 
                   <div
@@ -239,8 +267,12 @@ const ProductDetails = ({ data }) => {
             </div>
           </div>
 
-          <ProductDetailsInfo data={data} products={products} totalReviewsLength = {totalReviewsLength}
-          averageRating = {averageRating} />
+          <ProductDetailsInfo
+            data={data}
+            products={products}
+            totalReviewsLength={totalReviewsLength}
+            averageRating={averageRating}
+          />
           <br />
           <br />
         </div>
@@ -249,7 +281,12 @@ const ProductDetails = ({ data }) => {
   );
 };
 
-const ProductDetailsInfo = ({ data, products, totalReviewsLength, averageRating}) => {
+const ProductDetailsInfo = ({
+  data,
+  products,
+  totalReviewsLength,
+  averageRating,
+}) => {
   const [active, setActive] = useState(1);
 
   // CHANGED: use the same shop avatar logic in the seller info section
@@ -373,7 +410,8 @@ const ProductDetailsInfo = ({ data, products, totalReviewsLength, averageRating}
                 </span>
               </h5>
               <h5 className="font-[600] pt-3">
-                Total Reviews: <span className="font-[500]">{totalReviewsLength}</span>
+                Total Reviews:{" "}
+                <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
                 <div

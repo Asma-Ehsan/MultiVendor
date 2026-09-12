@@ -277,6 +277,19 @@ router.put("/update-user-password", isAuthenticated, catchAsyncErrors(async (req
     } catch (error) {
     return next(new ErrorHandler(error.message, 500));      
     }
+}));
+
+//find user info with userId for message list
+router.get("/user-info/:id", catchAsyncErrors(async(req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+        res.status(201).json({
+            success: true,
+            user,
+        })
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500));   
+    }
 }))
 
 module.exports = router;

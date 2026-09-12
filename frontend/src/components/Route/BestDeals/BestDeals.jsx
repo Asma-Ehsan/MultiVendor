@@ -8,13 +8,10 @@ const BestDeals = () => {
   const { allProducts } = useSelector((state) => state.products);
 
   useEffect(() => {
-    // const d = products  && products.sort((a,b) => b.sold_out - a.sold_out);
-    const firstFive = allProducts?.slice(0,5); //will show only 5 items
+    const allProductsData = allProducts ? [...allProducts] : [];
+    const sortedData = allProductsData?.sort((a, b) => b.sold_out - a.sold_out);
+    const firstFive = sortedData && sortedData.slice(0, 5);
     setData(firstFive);
-    // const allProductsData = allProducts ? [...allProducts] : [];
-    // const sortedData = allProductsData?.sort((a, b) => b.sold_out - a.sold_out);
-    // const firstFive = sortedData && sortedData.slice(0, 5);
-    // setData(firstFive);
   }, [allProducts]);
 
   return (

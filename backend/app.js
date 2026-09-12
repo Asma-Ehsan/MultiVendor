@@ -40,6 +40,10 @@ const order = require("./controller/order");
 const conversation = require("./controller/conversation");
 const message = require("./controller/message");
 
+app.get("/", (req, res) => {
+  res.send("Backend is running!");
+});
+
 app.use("/api/v2/user", user);
 app.use("/api/v2/shop", shop);
 app.use("/api/v2/product", product);

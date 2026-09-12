@@ -24,10 +24,10 @@ const DashboardHero = () => {
     setDeliveredOrder(orderData);
   },[dispatch]);
 
-  const totalEarningWithoutTax = deliveredOrder && deliveredOrder.reduce((acc, item) => acc + item.totalPrice, 0);
+  const totalEarningWithoutTax = deliveredOrder ? deliveredOrder.reduce((acc, item) => acc + item.totalPrice, 0) : 0;
 
-  const serviceCharge = totalEarningWithoutTax * 0.1;
-  const availableBalance = (totalEarningWithoutTax - serviceCharge).toFixed(2);
+  const serviceCharge = totalEarningWithoutTax * 0.1 || 0;
+  const availableBalance = (totalEarningWithoutTax - serviceCharge).toFixed(2) || 0;
 
   const columns = [
       { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },

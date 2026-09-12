@@ -23,9 +23,9 @@ const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { allProducts } = useSelector((state) => state.products);
   const { cart } = useSelector((state) => state.cart);
-  const {wishlist} = useSelector((state) => state.wishlist);
-  const {isSeller} = useSelector((state) => state.seller);
-  
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const { isSeller } = useSelector((state) => state.seller);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
@@ -38,9 +38,11 @@ const Header = ({ activeHeading }) => {
     const term = e.target.value;
     setSearchTerm(term);
 
-    const filterProducts = allProducts && allProducts.filter((product) =>
-      product.name.toLowerCase().includes(term.toLowerCase())
-    );
+    const filterProducts =
+      allProducts &&
+      allProducts.filter((product) =>
+        product.name.toLowerCase().includes(term.toLowerCase()),
+      );
     setSearchData(filterProducts);
   };
 
@@ -81,7 +83,13 @@ const Header = ({ activeHeading }) => {
                 {searchData &&
                   searchData.map((i, index) => {
                     return (
-                      <Link to={`/product/${i._id}`} onClick={() => {setSearchData(null); setSearchTerm("")}}>
+                      <Link
+                        to={`/product/${i._id}`}
+                        onClick={() => {
+                          setSearchData(null);
+                          setSearchTerm("");
+                        }}
+                      >
                         <div className="w-full flex items-start-py-3">
                           <img
                             src={`${backend_url}uploads/${i.images[0]}`}
@@ -148,7 +156,6 @@ const Header = ({ activeHeading }) => {
 
           {/* Right Icons side */}
           <div className="flex">
-
             {/* Heart Icons */}
             <div className={`${styles.noramlFlex}`}>
               <div
@@ -172,7 +179,9 @@ const Header = ({ activeHeading }) => {
                   size={30}
                   color="rgb(255 255 255 / 83%)"
                 />
-                <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">{cart && cart.length}</span>
+                <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
+                  {cart && cart.length}
+                </span>
               </div>
             </div>
 
@@ -197,7 +206,7 @@ const Header = ({ activeHeading }) => {
 
             {/* cart popup */}
             {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
-            
+
             {/* wishlist popup */}
             {openWishList ? (
               <Wishlist setOpenWishlist={setOpenWishlist} />
@@ -230,18 +239,19 @@ const Header = ({ activeHeading }) => {
             </Link>
           </div>
           <div>
-            <div className="relative cursor-pointer mr-[20px]"
-            onClick={() => setOpenCart(true)}
+            <div
+              className="relative cursor-pointer mr-[20px]"
+              onClick={() => setOpenCart(true)}
             >
-              <AiOutlineShoppingCart size={30}/>
+              <AiOutlineShoppingCart size={30} />
               <span class="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
-              {cart && cart.length}
+                {cart && cart.length}
               </span>
             </div>
           </div>
         </div>
         {/* cart popup */}
-            {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+        {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
 
         {/* header sidebar */}
         {open && (
@@ -298,9 +308,9 @@ const Header = ({ activeHeading }) => {
 
               {/* Seller Button */}
               <div className={`${styles.button} ml-4 !rounded-[4px]`}>
-                <Link to={"shop-create"}>
+                <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
                   <h1 className="text-[#fff] flex items-center">
-                    Become a Seller
+                    {isSeller ? "Dashboard" : "Become a Seller"}
                     <IoIosArrowForward className="ml-1" />
                   </h1>
                 </Link>

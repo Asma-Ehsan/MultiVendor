@@ -1,20 +1,21 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { server } from "../../server";
+import React, { useEffect, useState } from "react";
+import Header from "../components/Layout/Header";
 import { useSelector } from "react-redux";
+import socketIO from "socket.io-client";
+import { format } from "timeago.js";
+import axios from "axios";
+import { server } from "../server";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
-import styles from "../../styles/styles";
+import styles from "../styles/styles";
 import { GrGallery } from "react-icons/gr";
-import socketIO from "socket.io-client";
-import { format } from "timeago.js";
 
 const ENDPOINT = "http://localhost:4000/";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
-const ShopInbox = () => {
-  const { seller } = useSelector((state) => state.seller);
+const UserInboxPage = () => {
+  const { user } = useSelector((state) => state.user);
   const [conversations, setConversations] = useState([]);
   const [arivalMessage, setArivalMessage] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -42,9 +43,9 @@ const ShopInbox = () => {
   }, [arivalMessage, currentChat]);
 
   useEffect(() => {
-    if (!seller?._id) return;
+    if (!user?._id) return;
     axios
-      .get(`${server}/conversation/get-all-conversation-seller/${seller._id}`, {
+      .get(`${server}/conversation/get-all-conversation-user/${user._id}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -53,7 +54,7 @@ const ShopInbox = () => {
       .catch((error) => {
         toast.error(error.response.data.message);
       });
-  }, [seller]);
+  }, [user, messages]);
 
   // get messages
   useEffect(() => {
@@ -72,38 +73,38 @@ const ShopInbox = () => {
 
   //to get online status of users
   useEffect(() => {
-    if(seller){
-      const userId = seller?._id;
+    if (user) {
+      const userId = user?._id;
       socketId.emit("addUser", userId);
       socketId.on("getUsers", (data) => {
         setOnelineUsers(data);
       });
     }
-  },[seller]);
+  }, [user]);
 
   const onlineCheck = (chat) => {
-    const chatMembers = chat?.members?.find((member) => member !== seller?._id);
+    const chatMembers = chat?.members?.find((member) => member !== user?._id);
     const online = onlineUsers?.find((user) => user?.userId === chatMembers);
-    
+
     return online ? true : false;
-  }
+  };
 
   //create new message
   const sendMessageHandler = async (e) => {
     e.preventDefault();
 
     const message = {
-      sender: seller._id,
+      sender: user._id,
       text: newMessage,
       conversationId: currentChat._id,
     };
 
     const receiverId = currentChat.members.find(
-      (member) => member !== seller._id,
+      (member) => member !== user._id,
     );
 
     socketId.emit("sendMessage", {
-      senderId: seller._id,
+      senderId: user._id,
       receiverId,
       text: newMessage,
     });
@@ -128,12 +129,12 @@ const ShopInbox = () => {
   const updateLastMessage = async () => {
     socketId.emit("updateLastMessage", {
       lastMessage: newMessage,
-      lastMessageId: seller._id,
+      lastMessageId: user._id,
     });
     await axios
       .put(`${server}/conversation/update-last-message/${currentChat._id}`, {
         lastMessage: newMessage,
-        lastMessageId: seller._id,
+        lastMessageId: user._id,
       })
       .then((res) => {
         console.log(res.data.conversation);
@@ -145,7 +146,8 @@ const ShopInbox = () => {
   };
 
   return (
-    <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll rounded">
+    <div className="w-full">
+      <Header />
       {!open && (
         <>
           <h1 className="text-center text-[30px] py-3 font-Poppins">
@@ -160,11 +162,11 @@ const ShopInbox = () => {
                 index={index}
                 setOpen={setOpen}
                 setCurrentChat={setCurrentChat}
-                me = {seller._id}
-                userData = {userData}
-                setUserData = {setUserData}
-                online = {onlineCheck(item)}
-                setActiveStatus = {setActiveStatus}
+                me={user._id}
+                userData={userData}
+                setUserData={setUserData}
+                online={onlineCheck(item)}
+                setActiveStatus={setActiveStatus}
               />
             ))}
         </>
@@ -177,16 +179,26 @@ const ShopInbox = () => {
           setNewMessage={setNewMessage}
           sendMessageHandler={sendMessageHandler}
           messages={messages}
-          sellerId={seller._id}
-          userData = {userData}
-          activeStatus = {activeStatus}
+          sellerId={user._id}
+          userData={userData}
+          activeStatus={activeStatus}
         />
       )}
     </div>
   );
 };
 
-const MessageList = ({ data, index, setOpen, setCurrentChat, me, setUserData, online, setActiveStatus }) => {
+const MessageList = ({
+  data,
+  index,
+  setOpen,
+  setCurrentChat,
+  me,
+  userData,
+  setUserData,
+  online,
+  setActiveStatus,
+}) => {
   const [active, setActive] = useState(0);
   const [user, setUser] = useState([]);
   const navigate = useNavigate();
@@ -197,24 +209,29 @@ const MessageList = ({ data, index, setOpen, setCurrentChat, me, setUserData, on
   };
 
   useEffect(() => {
+    setActiveStatus(online);
     if (!data?.members || !me) return;
     const userId = data.members.find((user) => user !== me);
-    const getUser = async() => {
+    const getUser = async () => {
       try {
-        const res = await axios.get(`${server}/user/user-info/${userId}`)
-        setUser(res.data.user);
+        const res = await axios.get(`${server}/shop/get-shop-info/${userId}`);
+        setUser(res.data.shop);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-    }
+    };
     getUser();
-  },[me, data]);
+  }, [me, data]);
 
   return (
     <div
       className={`w-full flex p-3 my-[1px] px-3 ${active === index ? "bg-[#00000010]" : "bg-transparent"}   cursor-pointer`}
       onClick={(e) =>
-        setActive(index) || handleClick(data._id) || setCurrentChat(data) || setUserData(user) || setActiveStatus(online) 
+        setActive(index) ||
+        handleClick(data._id) ||
+        setCurrentChat(data) ||
+        setUserData(user) ||
+        setActiveStatus(online)
       }
     >
       <div className="relative">
@@ -223,17 +240,20 @@ const MessageList = ({ data, index, setOpen, setCurrentChat, me, setUserData, on
           alt=""
           className="w-[50px] h-[50px] rounded-full border-[#55555563] border-[1px]"
         />
-        {
-          online ? (
-            <div className="absolute top-[2px] right-[2px] w-[12px] h-[12px] bg-green-400 rounded-full"></div>
-          ) : (
-            <div className="absolute top-[2px] right-[2px] w-[12px] h-[12px] bg-[#c7b9b9] rounded-full"></div>
-          )
-        }
+        {online ? (
+          <div className="absolute top-[2px] right-[2px] w-[12px] h-[12px] bg-green-400 rounded-full"></div>
+        ) : (
+          <div className="absolute top-[2px] right-[2px] w-[12px] h-[12px] bg-[#c7b9b9] rounded-full"></div>
+        )}
       </div>
       <div className="pl-3">
         <h1 className=" text-[18px]">{user?.name}</h1>
-        <p className="text-[16px] text-[#000c]">{data?.lastMessageId !== user?._id ? "You:" : user?.name?.split("")[0] + ": "} {data?.lastMessage}</p>
+        <p className="text-[16px] text-[#000c]">
+          {data?.lastMessageId !== userData?._id
+            ? "You:"
+            : userData?.name?.split("")[0] + ": "}{" "}
+          {data?.lastMessage}
+        </p>
       </div>
     </div>
   );
@@ -248,6 +268,7 @@ const SellerInbox = ({
   sellerId,
   userData,
   activeStatus,
+  seller,
 }) => {
   return (
     <div className="w-full min-h-full flex flex-col justify-between">
@@ -287,9 +308,9 @@ const SellerInbox = ({
                   className="w-[40px] h-[40px] rounded-full border-[#55555563] border-[1px] mr-3"
                 />
               )}
-             {
+            {
               item.text !== "" && (
-                 <div>
+                  <div>
                 <div className="w-max p-2 rounded bg-slate-200 h-min">
                   {/* message from other side */}
                   <div className="flex w-full">
@@ -301,7 +322,7 @@ const SellerInbox = ({
                 </p>
               </div>
               )
-             }
+            }
             </div>
           ))}
       </div>
@@ -337,4 +358,4 @@ const SellerInbox = ({
   );
 };
 
-export default ShopInbox;
+export default UserInboxPage;

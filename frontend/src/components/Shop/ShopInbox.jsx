@@ -10,7 +10,7 @@ import { GrGallery } from "react-icons/gr";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
 
-const ENDPOINT = "http://localhost:4000/";
+const ENDPOINT = import.meta.env.VITE_SOCKET_URL;
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const ShopInbox = () => {

@@ -11,7 +11,7 @@ import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import styles from "../styles/styles";
 import { GrGallery } from "react-icons/gr";
 
-const ENDPOINT = "http://localhost:4000/";
+const ENDPOINT = import.meta.env.VITE_SOCKET_URL;
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInboxPage = () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { LoginPage, SignupPage, ActivationPage, HomePage, ProductsPage, BestSellingPage, EventsPage, FAQPage, ProductDetailsPage, ProfilePage, ShopCreatePage, SellerActivationPage, ShopLoginPage, CheckoutPage, PaymentPage, OrderSuccessPage,OrderDetailsPage, TrackOrderPage} from "./routes/Routes.js";
+import { LoginPage, SignupPage, ActivationPage, HomePage, ProductsPage, BestSellingPage, EventsPage, FAQPage, ProductDetailsPage, ProfilePage, ShopCreatePage, SellerActivationPage, ShopLoginPage, CheckoutPage, PaymentPage, OrderSuccessPage,OrderDetailsPage, TrackOrderPage, UserInboxPage} from "./routes/Routes.js";
 import {ShopDashboardPage, ShopCreateProduct, ShopAllProduct, ShopCreateEvents, ShopAllEvents, ShopAllCoupouns, ShopPreviewPage,ShopAllOrders,ShopOrderDetails, ShopAllRefunds, ShopSettingsPage, ShopWithdrawMoneyPage, ShopInboxPage} from "./routes/ShopRoutes"
 import {ToastContainer} from 'react-toastify';
 import Store from "./redux/stores";
@@ -71,6 +71,11 @@ const App = () => {
         <Route path="/profile" element={
           <ProtectedRoute>
             <ProfilePage/>
+          </ProtectedRoute>
+        }/>
+        <Route path="/inbox" element={
+          <ProtectedRoute>
+            <UserInboxPage/>
           </ProtectedRoute>
         }/>
         

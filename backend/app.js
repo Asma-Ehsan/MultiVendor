@@ -10,7 +10,7 @@ app.use(express.json()); //read JSON data from req by the client.
 app.use(cookieParser()); //cookieParser read cookies sent by the browser.
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:3000" || "https://multi-vendor-m5ay-nine.vercel.app",
     credentials: true,
   })
 );

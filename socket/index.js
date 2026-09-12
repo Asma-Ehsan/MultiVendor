@@ -9,9 +9,18 @@ require("dotenv").config({
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server);
 
-app.use(cors());
+const io = socketIO(server, {
+  cors: {
+    origin: "https://multi-vendor-m5ay-nine.vercel.app",
+    credentials: true
+  }
+});
+
+app.use(cors({
+  origin: "https://multi-vendor-m5ay-nine.vercel.app",
+  credentials: true
+}));
 app.use(express.json());
 
 app.get("/", (req, res) => {

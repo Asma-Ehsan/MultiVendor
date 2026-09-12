@@ -2,9 +2,12 @@
   "name": "multivendor-root",
   "version": "1.0.0",
   "scripts": {
-    "start": "cd socket && yarn install && node index.js"
+    "start": "node socket/index.js"
   },
   "dependencies": {
-    "stripe": "^22.6.1"
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
   }
 }

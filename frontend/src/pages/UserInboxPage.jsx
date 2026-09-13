@@ -11,7 +11,8 @@ import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import styles from "../styles/styles";
 import { GrGallery } from "react-icons/gr";
 
-const ENDPOINT = import.meta.env.VITE_SOCKET_URL;
+const ENDPOINT =
+  process.env.REACT_APP_SOCKET_URL || "https://multivendor-socket.bonto.run";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInboxPage = () => {

@@ -1,21 +1,10 @@
 const app = require("./app"); //This imports the Express app created inside app.js
-const connectDatabase = require("./db/Database");
 
 // Handling uncaught Exception
 process.on("uncaughtException", (err) => {
   console.log(`Error: ${err.message}`);
   console.log(`shutting down the server for handling uncaught exception`);
 });
-
-//config
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({
-    path: "config/.env",
-  });
-}
-
-//connect DB
-connectDatabase();
 
 //create server
 const server = app.listen(process.env.PORT, () => {

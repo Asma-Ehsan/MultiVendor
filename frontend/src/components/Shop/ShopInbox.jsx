@@ -10,7 +10,8 @@ import { GrGallery } from "react-icons/gr";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
 
-const ENDPOINT = import.meta.env.VITE_SOCKET_URL;
+const ENDPOINT =
+  process.env.REACT_APP_SOCKET_URL || "https://multivendor-socket.bonto.run";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const ShopInbox = () => {

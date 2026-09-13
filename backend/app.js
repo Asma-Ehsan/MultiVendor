@@ -3,31 +3,57 @@ const ErrorHandler = require("./middleware/error");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const connectDatabase = require("./db/Database");
+
+if (process.env.NODE_ENV !== "PRODUCTION") {
+  require("dotenv").config({
+    path: "config/.env",
+  });
+}
 
 const app = express();
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://multi-vendor-m5ay-nine.vercel.app",
+  "http://localhost:3000",
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("/{*splat}", cors(corsOptions));
+
+connectDatabase().catch((err) => {
+  console.error("MongoDB connection failed:", err.message);
+});
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use(express.json()); //read JSON data from req by the client.
 app.use(cookieParser()); //cookieParser read cookies sent by the browser.
-app.use(
-  cors({
-    origin: "https://multi-vendor-m5ay-nine.vercel.app",
-    credentials: true,
-  })
-);
 
 //path is a built-in Node.js module. It helps create file paths that work on Windows, Linux, and macOS.
 const path = require("path");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(bodyParser.urlencoded({ extended: true })); // Converts HTML form/urlencoded data into JavaScript object. Its alternative: app.use(express.urlencoded({ extended: true }));
-
-//config
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({
-    //Import dotenv package and run config function of dotenv
-    path: "config/.env",
-  });
-}
 
 //import routes
 const user = require("./controller/user");

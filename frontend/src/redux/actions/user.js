@@ -11,7 +11,7 @@ export const loadUser = () => async (dispatch) => {
     });
     dispatch({ type: "LoadUserSuccess", payload: data.user });
   } catch (error) {
-    dispatch({ type: "LoadUserFail", payload: error.response.data.message });
+    dispatch({ type: "LoadUserFail", payload: error.response?.data?.message || error.message });
   }
 };
 //load seller
@@ -24,7 +24,7 @@ export const loadSeller = () => async (dispatch) => {
     });
     dispatch({ type: "LoadSellerSuccess", payload: data.seller });
   } catch (error) {
-    dispatch({ type: "LoadSellerFail", payload: error.response.data.message });
+    dispatch({ type: "LoadSellerFail", payload: error.response?.data?.message || error.message });
   }
 };
 
@@ -40,7 +40,7 @@ export const updateUserInformation = (email, password, phoneNumber, name) => asy
     );
     dispatch({ type: "UpdateUserInfoSuccess", payload: data.user });
   } catch (error) {
-    dispatch({ type: "UpdateUserInfoFail", payload: error.response.data.message });
+    dispatch({ type: "UpdateUserInfoFail", payload: error.response?.data?.message || error.message });
   }
 };
 
@@ -56,7 +56,7 @@ export const updateUserAddress = (country, city, address1, address2,zipCode, add
     );
     dispatch({ type: "UpdateUserAddressSuccess", payload: {successMessage: "User address updated successfully!", user: data.user} });
   } catch (error) {
-    dispatch({ type: "UpdateUserAddressFail", payload: error.response.data.message });
+    dispatch({ type: "UpdateUserAddressFail", payload: error.response?.data?.message || error.message });
   }
 };
 
@@ -71,6 +71,6 @@ export const deleteUserAddress = (id) => async (dispatch, action) => {
     );
     dispatch({ type: "DeleteUserAddressSuccess", payload: {successMessage: "Address deleted successfully!", user: data.user} });
   } catch (error) {
-    dispatch({ type: "DeleteUserAddressFail", payload: error.response.data.message });
+    dispatch({ type: "DeleteUserAddressFail", payload: error.response?.data?.message || error.message });
   }
 };

@@ -17,7 +17,7 @@ export const getAllOrdersOfUser = (userId) => async(dispatch) => {
   } catch (error) {
     dispatch({
       type: "getAllOrdersUserFailed",
-      payload: error.response.data.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 }
@@ -38,7 +38,7 @@ export const getAllOrdersOfShop = (shopId) => async(dispatch) => {
   } catch (error) {
     dispatch({
       type: "getAllOrdersShopFailed",
-      payload: error.response.data.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 }

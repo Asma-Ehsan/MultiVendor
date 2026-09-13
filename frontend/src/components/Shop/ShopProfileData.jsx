@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import Ratings from "../Product/Ratings";
 import { getAllEventsShop } from "../../redux/actions/event";
+import { backend_url } from "../../server";
 
 const ShopProfileData = ({ isOwner }) => {
   const { products } = useSelector((state) => state.products);
@@ -84,7 +85,7 @@ const ShopProfileData = ({ isOwner }) => {
               const transformed = {
                 ...i,
                 image_Url: i.images.map((filename) => ({
-                  url: `http://localhost:8000/uploads/${filename}`,
+                  url: `${backend_url}uploads/${filename}`,
                 })),
               };
               return (
@@ -103,7 +104,7 @@ const ShopProfileData = ({ isOwner }) => {
                 const transformed = {
                   ...i,
                   image_Url: i.images.map((filename) => ({
-                    url: `http://localhost:8000/uploads/${filename}`,
+                    url: `${backend_url}uploads/${filename}`,
                   })),
                 };
                 return (

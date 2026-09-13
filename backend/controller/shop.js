@@ -29,7 +29,9 @@ router.post("/create-shop", upload.single("file"), async(req, res, next) => {
             return next(new ErrorHandler("Seller already exists.", 400));
         }
         const filename = req.file.filename;
-        const fileUrl = `http://localhost:8000/uploads/${filename}`;
+        // const fileUrl = `http://localhost:8000/uploads/${filename}`;
+        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+        const fileUrl = `${BACKEND_URL}/uploads/${filename}`;
 
         const seller = {
             name: req.body.name,
@@ -45,7 +47,9 @@ router.post("/create-shop", upload.single("file"), async(req, res, next) => {
         };
 
         const activationToken = createActivationToken(seller);
-        const activationUrl = `http://localhost:3000/seller/activation/${activationToken}`;
+        // const activationUrl = `http://localhost:3000/seller/activation/${activationToken}`;
+        const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+        const activationUrl = `${FRONTEND_URL}/seller/activation/${activationToken}`;
 
           //this try-catch is for send mail
           try {
@@ -141,11 +145,12 @@ router.get("/getSeller", isSeller, catchAsyncErrors(async (req, res, next) => {
 //log out from shop
 router.get("/logout",isSeller, catchAsyncErrors(async(req, res, next) => {
     try {
+        const isProduction = process.env.NODE_ENV === "production";
         res.cookie("seller_token", null, {
             expires: new Date(Date.now()),
             httpOnly: true,
-            sameSite: "none",
-            secure: true,
+            sameSite: isProduction ? "none" : "lax",
+            secure: isProduction,
     });
     res.status(201).json({
         success: true,
@@ -193,7 +198,9 @@ router.put("/update-shop-avatar", isSeller, upload.single("image"), catchAsyncEr
         }
 
         const filename = req.file.filename;
-        const fileUrl = `http://localhost:8000/uploads/${filename}`;
+        // const fileUrl = `http://localhost:8000/uploads/${filename}`;
+        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+        const fileUrl = `${BACKEND_URL}/uploads/${filename}`;
 
         const seller = await Shop.findByIdAndUpdate(req.seller._id, {avatar: {public_id: filename, url: fileUrl}}, {new: true});
 

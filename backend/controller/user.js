@@ -32,7 +32,9 @@ router.post("/create-user", upload.single("file"), async(req, res, next) => {
         }
 
         const filename = req.file.filename;
-        const fileUrl = `http://localhost:8000/uploads/${filename}`;
+        // const fileUrl = `http://localhost:8000/uploads/${filename}`;
+        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+        const fileUrl = `${BACKEND_URL}/uploads/${filename}`;
 
         const user = {
             name,
@@ -45,7 +47,9 @@ router.post("/create-user", upload.single("file"), async(req, res, next) => {
         };
         
         const activationToken = createActivationToken(user);
-        const activationUrl = `http://localhost:3000/activation/${activationToken}`;
+        // const activationUrl = `http://localhost:3000/activation/${activationToken}`;
+        const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+        const activationUrl = `${FRONTEND_URL}/activation/${activationToken}`;
 
         //this try-catch is for send mail
         try {
@@ -137,11 +141,12 @@ router.get("/getuser", isAuthenticated, catchAsyncErrors(async (req, res, next) 
 //log out
 router.get("/logout",isAuthenticated, catchAsyncErrors(async(req, res, next) => {
     try {
+        const isProduction = process.env.NODE_ENV === "production";
         res.cookie("token", null, {
             expires: new Date(Date.now()),
             httpOnly: true,
-            sameSite: "none",
-            secure: true,
+            sameSite: isProduction ? "none" : "lax",
+            secure: isProduction,
     });
     res.status(201).json({
         success: true,
@@ -208,7 +213,9 @@ router.put("/update-avatar", isAuthenticated, upload.single("image"), catchAsync
         }
 
         const filename = req.file.filename;
-        const fileUrl = `http://localhost:8000/uploads/${filename}`;
+        // const fileUrl = `http://localhost:8000/uploads/${filename}`;
+        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+        const fileUrl = `${BACKEND_URL}/uploads/${filename}`;
 
         const user = await User.findByIdAndUpdate(req.user.id, {avatar: {public_id: filename, url: fileUrl}}, {new: true});
 

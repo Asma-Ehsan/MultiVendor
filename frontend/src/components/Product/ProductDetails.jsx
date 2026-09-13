@@ -341,9 +341,10 @@ const ProductDetailsInfo = ({
 
       {active === 2 ? (
         <div className="w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll">
-          {data &&
-            data.reviews.map((item, index) => (
-              <div className="w-full flex my-2">
+          {data && data.reviews ? 
+          (
+             data.reviews.map((item, index) => (
+              <div className="w-full flex my-2" key={item._id || index}>
                 <img
                   src={item?.user?.avatar?.url}
                   alt=""
@@ -352,14 +353,17 @@ const ProductDetailsInfo = ({
                 <div className="pl-2">
                   <div className="w-full flex items-center">
                     <h1 className="font-[500] mr-4">{item?.user?.name}</h1>
-                    <Ratings rating={data?.ratings} />
+                    <Ratings rating={data?.ratings || 0} />
                   </div>
-                  <p>{item?.comment}</p>
+                  <p>{item?.comment || "No comment provided"}</p>
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <h5>No reviews found!</h5>
+          )}
           <div className="flex w-full justify-center">
-            {data && data.reviews.length === 0 && (
+            {data && data.reviews && data.reviews.length === 0 && (
               <h5>No Reviews have for this product!</h5>
             )}
           </div>
@@ -413,7 +417,7 @@ const ProductDetailsInfo = ({
                 Total Reviews:{" "}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
-              <Link to="/">
+              <Link to={`/shop/preview/${data?.shop._id}`}>
                 <div
                   className={`${styles.button} !rounded-[4px] !h-[39.5px] !mt-3`}
                 >

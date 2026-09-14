@@ -58,16 +58,23 @@ const ProductDetails = ({ data }) => {
     if (isAuthenticated) {
       const groupTitle = data._id + user._id;
       const userId = user._id;
-      const sellerId = data.shop._id;
-      await axios.post(`${server}/conversation/create-new-conversation`, {
-        groupTitle,
-        userId,
-        sellerId,
-      }).then((res) => {
-        navigate(`/conversation/${res.data.conversation._id}`);
-      }).catch((error) => {
-        toast.error(error.response.data.message);
-      })
+      const sellerId = data?.shop?._id;
+      if (!sellerId) {
+        toast.error("Seller information is unavailable");
+        return;
+      }
+      await axios
+        .post(`${server}/conversation/create-new-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+          navigate(`/conversation/${res.data.conversation._id}`);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
     } else {
       toast.error("Please login to create a conversation");
     }
@@ -236,7 +243,7 @@ const ProductDetails = ({ data }) => {
                 {/* seller info */}
                 <div className="flex items-center pt-8">
                   {/* CHANGED: show seller avatar from the backend shop object */}
-                  <Link to={`/shop/preview/${data?.shop._id}`}>
+                  <Link to={`/shop/preview/${data?.shop?._id}`}>
                     <img
                       src={shopAvatar || "https://via.placeholder.com/50"}
                       alt=""
@@ -244,7 +251,7 @@ const ProductDetails = ({ data }) => {
                     />
                   </Link>
                   <div className="pr-8">
-                    <Link to={`/shop/preview/${data?.shop._id}`}>
+                    <Link to={`/shop/preview/${data?.shop?._id}`}>
                       <h3 className={`${styles.shop_name} pb-1 pt-1`}>
                         {data?.shop?.name || "Seller"}
                       </h3>
@@ -341,9 +348,8 @@ const ProductDetailsInfo = ({
 
       {active === 2 ? (
         <div className="w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll">
-          {data && data.reviews ? 
-          (
-             data.reviews.map((item, index) => (
+          {data && data.reviews ? (
+            data.reviews.map((item, index) => (
               <div className="w-full flex my-2" key={item._id || index}>
                 <img
                   src={item?.user?.avatar?.url}
@@ -375,7 +381,8 @@ const ProductDetailsInfo = ({
           <div className="w-full 800px:w-[50%]">
             <div className="flex items-center">
               {/* CHANGED: show seller avatar from the backend shop object */}
-              <Link to={`/shop/preview/${data?.shop._id}`}>
+              <Link to={`/shop/preview/${data?.shop?._id}`}>
+              {console.log("Data:", data)}
                 <img
                   src={shopAvatar}
                   alt=""
@@ -394,7 +401,7 @@ const ProductDetailsInfo = ({
               </div>
             </div>
             <p className="pt-2">
-              {data.shop.description || "Seller information will appear here."}
+              {data?.shop?.description || "Seller information will appear here."}
             </p>
           </div>
 

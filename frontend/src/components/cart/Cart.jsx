@@ -5,7 +5,7 @@ import { HiMinus, HiPlus } from "react-icons/hi";
 import styles from "../../styles/styles";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { backend_url } from "../../server";
+import { backend_url, getImageUrl } from "../../server";
 import { addToCart, removeFromCart } from "../../redux/actions/cart";
 import { toast } from "react-toastify";
 
@@ -130,7 +130,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
         </div>
 
         <img
-          src={`${backend_url}uploads/${data?.images?.[0] ?? ""}`}
+          src={getImageUrl(data?.images?.[0])}
           alt=""
           className="w-[130px] h-min ml-2 mr-2 rounded-[5px] "
         />

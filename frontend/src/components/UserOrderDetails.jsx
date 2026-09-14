@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BsFillBagFill } from "react-icons/bs";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { backend_url, server } from "../server";
+import { backend_url, getImageUrl, server } from "../server";
 import { getAllOrdersOfUser } from "../redux/actions/order";
 import styles from "../styles/styles";
 import { RxCross1 } from "react-icons/rx";
@@ -80,7 +80,7 @@ const OrderDetails = () => {
         data?.cart?.map((item, index) => (
           <div className="w-full flex items-start mb-5">
             <img
-              src={`${backend_url}uploads/${item?.images?.[0] ?? ""}`}
+              src={getImageUrl(item?.images?.[0])}
               alt=""
               className="w-[80px] h-[80px]"
             />
@@ -118,7 +118,7 @@ const OrderDetails = () => {
             <br />
             <div className="w-full flex">
               <img
-                src={`${backend_url}uploads/${selectedItem?.images[0]}`}
+                src={getImageUrl(selectedItem?.images?.[0])}
                 alt=""
                 className="w-[80px] h-[80px] rounded-sm"
               />

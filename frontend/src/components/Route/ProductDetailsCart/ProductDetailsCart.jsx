@@ -7,7 +7,7 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { backend_url } from "../../../server";
+import { backend_url, getImageUrl } from "../../../server";
 import { useDispatch, useSelector } from "react-redux";
 import {toast} from 'react-toastify';
 import { addToCart } from "../../../redux/actions/cart";
@@ -79,9 +79,7 @@ const ProductDetailsCart = ({ setOpen, data }) => {
               <div className="w-full 800px:w-[50%] ">
                 <img
                   src={
-                    data.images && data.images[0]
-                      ? `${backend_url}uploads/${data.images[0]}`
-                      : ""
+                    getImageUrl(data.images && data.images[0])
                   }
                   alt=""
                 />

@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 import Cart from "../cart/Cart";
 import Wishlist from "../Wishlist/Wishlist";
 import { RxCross1 } from "react-icons/rx";
-import { backend_url } from "../../server";
+import { backend_url, getImageUrl } from "../../server";
 // import { RxCross1 } from "react-icons/rx";
 
 const Header = ({ activeHeading }) => {
@@ -92,7 +92,7 @@ const Header = ({ activeHeading }) => {
                       >
                         <div className="w-full flex items-start-py-3">
                           <img
-                            src={`${backend_url}uploads/${i.images[0]}`}
+                            src={getImageUrl(i.images && i.images[0])}
                             alt=""
                             className="w-[40px] h-[40px] mr-[10px]"
                           />

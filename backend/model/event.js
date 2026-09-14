@@ -11,7 +11,10 @@ const eventSchema = new mongoose.Schema({
   originalPrice: { type: Number, },
   discountPrice: { type: Number, required: [true, "Please enter your event product price!"], },
   stock: { type: Number, required: [true, "Please enter your event product stock!"], },
-  images: [{type: String,}],
+  images: [{
+    public_id: {type: String},
+    url: {type: String},
+  }],
   shopId: { type: String, required: true, },
   shop: { type: Object, required: true, },
   sold_out: { type: Number, default: 0, },

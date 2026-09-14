@@ -20,7 +20,11 @@ router.post(
       if (!shopId) return next(new ErrorHandler("Shop Id is invalid!", 400));
       else {
         const files = req.files;
-        const imageUrls = files.map((file) => `${file.filename}`);
+        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+        const imageUrls = files.map((file) => ({
+          public_id: file.filename,
+          url: `${BACKEND_URL}/uploads/${file.filename}`
+        }));
 
         const eventData = req.body;
         eventData.images = imageUrls;

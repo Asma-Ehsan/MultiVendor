@@ -3,14 +3,12 @@ import { Link } from "react-router-dom";
 import styles from "../../../styles/styles";
 import {
   AiFillHeart,
-  AiFillStar,
   AiOutlineEye,
   AiOutlineHeart,
   AiOutlineShoppingCart,
-  AiOutlineStar,
 } from "react-icons/ai";
 import ProductDetailsCart from "../ProductDetailsCart/ProductDetailsCart.jsx"
-import { backend_url } from "../../../server.js";
+import { getImageUrl } from "../../../server.js";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist, removeFromWishlist } from "../../../redux/actions/wishlist.js";
 import { addToCart } from "../../../redux/actions/cart.js";
@@ -65,7 +63,7 @@ const ProductCard = ({ data, isEvent }) => {
         {/* Product images */}
         <Link to={`${isEvent === true ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}`}>
           <img
-            src={data.images && data.images[0] ? `${backend_url}uploads/${data.images[0]}` : ""}
+            src={getImageUrl(data.images && data.images[0])}
             alt=""
             className="w-full h-[170px] object-contain"
           />

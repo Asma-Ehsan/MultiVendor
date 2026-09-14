@@ -7,7 +7,7 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { backend_url, server } from "../../server";
+import { backend_url, getImageUrl, server } from "../../server";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import {
@@ -103,16 +103,6 @@ const ProductDetails = ({ data }) => {
         toast.success("Items added o cart successfully!");
       }
     }
-  };
-
-  // CHANGED: build real image URLs from the backend upload folder
-  const getImageUrl = (image) => {
-    if (!image) return "";
-    if (typeof image === "string") {
-      if (image.startsWith("http")) return image;
-      return `${backend_url}uploads/${data.images[0]}`;
-    }
-    return "";
   };
 
   // CHANGED: read product images from the backend shape (data.images)

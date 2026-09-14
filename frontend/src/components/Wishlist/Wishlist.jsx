@@ -4,7 +4,7 @@ import { BsCartPlus } from "react-icons/bs";
 import styles from "../../styles/styles";
 import { AiOutlineHeart } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
-import { backend_url } from "../../server";
+import { backend_url, getImageUrl } from "../../server";
 import { removeFromWishlist } from "../../redux/actions/wishlist";
 import { toast } from "react-toastify";
 import { addToCart } from "../../redux/actions/cart";
@@ -81,7 +81,7 @@ const CartSingle = ({ data, removeFromWishlistHandler, addToCartHandler }) => {
         <RxCross1 className="cursor-pointer" 
         onClick = {() => removeFromWishlistHandler(data)} />
         <img
-          src={`${backend_url}uploads/${data.images[0]}`}
+         src={getImageUrl(data.images && data.images[0])}
           alt=""
           className="w-[80px] h-[80px] ml-2 "
         />

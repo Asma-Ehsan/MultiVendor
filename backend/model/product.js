@@ -9,7 +9,10 @@ const productSchema = new mongoose.Schema({
     discountPrice: {type: Number, required: [true, "Please enter your product price!"]},
     stock: {type: Number, required: [true, "Please enter your product stock!"]},
     stock: {type: Number, required: [true, "Please enter your product stock!"]},
-    images: [{type: String,}],
+    images: [{
+        public_id: {type: String},
+        url: {type: String},
+      }],
     reviews: [{
         user: {type: Object,}, 
         rating: {type: Number,},

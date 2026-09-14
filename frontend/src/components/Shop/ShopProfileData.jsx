@@ -78,7 +78,7 @@ const ShopProfileData = ({ isOwner }) => {
 
       {/* If active === 1 */}
       <br />
-      {active === 1 && (
+      {/* {active === 1 && (
         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
           {products &&
             products.map((i, index) => {
@@ -93,6 +93,15 @@ const ShopProfileData = ({ isOwner }) => {
               );
             })}
         </div>
+      )} */}
+
+{active === 1 && (
+        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
+          {products &&
+           products.map((i, index) => (
+            <ProductCard data={i} key={index} isShop={true} />
+          ))}
+        </div>
       )}
 
       {/* If active === 2 */}
@@ -100,17 +109,10 @@ const ShopProfileData = ({ isOwner }) => {
         <div className="w-full">
           <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
             {events && events.length > 0 ? (
-              events.map((i, index) => {
-                const transformed = {
-                  ...i,
-                  image_Url: i.images.map((filename) => ({
-                    url: `${backend_url}uploads/${filename}`,
-                  })),
-                };
-                return (
-                  <ProductCard data={transformed} key={index} isShop={true} isEvent = {true} />
-                );
-              })
+              events.map((i, index) =>  (
+                  <ProductCard data={i} key={index} isShop={true} isEvent = {true} />
+                )
+              )
             ) : (
               <div className="w-full col-span-full h-[60vh] flex items-center justify-center">
                 <p className="text-center text-[20px]">No events found!</p>

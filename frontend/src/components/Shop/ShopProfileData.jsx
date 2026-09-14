@@ -10,16 +10,16 @@ import { backend_url } from "../../server";
 
 const ShopProfileData = ({ isOwner }) => {
   const { products } = useSelector((state) => state.products);
-  const { seller } = useSelector((state) => state.seller);
   const { events } = useSelector((state) => state.events);
   const [active, setActive] = useState(1);
   const { id } = useParams();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if(!id) return;
     dispatch(getAllProductsShop(id));
-    dispatch(getAllEventsShop(seller._id));
-  }, [dispatch]);
+    dispatch(getAllEventsShop(id));
+  }, [dispatch, id]);
 
   const allReviews =
     products && products.map((product) => product.reviews).flat();

@@ -31,6 +31,7 @@ const ShopInfo = ({ isOwner }) => {
   const logoutHandler = async() => {
     await axios.get(`${server}/shop/logout`, {withCredentials: true});
     window.location.reload();
+    navigate("/shop-login")
   };
 
   const totalReviewsLength = products && products.reduce((acc , product) => acc + product.reviews.length, 0);

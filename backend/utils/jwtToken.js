@@ -10,7 +10,7 @@ const sendToken = (user, statusCode, res) => {
         httpOnly: true,
         sameSite: isProduction ? "none" : "lax",
         secure: isProduction,
-        //This is a security option. It means: JavaScript running in the browser cannot access this cookie.
+        //It means: "In production, require HTTPS for this cookie. In development, don't require HTTPS."
     };
 
     res.status(statusCode).cookie("token", token, options).json({
@@ -42,6 +42,9 @@ The cookie expires after 90 days.
 ----------------------------------------------------------
                    httpOnly
 ----------------------------------------------------------
+This tells the browser:
+
+"JavaScript running in the browser should not be allowed to directly access this cookie.
 
 Without httpOnly:
 

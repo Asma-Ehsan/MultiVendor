@@ -7,12 +7,12 @@ const storage = multer.diskStorage({
     },
     filename: function(req, file , cb){
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9); //1e9 means: 1 × 10⁹ = 1,000,000,000 = 583472918
-        const filename = file.originalname.split(".")[0];
+        const filename = file.originalname.split(".")[0]; //cat.png -> take index[0] -> cat
         cb(null,filename + "-" + uniqueSuffix + ".png");
     }
 });
 
-exports.upload = multer({storage: storage});
+exports.upload = multer({storage});
 
 /*
 ===========================================
@@ -69,6 +69,8 @@ multer.diskStorage()
 Code:
 
 const storage = multer.diskStorage({...});
+
+diskStorage() is a function provided by Multer which tells Multer: store uploaded files on the server's disk/file system.
 
 Purpose:
 

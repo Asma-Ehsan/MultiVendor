@@ -35,34 +35,92 @@ What is Error.captureStackTrace()?
 It takes two parameters.
 
 ------------------------------------------------
-Error.captureStackTrace(this, this.constructor):
+When you do:
+
+new ErrorHandler("Invalid Credentials", 401);
 ------------------------------------------------
 
-Parameter 1: this
+JavaScript creates a new ErrorHandler object.
 
-Error.captureStackTrace(this, ...);
+Inside the constructor:
 
-- "this" refers to the current ErrorHandler object.
-- Node.js attaches the generated stack trace to this error object.
+'this'
 
--------------------------------------------
+refers to that newly created object.
 
-Parameter 2: this.constructor
+So conceptually:
+
+new ErrorHandler(...)
+        ↓
+New ErrorHandler object
+        ↓
+this
+
+Therefore:
+
+Error.captureStackTrace(this, ...)
+
+means:
+
+"Create the stack trace and attach it to this ErrorHandler error object."
+
+2. What is this.constructor?
+
+Every JavaScript object has access to a constructor property that points to the function/class that created that object.
+
+Here:
+
+this.constructor
+
+means:
+
+"What constructor/class was used to create this object?"
+
+Your object was created using:
+
+new ErrorHandler(...)
+
+Therefore: this.constructor
+refers to: ErrorHandler
+
+So these are effectively equivalent here:
 
 Error.captureStackTrace(this, this.constructor);
 
-- "this.constructor" refers to the ErrorHandler constructor function.
-- It is equivalent to:
+and:
 
 Error.captureStackTrace(this, ErrorHandler);
 
-Node.js gives the second parameter a special meaning.
+3. Why pass this.constructor as the second parameter?
 
-It tells Node.js:
+The syntax is: Error.captureStackTrace(targetObject, constructorFunction);
 
-"While generating the stack trace, remove the constructor function and all stack frames above it."
+You are telling Node.js:
 
--------------------------------------------
+Error.captureStackTrace(
+    this,              // error object
+    this.constructor   // ErrorHandler constructor
+);
+
+The second parameter tells Node.js:
+
+"Start the useful stack trace after this constructor."
+
+So the ErrorHandler constructor itself does not unnecessarily appear as the starting point of the stack trace.
+
+Simple mental model
+new ErrorHandler()
+       ↓
+ErrorHandler constructor
+       ↓
+captureStackTrace(this, this.constructor)
+       ↓
+Skip ErrorHandler constructor
+       ↓
+Show where the error was actually created
+In one sentence
+
+this = the current ErrorHandler error object, while this.constructor = the ErrorHandler class that created that object; passing both to captureStackTrace() creates a cleaner stack trace that starts from the code that actually caused the error.
 
 Without captureStackTrace()
 

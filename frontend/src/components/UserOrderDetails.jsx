@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { BsFillBagFill } from "react-icons/bs";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { backend_url, getImageUrl, server } from "../server";
 import { getAllOrdersOfUser } from "../redux/actions/order";
 import styles from "../styles/styles";
 import { RxCross1 } from "react-icons/rx";
-import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import { AiFillStar, AiOutlineMessage, AiOutlineStar } from "react-icons/ai";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const OrderDetails = () => {
   const { orders } = useSelector((state) => state.order);
-  const { user } = useSelector((state) => state.user);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [rating, setRating] = useState(1);
   const [comment, setComment] = useState("");
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getAllOrdersOfUser(user._id));
@@ -54,6 +55,35 @@ const OrderDetails = () => {
       toast.error(error.response?.data?.message || "Something went wrong");
     })
   }
+
+  console.log("data", data);
+   const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data._id + user._id;
+      const userId = user._id;
+      const sellerId = data?.cart[0]?.shop?._id;
+      if (!sellerId) {
+        toast.error("Seller information is unavailable");
+        return;
+      }
+      await axios
+        .post(`${server}/conversation/create-new-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+          navigate("/inbox", {
+            state: {conversationId: res?.data?.conversation?._id},
+          });
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    } else {
+      toast.error("Please login to create a conversation");
+    }
+  };
 
   return (
     <div className={`py-4 min-h-screen ${styles.section}`}>
@@ -208,9 +238,14 @@ const OrderDetails = () => {
         </div>
       </div>
       <br />
-      <Link to="/">
-        <div className={`${styles.button} text-white`}>Send Message</div>
-      </Link>
+        <div
+                    className={`${styles.button} bg-[#6443d1] !mt-4 rounded !h-11`}
+                    onClick={handleMessageSubmit}
+                  >
+                    <span className="text-white flex items-center">
+                      Send Message <AiOutlineMessage className="ml-1" />
+                    </span>
+                  </div>
       <br />
       <br />
     </div>

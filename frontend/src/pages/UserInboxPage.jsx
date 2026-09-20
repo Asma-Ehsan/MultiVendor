@@ -4,15 +4,15 @@ import { useSelector } from "react-redux";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
 import axios from "axios";
-import { server } from "../server";
+import { getImageUrl, server } from "../server";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import styles from "../styles/styles";
 import { GrGallery } from "react-icons/gr";
 
 const ENDPOINT =
-  process.env.REACT_APP_SOCKET_URL || "https://multivendor-socket.bonto.run";
+process.env.REACT_APP_SOCKET_URL || "https://multivendor-socket.bonto.run";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInboxPage = () => {
@@ -26,6 +26,7 @@ const UserInboxPage = () => {
   const [userData, setUserData] = useState(null);
   const [onlineUsers, setOnelineUsers] = useState([]);
   const [activeStatus, setActiveStatus] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     socketId.on("getMessage", (data) => {
@@ -82,6 +83,22 @@ const UserInboxPage = () => {
       });
     }
   }, [user]);
+
+  useEffect(() => {
+    const conversationId = location?.state?.conversationId;
+    if(!conversationId || !conversations.length) return;
+
+    const chat = conversations.find((item) => item._id === conversationId);
+    if(!chat) return;
+
+    setCurrentChat(chat);
+    setOpen(true);
+    
+    const sellerId = chat.members.find((member) => member !== user?._id);
+    axios.get(`${server}/shop/get-shop-info/${sellerId}`).then((res) => {
+      setUserData(res?.data?.shop);
+    }).catch((error) => console.log(error));
+  }, [location.state, conversations, user]);
 
   const onlineCheck = (chat) => {
     const chatMembers = chat?.members?.find((member) => member !== user?._id);
@@ -276,8 +293,9 @@ const SellerInbox = ({
       {/* message header */}
       <div className="flex w-full p-3 items-center justify-between">
         <div className="flex">
+          {console.log(userData)}
           <img
-            src={`${userData?.avatar?.url}`}
+            src={getImageUrl(userData?.avatar)}
             alt=""
             className="w-[60px] h-[60px] rounded-full border-[#55555563] border-[1px]"
           />

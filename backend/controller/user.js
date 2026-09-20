@@ -1,16 +1,15 @@
 const express = require("express");
-const path = require("path");
 const router = express.Router();
 const User = require("../model/user")
 const {upload} = require("../multer");
 const ErrorHandler = require("../utils/ErrorHandler");
-const fs = require("fs");
 const  jwt  = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
 const catchAsyncErrors = require("../middleware/catchAsyncError");
 const sendToken = require("../utils/jwtToken");
 const { isAuthenticated } = require("../middleware/auth");
-
+const cloudinary = require("../config/cloudinary");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 //upload.single("file"): accept one uploaded file
 router.post("/create-user", upload.single("file"), async(req, res, next) => {
@@ -19,30 +18,18 @@ router.post("/create-user", upload.single("file"), async(req, res, next) => {
 
         const userEmail = await User.findOne({email});
         if(userEmail) {
-            const filename = req.file.filename;
-            const filePath = `uploads/${filename}`
-            fs.unlink(filePath, (err) => {
-                if(err){
-                    console.log(err);
-                    // res.status(500).json({message: "Error deleting file"});
-                }
-            })
-         
             return next(new ErrorHandler("User already exists.", 400));
         }
 
-        const filename = req.file.filename;
-        // const fileUrl = `http://localhost:8000/uploads/${filename}`;
-        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
-        const fileUrl = `${BACKEND_URL}/uploads/${filename}`;
+        const result = await uploadToCloudinary(req.file.buffer, "avatars");
 
         const user = {
             name,
             email,
             password,
             avatar: {
-                public_id: filename,
-                url: fileUrl,
+                public_id: result.public_id,
+                url: result.secure_url,
             },
         };
         
@@ -195,29 +182,19 @@ router.put("/update-avatar", isAuthenticated, upload.single("image"), catchAsync
         //we are accessing previous user bcz we need to delete the previous avatar of user from uploads folder
         const existUser = await User.findById(req.user.id); // we are using isAuthenticated, taht's why we can access req.user.id otherwise it returns undefined
 
-        // Extract the file name from the avatar object
-        const avatarUrl = existUser.avatar.url; //Get the url of avatar
-        const avatarFileName = path.basename(avatarUrl); //Extract the filename from the URL
+        if(!existUser) return next(new ErrorHandler("User not found", 404));
 
-        //construct the file path
-        const existAvatarPath = path.join(__dirname, "../uploads", avatarFileName);
-        if(fs.existsSync(existAvatarPath)){
-            try {
-                fs.unlinkSync(existAvatarPath);
-                console.log("previous avatar deleted successfully!");
-            } catch (error) {
-                console.error("Error deleting avatar:", err);
-            }
-        }else{
-            console.warn("Avatar file does not exist:", existAvatarPath);
+        if(existUser?.avatar?.public_id){
+            await cloudinary.uploader.destroy(existUser.avatar.public_id);
         }
 
-        const filename = req.file.filename;
-        // const fileUrl = `http://localhost:8000/uploads/${filename}`;
-        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
-        const fileUrl = `${BACKEND_URL}/uploads/${filename}`;
+        const result = await uploadToCloudinary(req.file.buffer, "avatars");
 
-        const user = await User.findByIdAndUpdate(req.user.id, {avatar: {public_id: filename, url: fileUrl}}, {new: true});
+        const user = await User.findByIdAndUpdate(req.user.id, {
+            avatar: {
+                public_id: result.public_id,
+                url: result.secure_url,
+            }}, {new: true});
 
         res.status(200).json({
             success:true,

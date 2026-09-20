@@ -1,6 +1,6 @@
 import styles from '../../styles/styles'
 import CountDown from "./CountDown"
-import { backend_url, getImageUrl } from '../../server'
+import { getImageUrl } from '../../server'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'

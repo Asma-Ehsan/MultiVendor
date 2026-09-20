@@ -1,18 +1,13 @@
 const multer = require("multer");
 
-const storage = multer.diskStorage({
-    destination: function(req, file, cb){
-        cb(null, "uploads");
-        //cb is a callback function that takes 2 parameters. first is error(if any) and 2nd is path of a file in which images is going to store.
-    },
-    filename: function(req, file , cb){
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9); //1e9 means: 1 × 10⁹ = 1,000,000,000 = 583472918
-        const filename = file.originalname.split(".")[0]; //cat.png -> take index[0] -> cat
-        cb(null,filename + "-" + uniqueSuffix + ".png");
+const storage = multer.memoryStorage();
+
+exports.upload = multer({
+    storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024,
     }
 });
-
-exports.upload = multer({storage});
 
 /*
 ===========================================

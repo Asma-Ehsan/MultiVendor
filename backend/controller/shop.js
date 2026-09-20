@@ -1,7 +1,5 @@
 const express = require("express");
-const path = require("path");
 const router = express.Router();
-const fs = require("fs");
 const sendMail = require("../utils/sendMail");
 const sendToken = require("../utils/jwtToken");
 const { isSeller } = require("../middleware/auth");
@@ -11,35 +9,25 @@ const Shop = require("../model/shop");
 const {upload} = require("../multer");
 const ErrorHandler = require("../utils/ErrorHandler");
 const sendShopToken = require("../utils/shopToken");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
+const cloudinary = require("../config/cloudinary");
 
 router.post("/create-shop", upload.single("file"), async(req, res, next) => {
     try {
         const {email} = req.body;
         const sellerEmail = await Shop.findOne({email});
         if(sellerEmail) {
-            const filename = req.file.filename;
-            const filePath = `uploads/${filename}`
-            fs.unlink(filePath, (err) => {
-                if(err){
-                    console.log(err);
-                    // res.status(500).json({message: "Error deleting file"});
-                }
-            })
-         
             return next(new ErrorHandler("Seller already exists.", 400));
         }
-        const filename = req.file.filename;
-        // const fileUrl = `http://localhost:8000/uploads/${filename}`;
-        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
-        const fileUrl = `${BACKEND_URL}/uploads/${filename}`;
+        const result = await uploadToCloudinary(req.file.buffer, "avatars");
 
         const seller = {
             name: req.body.name,
             email: email,
             password : req.body.password,
             avatar: {
-                public_id: filename,
-                url: fileUrl,
+                public_id: result.public_id,
+                url: result.secure_url,
             },
             address: req.body.address,
             phoneNumber: req.body.phoneNumber,
@@ -180,29 +168,13 @@ router.put("/update-shop-avatar", isSeller, upload.single("image"), catchAsyncEr
         //we are accessing previous user bcz we need to delete the previous avatar of user from uploads folder
         const existUser = await Shop.findById(req.seller._id); // we are using isAuthenticated, taht's why we can access req.user.id otherwise it returns undefined
 
-        // Extract the file name from the avatar object
-        const avatarUrl = existUser.avatar.url; //Get the url of avatar
-        const avatarFileName = path.basename(avatarUrl); //Extract the filename from the URL
+        if(!existUser) return next(new ErrorHandler("Seller not found", 404));
 
-        //construct the file path
-        const existAvatarPath = path.join(__dirname, "../uploads", avatarFileName);
-        if(fs.existsSync(existAvatarPath)){
-            try {
-                fs.unlinkSync(existAvatarPath);
-                console.log("previous avatar deleted successfully!");
-            } catch (error) {
-                console.error("Error deleting avatar:", err);
-            }
-        }else{
-            console.warn("Avatar file does not exist:", existAvatarPath);
-        }
+        if(existUser?.avatar?.public_id) await cloudinary.uploader.destroy(existUser.avatar.public_id);
 
-        const filename = req.file.filename;
-        // const fileUrl = `http://localhost:8000/uploads/${filename}`;
-        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
-        const fileUrl = `${BACKEND_URL}/uploads/${filename}`;
+        const result = await uploadToCloudinary(req.file.buffer, "avatars");
 
-        const seller = await Shop.findByIdAndUpdate(req.seller._id, {avatar: {public_id: filename, url: fileUrl}}, {new: true});
+        const seller = await Shop.findByIdAndUpdate(req.seller._id, {avatar: {public_id: result.public_id, url: result.secure_url}}, {new: true});
 
         res.status(200).json({
             success:true,

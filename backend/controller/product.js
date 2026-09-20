@@ -7,7 +7,8 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const Shop = require("../model/shop");
 const { upload } = require("../multer");
 const { isSeller, isAuthenticated } = require("../middleware/auth");
-const fs = require("fs");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
+const cloudinary = require("../config/cloudinary");
 
 //create product
 router.post(
@@ -20,11 +21,19 @@ router.post(
       if (!shopId) return next(new ErrorHandler("Shop Id is invalid!", 400));
       else {
         const files = req.files;
-        const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
-        const imageUrls = files.map((file) => ({
-          public_id: file.filename,
-          url: `${BACKEND_URL}/uploads/${file.filename}`
-        }));
+
+        if(!files || files.length === 0) return next(new ErrorHandler("Please upload atleast one image!", 400));
+
+        const imageUrls = [];
+
+        for(const file of files){
+          const result = await uploadToCloudinary(file.buffer, "products");
+          imageUrls.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+
         const productData = req.body;
         productData.images = imageUrls;
         productData.shop = shop;
@@ -68,14 +77,9 @@ router.delete(
       const productId = req.params.id;
       const productData = await Product.findById(productId);
 
-      productData.images.forEach((imageUrl) =>{
-        const filename = imageUrl;
-        const filePath = `uploads/${filename}`;
-
-        fs.unlink(filePath, (err) => {
-          if(err) console.log(err);
-        })
-      })
+     for(const image of productData.images){
+      await cloudinary.uploader.destroy(image.public_id);
+     }
 
       const product = await Product.findByIdAndDelete(productId);
 

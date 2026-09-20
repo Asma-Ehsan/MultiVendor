@@ -6,7 +6,7 @@ const cors = require("cors");
 const connectDatabase = require("./db/Database");
 
 //app.js loads your environment variables. Now, application can access them through: process.env.PORT
-if (process.env.NODE_ENV !== "PRODUCTION") {
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config({
     path: "config/.env",
   });
@@ -53,10 +53,6 @@ app.use(async (req, res, next) => {
 app.use(express.json()); //read JSON data from req by the client. now you can access "req.body.name" like requests
 
 app.use(cookieParser()); //cookieParser read cookies sent by the browser. now cookies become accessible through: req.cookies
-
-//path is a built-in Node.js module. It helps create file paths that work on Windows, Linux, and macOS.
-const path = require("path");
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(bodyParser.urlencoded({ extended: true })); // Converts HTML form/urlencoded data into JavaScript object. Its alternative: app.use(express.urlencoded({ extended: true }));
 

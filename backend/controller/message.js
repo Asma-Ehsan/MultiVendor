@@ -4,6 +4,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncError");
 const express = require("express");
 const router = express.Router();
 const {upload} = require("../multer");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 
 // create new message
@@ -13,13 +14,20 @@ router.post("/create-new-message",upload.array("images"), catchAsyncErrors(async
 
         if(req.files){
             const files = req.files;
-            const imageUrls = files.map((file) => `${file.fileName}`);
+            const imageUrls = [];
+            for (const file of req.files) {
+              const result = await uploadToCloudinary(file.buffer, "messages");
+              imageUrls.push({
+                public_id: result.public_id,
+                url: result.secure_url,
+              });
+            }
             messageData.images = imageUrls;
         }
        messageData.conversationId = req.body.conversationId;
        messageData.sender = req.body.sender;
        messageData.text = req.body.text;
-
+       messageData.images = messageData.images ? messageData.images : undefined;
        const message = new Messages({
         conversationId: messageData.conversationId,
         sender: messageData.sender,

@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import Ratings from "../Product/Ratings";
 import { getAllEventsShop } from "../../redux/actions/event";
-import { backend_url } from "../../server";
 
 const ShopProfileData = ({ isOwner }) => {
   const { products } = useSelector((state) => state.products);
@@ -16,7 +15,7 @@ const ShopProfileData = ({ isOwner }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(!id) return;
+    if (!id) return;
     dispatch(getAllProductsShop(id));
     dispatch(getAllEventsShop(id));
   }, [dispatch, id]);
@@ -95,12 +94,12 @@ const ShopProfileData = ({ isOwner }) => {
         </div>
       )} */}
 
-{active === 1 && (
+      {active === 1 && (
         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
           {products &&
-           products.map((i, index) => (
-            <ProductCard data={i} key={index} isShop={true} />
-          ))}
+            products.map((i, index) => (
+              <ProductCard data={i} key={index} isShop={true} />
+            ))}
         </div>
       )}
 
@@ -109,10 +108,14 @@ const ShopProfileData = ({ isOwner }) => {
         <div className="w-full">
           <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
             {events && events.length > 0 ? (
-              events.map((i, index) =>  (
-                  <ProductCard data={i} key={index} isShop={true} isEvent = {true} />
-                )
-              )
+              events.map((i, index) => (
+                <ProductCard
+                  data={i}
+                  key={index}
+                  isShop={true}
+                  isEvent={true}
+                />
+              ))
             ) : (
               <div className="w-full col-span-full h-[60vh] flex items-center justify-center">
                 <p className="text-center text-[20px]">No events found!</p>
@@ -125,7 +128,7 @@ const ShopProfileData = ({ isOwner }) => {
       {/* If active === 3 */}
       {active === 3 && (
         <div className="w-full">
-          {allReviews &&
+          {allReviews.length > 0 ?
             allReviews.map((item, index) => (
               <div className="w-full flex my-4 items-center">
                 <img
@@ -143,9 +146,12 @@ const ShopProfileData = ({ isOwner }) => {
                     {item.createdAt || "2 days ago"}
                   </p>
                 </div>
-                {console.log(item)}
               </div>
-            ))}
+            ))  : (
+               <div className="w-full col-span-full h-[60vh] flex items-center justify-center">
+                <p className="text-center text-[20px]">No reviews found!</p>
+              </div>
+            )}
         </div>
       )}
     </div>

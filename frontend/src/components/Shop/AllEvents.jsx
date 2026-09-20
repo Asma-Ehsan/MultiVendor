@@ -29,11 +29,9 @@ const AllEvents = () => {
         { field: "sold", headerName: "Sold out", type: "number", minWidth: 130, flex: 0.6,},
         { field: "Preview", headerName: "Preview", type: "number", minWidth: 100, flex: 0.8, sortable: false,
             renderCell: (params) => {
-                const d = params.row.name;
-                const product_name = d.replace(/\s+/g, "-");
                 return (
                     <>
-                    <Link to ={`/product/${product_name}`}>
+                    <Link to ={`/product/${params.id}?isEvent=true`}>
                     <Button>
                         <AiOutlineEye size={20}/>
                     </Button>
@@ -44,8 +42,6 @@ const AllEvents = () => {
         },
         { field: "Delete", headerName: "Delete", type: "number", minWidth: 120, flex: 0.8, sortable: false,
             renderCell: (params) => {
-                const d = params.row.name;
-                const product_name = d.replace(/\s+/g, "-");
                 return (
                     <>
                     

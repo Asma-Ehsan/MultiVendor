@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import React, { useEffect, } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteProduct, getAllProductsShop } from "../../redux/actions/product";
 import { Link } from "react-router-dom";
@@ -9,13 +9,15 @@ import { DataGrid } from "@mui/x-data-grid";
 
 const AllProducts = () => {
   const { seller } = useSelector((state) => state.seller);
-  const { products, isLoading } = useSelector((state) => state.products);
+  const { products, isLoading } = useSelector(
+    (state) => state.products,
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllProductsShop(seller._id));
   }, [dispatch]);
-
+  
   const handleDelete = (id) => {
     dispatch(deleteProduct(id));
     window.location.reload();
@@ -47,11 +49,9 @@ const AllProducts = () => {
       flex: 0.8,
       sortable: false,
       renderCell: (params) => {
-        const d = params.row.name;
-        const product_name = d.replace(/\s+/g, "-");
         return (
           <>
-            <Link to={`/product/${product_name}`}>
+            <Link to={`/product/${params.id}`}>
               <Button>
                 <AiOutlineEye size={20} />
               </Button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import styles from "../../../styles/styles";
 import {
@@ -7,11 +7,15 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { backend_url, getImageUrl } from "../../../server";
+import { getImageUrl } from "../../../server";
 import { useDispatch, useSelector } from "react-redux";
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
 import { addToCart } from "../../../redux/actions/cart";
-import { addToWishlist, removeFromWishlist } from "../../../redux/actions/wishlist";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../../redux/actions/wishlist";
+import { Link } from "react-router-dom";
 
 const ProductDetailsCart = ({ setOpen, data }) => {
   const { cart } = useSelector((state) => state.cart);
@@ -21,7 +25,7 @@ const ProductDetailsCart = ({ setOpen, data }) => {
   const dispatch = useDispatch();
 
   const handleMessageSubmit = () => {};
-  
+
   const decrementCount = () => {
     if (count > 1) setCount(count - 1);
   };
@@ -33,33 +37,33 @@ const ProductDetailsCart = ({ setOpen, data }) => {
   const removeFromWishListHandler = (data) => {
     setClick(!click);
     dispatch(removeFromWishlist(data));
-  }
+  };
 
   const addToWIshListHandler = (data) => {
     setClick(!click);
     dispatch(addToWishlist(data));
-  }
+  };
 
   const addToCartHandler = (id) => {
     const isItemExists = cart && cart.find((i) => i._id === id);
-    if(isItemExists){
+    if (isItemExists) {
       toast.error("Item already in cart!");
-    }else{
-      if(data.stock < count){
-        toast.error("Product stock limited!")
-      }else{
-        const cartData = {...data, qty: count};
-      dispatch(addToCart(cartData));
-      toast.success("Item added to cart successfully!");
+    } else {
+      if (data.stock < count) {
+        toast.error("Product stock limited!");
+      } else {
+        const cartData = { ...data, qty: count };
+        dispatch(addToCart(cartData));
+        toast.success("Item added to cart successfully!");
       }
     }
-  }
+  };
 
   useEffect(() => {
-    if(data && wishlist && wishlist.find((i) => i._id === data._id)){
+    if (data && wishlist && wishlist.find((i) => i._id === data._id)) {
       setClick(true);
-    }else{
-      setClick(false)
+    } else {
+      setClick(false);
     }
   }, [wishlist, data]);
 
@@ -77,26 +81,29 @@ const ProductDetailsCart = ({ setOpen, data }) => {
             <div className="block w-full 800px:flex ">
               {/* Left Side */}
               <div className="w-full 800px:w-[50%] ">
-                <img
-                  src={
-                    getImageUrl(data.images && data.images[0])
-                  }
-                  alt=""
-                />
+                <div className="w-full h-[300px] flex items-center justify-center bg-gray-50 rounded-lg border overflow-hidden">
+                  <img
+                    src={getImageUrl(data.images && data.images[0])}
+                    alt={data?.name || "product"}
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
 
                 {/* Shop info */}
-                <div className="flex">
+                <div className="flex items-center pt-4">
                   <img
                     src={data?.shop?.avatar?.url}
                     alt=""
                     className="w-[50px] h-[50px] rounded-full mr-2 "
                   />
-                  <div>
-                    <h3 className={`${styles.shop_name}`}>
-                      {" "}
-                      {data.shop.name}{" "}
-                    </h3>
-                    <h5 className="pb-3 text-[15px]"> (4/5) Ratings </h5>
+                  <div className="">
+                    <Link to={`/shop/preview/${data?.shop?._id}`}>
+                      <h3 className={`${styles.shop_name} !pb-1`}>
+                        {" "}
+                        {data?.shop?.name}{" "}
+                      </h3>
+                    </Link>
+                    <h5 className="pb-3 pt-0 text-[15px]"> (4/5) ratings </h5>
                   </div>
                 </div>
 
@@ -109,32 +116,31 @@ const ProductDetailsCart = ({ setOpen, data }) => {
                     Send Message <AiOutlineMessage className="ml-1" />
                   </span>
                 </div>
-
-                {/* Sold out */}
-                <h5 className="text-[16px] text-[red] mt-5">
-                  ({data.sold_out}) sold out
-                </h5>
               </div>
 
               {/* Right Side */}
-              <div className="w-full 800px:[50%] pt-5 pl-[5px] pr-[5px]">
-
+              <div className="w-full 800px:[50%] pt-5 pl-[18px] pr-[5px]">
                 {/* Product info */}
                 <h1 className={`${styles.productTitle} text-[20px]`}>
                   {data.name}
                 </h1>
                 <p>{data.description}</p>
-                <div className="flex pt-3">
-                  <h4 className={`${styles.productDiscountPrice}`}>
-                    {data.discountPrice} $
-                  </h4>
-                  <h3 className={`${styles.price}`}>
-                    {data.originalPrice ? data.originalPrice + " $" : null}
-                  </h3>
+                <div className="flex pt-3 justify-between">
+                  <div className="flex">
+                    <h4 className={`${styles.productDiscountPrice}`}>
+                      {data.discountPrice} $
+                    </h4>
+                    <span className={`${styles.price}`}>
+                      {data.originalPrice ? data.originalPrice + " $" : null}
+                    </span>
+                  </div>
+                  {/* Sold out */}
+                  <h5 className="text-[16px] text-[red] pr-5">
+                    ({data.sold_out}) sold out
+                  </h5>
                 </div>
 
                 <div className="flex items-center justify-between mt-12 pr-3">
-                
                   {/* " + " and " - "" buttons */}
                   <div className="flex items-center">
                     <button
@@ -153,7 +159,7 @@ const ProductDetailsCart = ({ setOpen, data }) => {
                       +
                     </button>
                   </div>
-                
+
                   {/* Heart icons */}
                   <div>
                     {click ? (

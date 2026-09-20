@@ -23,7 +23,7 @@ const ProductCard = ({ data, isEvent }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!data) return null;
+    if (!data) return;
     if (data && wishlist && wishlist.find((i) => i._id === data._id)) {
       setClick(true);
     } else {
@@ -58,16 +58,17 @@ const ProductCard = ({ data, isEvent }) => {
 
   return (
     <>
-      <div className="w-full h-[370] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
-        <div className="flex justify-end"></div>
+      <div className="w-full bg-white rounded-lg shadow-sm p-3 relative cursor-pointer group transition-all duration-300 hover:shadow-xl">
+        <div className="w-full h-[200px] overflow-hidden rounded-md bg-gray-50">
         {/* Product images */}
         <Link to={`${isEvent === true ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}`}>
           <img
             src={getImageUrl(data.images && data.images[0])}
             alt=""
-            className="w-full h-[170px] object-contain"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:brightness-110"
           />
         </Link>
+        </div>
 
         {/* Shop info */}
         <Link to={`/shop/preview/${data?.shop?._id}`}>
@@ -100,34 +101,34 @@ const ProductCard = ({ data, isEvent }) => {
         </Link>
 
         {/* side options */}
-        <div className="div">
+        <div className="flex flex-col gap-3 absolute right-3 top-3">
           {click ? (
             <AiFillHeart
-              size={22}
-              className="cursor-pointer absolute right-2 top-5"
+              size={28}
+              className="cursor-pointer bg-white rounded-full p-1 shadow-md hover:scale-125 transition-transform"
               onClick={() => removeFromWishListHandler(data)}
               color={click ? "red" : "#333"}
               title="Remove from wishlist"
             />
           ) : (
             <AiOutlineHeart
-              size={22}
-              className="cursor-pointer absolute right-2 top-5"
+              size={28}
+              className="cursor-pointer bg-white rounded-full p-1 shadow-md hover:scale-125 transition-transform"
               onClick={() =>  addToWIshListHandler(data)}
               color={click ? "red" : "#333"}
               title="Add to wishlist"
             />
           )}
           <AiOutlineEye
-              size={22}
-              className="cursor-pointer absolute right-2 top-14"
+              size={28}
+              className="cursor-pointer bg-white rounded-full p-1 shadow-md hover:scale-125 transition-transform"
               onClick={() => setOpen(!open)}
               color="#333"
               title="Quick view"
             />
             <AiOutlineShoppingCart
-            size={25}
-            className="cursor-pointer absolute right-2 top-24"
+            size={28}
+            className="cursor-pointer bg-white rounded-full p-1 shadow-md hover:scale-125 transition-transform"
             color="#44"
             title="Add to cart"
             onClick={() => addToCartHandler(data._id)}

@@ -22,7 +22,6 @@ import axios from "axios";
 const ProductDetails = ({ data }) => {
   const { products } = useSelector((state) => state.products);
   const { cart } = useSelector((state) => state.cart);
-  const { seller } = useSelector((state) => state.seller);
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { wishlist } = useSelector((state) => state.wishlist);
 
@@ -70,7 +69,9 @@ const ProductDetails = ({ data }) => {
           sellerId,
         })
         .then((res) => {
-          navigate(`/conversation/${res.data.conversation._id}`);
+          navigate("/inbox", {
+            state: {conversationId: res?.data?.conversation?._id},
+          });
         })
         .catch((error) => {
           toast.error(error.response.data.message);
@@ -124,45 +125,49 @@ const ProductDetails = ({ data }) => {
       0,
     );
 
-  const averageRating = (totalRatings / totalReviewsLength).toFixed(1) || 0;
+  const averageRating = totalReviewsLength > 0 ? (totalRatings / totalReviewsLength).toFixed(1) : 0;
 
   return (
     <div className="bg-white">
       {data ? (
         <div className={` ${styles.section} w-[90%] 800px:w-[80%]`}>
           <div className="w-full py-5">
-            <div className="block w-full 800px:flex">
+            <div className="block w-full 800px:flex gap-5">
               {/* Left Side */}
-              <div className="w-full 800px:w-[50%] ">
+              <div className="w-full 800px:w-[45%]">
+                <div className="w-full h-[400px] flex items-center justify-center bg-gray-50 rounded-lg border overflow-hidden">
                 {/* CHANGED: show the main selected image */}
                 <img
                   src={mainImage || "https://via.placeholder.com/300x300"}
                   alt={data.name}
-                  className="w-[80%] object-contain"
+                  className="max-w-full max-h-full object-contain"
                 />
+                </div>
 
                 {/* CHANGED: show thumbnails from the backend image array */}
                 {productImages.length > 0 ? (
-                  <div className="w-full flex gap-2 mt-3">
+                  <div className="w-full flex gap-3 mt-4">
                     {productImages.map((image, index) => (
-                      <img
-                        key={index}
+                      <div className="h-[80px] w-[80px] flex items-center justify-center bg-gray-50 rounded-md border overflow-hidden cursor-pointer" 
+                      key={index}
+                      onClick={() => setSelect(index)}>
+                          <img
                         src={image}
                         alt=""
-                        className={`h-[80px] w-[80px] object-cover cursor-pointer ${
+                        className={`w-full h-full object-cover transition ${
                           select === index
-                            ? "border-2 border-teal-500"
-                            : "border"
+                            ? "ring-2 ring-teal-500"
+                            : ""
                         }`}
-                        onClick={() => setSelect(index)}
                       />
+                      </div>
                     ))}
                   </div>
                 ) : null}
               </div>
 
               {/* Right Side */}
-              <div className="w-full 800px:w-[50%] pt-5">
+              <div className="w-full 800px:w-[55%] pt-5">
                 {/* Product Info */}
                 <h1 className={`${styles.productTitle}`}>{data.name}</h1>
                 <p>{data.description}</p>
@@ -337,7 +342,7 @@ const ProductDetailsInfo = ({
       ) : null}
 
       {active === 2 ? (
-        <div className="w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll">
+        <div className="w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll justify-center">
           {data && data.reviews ? (
             data.reviews.map((item, index) => (
               <div className="w-full flex my-2" key={item._id || index}>
@@ -356,11 +361,11 @@ const ProductDetailsInfo = ({
               </div>
             ))
           ) : (
-            <h5>No reviews found!</h5>
+            <h5 className="text-center">No reviews found!</h5>
           )}
-          <div className="flex w-full justify-center">
+          <div className="flex w-full justify-center ">
             {data && data.reviews && data.reviews.length === 0 && (
-              <h5>No Reviews have for this product!</h5>
+              <h5 className="text-center">No Reviews have for this product!</h5>
             )}
           </div>
         </div>

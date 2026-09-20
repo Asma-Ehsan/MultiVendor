@@ -31,7 +31,7 @@ const ShopInfo = ({ isOwner }) => {
 
   const logoutHandler = async() => {
     await axios.get(`${server}/shop/logout`, {withCredentials: true});
-    window.location.reload();
+    window.location.reload(true);
     navigate("/shop-login")
   };
 

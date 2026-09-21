@@ -16,8 +16,7 @@ import { useSelector } from "react-redux";
 import Cart from "../cart/Cart";
 import Wishlist from "../Wishlist/Wishlist";
 import { RxCross1 } from "react-icons/rx";
-import { backend_url, getImageUrl } from "../../server";
-// import { RxCross1 } from "react-icons/rx";
+import { getImageUrl } from "../../server";
 
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
@@ -33,6 +32,7 @@ const Header = ({ activeHeading }) => {
   const [openCart, setOpenCart] = useState(false);
   const [openWishList, setOpenWishlist] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openSearchBox, setOpenSearchBox] = useState(false);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
@@ -77,24 +77,33 @@ const Header = ({ activeHeading }) => {
             <AiOutlineSearch
               size={30}
               className="absolute right-2 top-1.5 cursor-pointer"
+              onClick={() => setOpenSearchBox(true)}
             />
             {searchData && searchData.length !== 0 ? (
-              <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+              <>
+              {/* inset-0 = top:0, left:0, right:0, bottom:0) */}
+               <div className="fixed inset-0 z-30" onClick={() => {
+                setOpenSearchBox(false);
+                setSearchData(null);
+                setSearchTerm("");
+                }}/>
+                <div className="absolute top-full left-0 mt-1 w-full max-h-[60vh] overflow-y-auto bg-white shadow-lg rounded-md z-40 p-2">
                 {searchData &&
                   searchData.map((i, index) => {
                     return (
                       <Link
                         to={`/product/${i._id}`}
+                        key={index}
                         onClick={() => {
                           setSearchData(null);
                           setSearchTerm("");
                         }}
                       >
-                        <div className="w-full flex items-start-py-3">
+                        <div className="w-full flex items-center py-2 px-1 hover:bg-gray-100 rounded">
                           <img
                             src={getImageUrl(i.images && i.images[0])}
                             alt=""
-                            className="w-[40px] h-[40px] mr-[10px]"
+                            className="w-[40px] h-[40px] mr-[10px] object-cover rounded  border-[#55555563] border-[1px]"
                           />
                           <h1>{i.name}</h1>
                         </div>
@@ -102,6 +111,7 @@ const Header = ({ activeHeading }) => {
                     );
                   })}
               </div>
+              </>
             ) : null}
           </div>
 
@@ -192,7 +202,7 @@ const Header = ({ activeHeading }) => {
                   <Link to={"/profile"}>
                     <img
                       src={user?.avatar?.url}
-                      className="w-[35px] h-[35px] rounded-full"
+                      className="w-[35px] h-[35px] rounded-full hover:cursor-pointer border-[#55555563] border-[3px]"
                       alt=""
                     />
                   </Link>
@@ -339,7 +349,7 @@ const Header = ({ activeHeading }) => {
                   <Link to="/profile" className="pb-[15px]">
                     <img
                       src={user?.avatar?.url}
-                      className="w-[60px] h-[60px] rounded-full border-[3px] border-[#0eae88]"
+                      className="w-[60px] h-[60px] rounded-full border-[3px]  border-[#55555563]"
                       alt=""
                     />
                   </Link>

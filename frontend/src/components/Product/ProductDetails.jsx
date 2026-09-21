@@ -69,8 +69,8 @@ const ProductDetails = ({ data }) => {
           sellerId,
         })
         .then((res) => {
-          navigate("/inbox", {
-            state: {conversationId: res?.data?.conversation?._id},
+          navigate("/profile", {
+            state: {active: 4, conversationId: res?.data?.conversation?._id},
           });
         })
         .catch((error) => {
@@ -242,7 +242,7 @@ const ProductDetails = ({ data }) => {
                     <img
                       src={shopAvatar || "https://via.placeholder.com/50"}
                       alt=""
-                      className="w-[50px] h-[50px] mr-2 rounded-full"
+                      className="w-[50px] h-[50px] mr-2 rounded-full  border-[#55555563] border-[1px]"
                     />
                   </Link>
                   <div className="pr-8">
@@ -349,7 +349,7 @@ const ProductDetailsInfo = ({
                 <img
                   src={item?.user?.avatar?.url}
                   alt=""
-                  className="w-[50px] h-[50px] rounded-full"
+                  className="w-[50px] h-[50px] rounded-full border-[#55555563] border-[1px]"
                 />
                 <div className="pl-2">
                   <div className="w-full flex items-center">
@@ -377,11 +377,10 @@ const ProductDetailsInfo = ({
             <div className="flex items-center">
               {/* CHANGED: show seller avatar from the backend shop object */}
               <Link to={`/shop/preview/${data?.shop?._id}`}>
-              {console.log("Data:", data)}
                 <img
                   src={shopAvatar}
                   alt=""
-                  className="w-[50px] h-[50px] rounded-full"
+                  className="w-[50px] h-[50px] rounded-full border-[#55555563] border-[1px]"
                 />
               </Link>
               <div className="pl-3">
@@ -396,7 +395,7 @@ const ProductDetailsInfo = ({
               </div>
             </div>
             <p className="pt-2">
-              {data?.shop?.description || "Seller information will appear here."}
+              {data?.shop?.description || ""}
             </p>
           </div>
 

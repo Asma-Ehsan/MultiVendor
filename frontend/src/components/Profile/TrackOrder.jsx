@@ -15,8 +15,6 @@ const TrackOrder = () => {
 
   const data = orders && orders.find((item) => item._id === id);
 
-  console.log("data:", data);
-
   return <div className="w-full flex justify-center items-center h-[80vh]">
     {
         data && data?.status === "Processing" ? (

@@ -8,8 +8,9 @@ import { backend_url, getImageUrl } from "../../server";
 import { removeFromWishlist } from "../../redux/actions/wishlist";
 import { toast } from "react-toastify";
 import { addToCart } from "../../redux/actions/cart";
+import { Link } from "react-router-dom";
 
-const Wishlist = ({ setOpenWishlist }) => {
+const Wishlist = ({ setOpenWishlist, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
 
@@ -20,10 +21,10 @@ const Wishlist = ({ setOpenWishlist }) => {
   };
 
   const addToCartHandler = (data) => {
-    const newData = {...data, qty:1};
+    const newData = { ...data, qty: 1 };
     dispatch(addToCart(newData));
     toast.success("Items added o cart successfully!");
-  }
+  };
 
   return (
     <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10">
@@ -62,7 +63,16 @@ const Wishlist = ({ setOpenWishlist }) => {
             <br />
             <div className="w-full border-t">
               {wishlist &&
-                wishlist.map((i, index) => <CartSingle key={index} data={i} removeFromWishlistHandler = {removeFromWishlistHandler} addToCartHandler = {addToCartHandler} />)}
+                wishlist.map((i, index) => (
+                  <CartSingle
+                    key={index}
+                    data={i}
+                    removeFromWishlistHandler={removeFromWishlistHandler}
+                    addToCartHandler={addToCartHandler}
+                    isEvent={isEvent}
+                    setOpenWishlist={setOpenWishlist}
+                  />
+                ))}
             </div>
           </div>
         )}
@@ -71,28 +81,52 @@ const Wishlist = ({ setOpenWishlist }) => {
   );
 };
 
-const CartSingle = ({ data, removeFromWishlistHandler, addToCartHandler }) => {
+const CartSingle = ({
+  data,
+  removeFromWishlistHandler,
+  addToCartHandler,
+  isEvent,
+  setOpenWishlist,
+}) => {
   //data will get from  <CartSingle key={index} data={i}/>
   const [value, setValue] = useState(1);
   const totalPrice = data.discountPrice * value;
   return (
     <div className="border-b p-4">
-      <div className="w-full flex items-center">
-        <RxCross1 className="cursor-pointer" 
-        onClick = {() => removeFromWishlistHandler(data)} />
-        <img
-         src={getImageUrl(data.images && data.images[0])}
-          alt=""
-          className="w-[80px] h-[80px] ml-2 "
-        />
-        <div className="pl-[5px]">
-          <h1>{data.name}</h1>
-          <h4 className="font-[600] text-[17px] pt-[3px] text-[#d02222] font-Roboto">
-            US$ {totalPrice}
-          </h4>
+      <div className="w-full flex items-center justify-between">
+        <div className="flex items-center">
+          <RxCross1
+            className="cursor-pointer flex-shrink-0"
+            onClick={() => removeFromWishlistHandler(data)}
+          />
+          <Link
+            to={`${isEvent === true ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}`}
+            onClick={() => setOpenWishlist(false)}
+          >
+            <div className="w-[80px] h-[80px] ml-2 flex-shrink-0 bg-gray-50 border rounded-[5px] flex items-center justify-center overflow-hidden">
+              <img
+                src={getImageUrl(data.images && data.images[0])}
+                alt={data?.name || "product"}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+          </Link>
+          <div className="pl-[5px]">
+            {/* added line-clamp-2 — long names now wrap to a MAX of 2 lines with "..." at the end, instead of stretching the row to 5 lines */}
+            <Link
+              to={`${isEvent === true ? `/product/${data._id}?isEvent=true` : `/product/${data._id}`}`}
+              onClick={() => setOpenWishlist(false)}
+            >
+              <h1 className="line-clamp-2">{data.name}</h1>
+            </Link>
+            <h4 className="font-[600] text-[17px] pt-[3px] text-[#d02222] font-Roboto">
+              US$ {totalPrice}
+            </h4>
+          </div>
         </div>
         <div
-        onClick={() => addToCartHandler(data)}
+          onClick={() => addToCartHandler(data)}
+          className="flex-shrink-0 pl-2"
         >
           <BsCartPlus
             size={20}

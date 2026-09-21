@@ -7,7 +7,7 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { getImageUrl } from "../../../server";
+import { getImageUrl, server } from "../../../server";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { addToCart } from "../../../redux/actions/cart";
@@ -15,16 +15,46 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from "../../../redux/actions/wishlist";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ProductDetailsCart = ({ setOpen, data }) => {
+  const { products } = useSelector((state) => state.products);
   const { cart } = useSelector((state) => state.cart);
   const { wishlist } = useSelector((state) => state.wishlist);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleMessageSubmit = () => {};
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data._id + user._id;
+      const userId = user._id;
+      const sellerId = data?.shop?._id;
+      if (!sellerId) {
+        toast.error("Seller information is unavailable");
+        return;
+      }
+      await axios
+        .post(`${server}/conversation/create-new-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+           navigate("/profile", {
+            state: {active: 4, conversationId: res?.data?.conversation?._id},
+          });
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    } else {
+      toast.error("Please login to create a conversation");
+    }
+  };
 
   const decrementCount = () => {
     if (count > 1) setCount(count - 1);
@@ -67,11 +97,29 @@ const ProductDetailsCart = ({ setOpen, data }) => {
     }
   }, [wishlist, data]);
 
+  const totalReviewsLength =
+    products &&
+    products.reduce((acc, product) => acc + product.reviews.length, 0);
+
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0,
+    );
+
+  const averageRating = totalReviewsLength > 0 ? (totalRatings / totalReviewsLength).toFixed(1) : 0;
+
   return (
     <div className="bg-[#fff]">
       {data ? (
-        <div className="fixed w-full h-screen top-0 left-0 bg-[#00000030] z-40 flex items-center justify-center">
-          <div className="w-[90%] 800px:w-[60%] h-[90vh] overflow-y-scroll 800px:h-[75vh] bg-white rounded-md shadow-sm relative p-4 ">
+        <div className="fixed w-full h-screen top-0 left-0 bg-[#00000030] z-40 flex items-center justify-center" 
+        onClick={() => setOpen(false)}
+        >
+          <div className="w-[90%] 800px:w-[60%] h-[90vh] overflow-y-scroll 800px:h-[75vh] bg-white rounded-md shadow-sm relative p-4 " 
+          onClick={(e) => e.stopPropagation()}
+          >
             {/* Cross button */}
             <RxCross1
               size={30}
@@ -91,11 +139,13 @@ const ProductDetailsCart = ({ setOpen, data }) => {
 
                 {/* Shop info */}
                 <div className="flex items-center pt-4">
+                  <Link to={`/shop/preview/${data?.shop?._id}`}>
                   <img
                     src={data?.shop?.avatar?.url}
                     alt=""
                     className="w-[50px] h-[50px] rounded-full mr-2 "
                   />
+                  </Link>
                   <div className="">
                     <Link to={`/shop/preview/${data?.shop?._id}`}>
                       <h3 className={`${styles.shop_name} !pb-1`}>
@@ -103,7 +153,7 @@ const ProductDetailsCart = ({ setOpen, data }) => {
                         {data?.shop?.name}{" "}
                       </h3>
                     </Link>
-                    <h5 className="pb-3 pt-0 text-[15px]"> (4/5) ratings </h5>
+                    <h5 className="pb-3 pt-0 text-[15px]"> ({averageRating}/5) ratings </h5>
                   </div>
                 </div>
 

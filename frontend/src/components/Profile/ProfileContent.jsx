@@ -22,6 +22,7 @@ import axios from "axios";
 import { RxCross1 } from "react-icons/rx";
 import { Country, State } from "country-state-city";
 import { getAllOrdersOfUser } from "../../redux/actions/order";
+import UserInbox from "./UserInbox";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -183,6 +184,13 @@ const ProfileContent = ({ active }) => {
       {active === 3 && (
         <div>
           <AllRefundOrders />
+        </div>
+      )}
+
+      {/* Refund  */}
+      {active === 4 && (
+        <div>
+          <UserInbox active={active}/>
         </div>
       )}
 

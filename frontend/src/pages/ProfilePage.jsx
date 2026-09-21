@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Header from "../components/Layout/Header";
 import styles from "../styles/styles";
 import ProfileSideBar from "../components/Profile/ProfileSideBar";
 import ProfileContent from "../components/Profile/ProfileContent.jsx";
+import { useLocation } from "react-router-dom";
 
 const ProfilePage = () => {
-  const [active, setActive] = useState(1);
+  const location = useLocation();
+
+  const [active, setActive] = useState(location?.state?.active || 1);
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
       <Header />

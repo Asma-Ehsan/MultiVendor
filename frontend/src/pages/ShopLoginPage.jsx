@@ -7,6 +7,7 @@ const ShopLoginPage = () => {
   const navigate = useNavigate();
   const {isSeller, isLoading} = useSelector((state) => state.seller);
 
+  // Watching `isLoading` means: when the seller check finishes, run the logic again and make a fresh decision.
   useEffect(() => {
     if(isSeller === true){
       navigate("/dashboard")

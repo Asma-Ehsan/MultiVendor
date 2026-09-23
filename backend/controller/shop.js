@@ -149,7 +149,7 @@ router.get("/logout",isSeller, catchAsyncErrors(async(req, res, next) => {
     }
 }));
 
-//get shop info
+//get shop info for messaging
 router.get("/get-shop-info/:id", catchAsyncErrors(async(req, res, next) => {
     try {
         const shop = await Shop.findById(req.params.id);
@@ -193,7 +193,7 @@ router.put("/update-seller-info", isSeller, catchAsyncErrors(async(req, res, nex
         const shop = await Shop.findById(req.seller._id);
         
         if(!shop) {
-            return next(new ErrorHandler("User not found!", 400));  
+            return next(new ErrorHandler("Seller not found!", 400));  
         }
 
         shop.name = name;

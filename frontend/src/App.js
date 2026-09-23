@@ -87,6 +87,7 @@ const App = () => {
         
         {/* shop Routes */}
 
+        {/* For user side */}
         <Route path="/shop/preview/:id" element = {<ShopPreviewPage/>}/>
         <Route path="/shop-create" element={<ShopCreatePage/>}/>
         <Route
@@ -94,6 +95,7 @@ const App = () => {
           element={<SellerActivationPage />}
         />
         <Route path="/shop-login" element={<ShopLoginPage/>}/>
+        {/* For seller side */}
         <Route path="/shop/:id" element={
           <SellerProtectedRoute>
             <ShopHomePage/>

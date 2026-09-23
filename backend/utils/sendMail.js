@@ -15,6 +15,7 @@ const sendMail = async(options) => {
         text: options.message,
     };
 
+    //sendMail() is a built-in method of the transporter object that sends the email. (NOT our own sendMail() function)
     await transporter.sendMail(mailOptions);
 };
 

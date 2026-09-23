@@ -63,6 +63,7 @@ const CreateProduct = () => {
       {/* create product form */}
       <form onSubmit={handleSubmit}>
         <br />
+        {/* Name */}
         <div>
           <label className="pb-2">
             Name <span className="text-red-500">*</span>
@@ -77,6 +78,7 @@ const CreateProduct = () => {
           />
         </div>
         <br />
+        {/* Description */}
         <div>
           <label className="pb-2">
             Description <span className="text-red-500">*</span>
@@ -94,6 +96,7 @@ const CreateProduct = () => {
           ></textarea>
         </div>
         <br />
+        {/* Category */}
         <div>
           <label className="pb-2">
             Category <span className="text-red-500">*</span>
@@ -113,6 +116,7 @@ const CreateProduct = () => {
           </select>
         </div>
         <br />
+        {/* Tags */}
         <div>
           <label className="pb-2">Tags</label>
           <input
@@ -125,8 +129,9 @@ const CreateProduct = () => {
           />
         </div>
         <br />
+        {/* Original Price */}
         <div>
-          <label className="pb-2">Original Price</label>
+          <label className="pb-2">Original Price<span className="text-red-500">*</span></label>
           <input
             type="number"
             name="price"
@@ -137,6 +142,7 @@ const CreateProduct = () => {
           />
         </div>
         <br />
+        {/* Discount Price */}
         <div>
           <label className="pb-2">
             Price (With Discount) <span className="text-red-500">*</span>
@@ -151,6 +157,7 @@ const CreateProduct = () => {
           />
         </div>
         <br />
+        {/* Product Stock */}
         <div>
           <label className="pb-2">
             Product Stock <span className="text-red-500">*</span>
@@ -165,6 +172,7 @@ const CreateProduct = () => {
           />
         </div>
         <br />
+        {/* Images */}
         <div>
           <label className="pb-2">
             Upload Images <span className="text-red-500">*</span>

@@ -10,6 +10,8 @@ const DashboardHeader = () => {
   const { seller } = useSelector((state) => state.seller);
   return (
     <div className="w-full h-[80px] bg-white shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
+
+      {/* Shop Logo */}
       <div>
         <Link to="/dashboard">
           <img
@@ -18,6 +20,8 @@ const DashboardHeader = () => {
           />
         </Link>
       </div>
+      
+      {/* Shop Navigation */}
       <div className="flex items-center">
         <div className="flex items-center mr-4">
           <Link to="/dashboard-coupouns" className="800px:block hidden">

@@ -6,10 +6,21 @@ export const loadUser = () => async (dispatch) => {
   try {
     dispatch({ type: "LoadUserRequest" });
 
+    /*
+    Axios wraps the server response in its own object containing data, status, headers, etc.
+    {
+      data: { success: true, user: {...} },   // <-- this is exactly what your backend sent
+      status: 200,
+      headers: {...},
+      // ...other axios-specific info
+    }
+    const { data } = await axios.get(...) extracts only the data property.
+    Your data variable now contains exactly what the backend sent.
+    */
     const { data } = await axios.get(`${server}/user/getuser`, {
       withCredentials: true,
     });
-    dispatch({ type: "LoadUserSuccess", payload: data.user });
+    dispatch({ type: "LoadUserSuccess", payload: data.user }); //data.user extracts the user data from the backend response.Redux puts this data into the action as payload
   } catch (error) {
     dispatch({ type: "LoadUserFail", payload: error.response?.data?.message || error.message });
   }

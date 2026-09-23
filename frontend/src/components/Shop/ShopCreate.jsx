@@ -127,10 +127,10 @@ const ShopCreate = () => {
               </div>
             </div>
 
-            {/* PhoneNumber Placeholder */}
+            {/* Address Placeholder */}
             <div>
               <label
-                htmlFor="number"
+                htmlFor="address"
                 className="block text-sm font-medium text-gray-700"
               >
                 Address

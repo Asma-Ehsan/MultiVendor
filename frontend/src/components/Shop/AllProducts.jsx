@@ -9,9 +9,7 @@ import { DataGrid } from "@mui/x-data-grid";
 
 const AllProducts = () => {
   const { seller } = useSelector((state) => state.seller);
-  const { products, isLoading } = useSelector(
-    (state) => state.products,
-  );
+  const { products, isLoading } = useSelector((state) => state.products,);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -68,8 +66,6 @@ const AllProducts = () => {
       flex: 0.8,
       sortable: false,
       renderCell: (params) => {
-        const d = params.row.name;
-        const product_name = d.replace(/\s+/g, "-");
         return (
           <>
             <Button onClick={() => handleDelete(params.id)}>

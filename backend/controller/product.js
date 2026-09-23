@@ -13,12 +13,13 @@ const cloudinary = require("../config/cloudinary");
 //create product
 router.post(
   "/create-product",
+  // multer intercepts the files first, and stores them in memory as req.files
   upload.array("images"),
   catchAsyncError(async (req, res, next) => {
     try {
       const shopId = req.body.shopId;
       const shop = await Shop.findById(shopId);
-      if (!shopId) return next(new ErrorHandler("Shop Id is invalid!", 400));
+      if (!shop) return next(new ErrorHandler("Shop Id is invalid!", 400));
       else {
         const files = req.files;
 

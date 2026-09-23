@@ -11,7 +11,7 @@ const { isAuthenticated } = require("../middleware/auth");
 const cloudinary = require("../config/cloudinary");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
-//upload.single("file"): accept one uploaded file
+//upload.single("file"): accept one uploaded file. multer stores it as a buffer and attaches it to req.file.
 router.post("/create-user", upload.single("file"), async(req, res, next) => {
     try {
         const {name, email, password} = req.body;
@@ -62,7 +62,7 @@ router.post("/create-user", upload.single("file"), async(req, res, next) => {
 //create activation token
 const createActivationToken = (user) => {
     return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-        expiresIn : "5m"
+        expiresIn : "5m" // expire remains in payload with user
     })
 };
 
@@ -97,7 +97,7 @@ router.post("/activation", catchAsyncErrors(async(req, res, next) => {
 router.post("/login-user", catchAsyncErrors(async(req, res, next) => {
     try {
         const {email, password} = req.body;
-        if(!email || !password) return next(new ErrorHandler("Please provide the all fileds", 400));
+        if(!email || !password) return next(new ErrorHandler("Please provide the all fields", 400));
 
         const user = await User.findOne({email}).select("+password");
         if(!user) return next(new ErrorHandler("User doesn't exist", 400));
@@ -194,7 +194,13 @@ router.put("/update-avatar", isAuthenticated, upload.single("image"), catchAsync
             avatar: {
                 public_id: result.public_id,
                 url: result.secure_url,
-            }}, {new: true});
+            }}, 
+
+            //By default, findByIdAndUpdate() returns the old document.
+            // { new: true } tells Mongoose to return the updated document.
+            
+            {new: true}
+        );
 
         res.status(200).json({
             success:true,
@@ -234,9 +240,15 @@ router.delete("/delete-user-addresses/:id", isAuthenticated, catchAsyncErrors( a
     try {
         const userId = req.user._id;
         const addressId = req.params.id;
+
+        //$pull is a special MongoDB operator (not plain JavaScript — it's part of MongoDB's own update syntax) used specifically to remove item(s) from an array field, based on a condition you give it.
+        
+        // "Find the User with this _id. Inside their addresses array, find the specific address object whose _id matches addressId, and remove just that one object from the array."
+
         await User.updateOne({
             _id: userId,
         }, {$pull: {addresses: {_id: addressId}}})
+        
         const user = await User.findById(userId);
         res.status(200).json({
             success: true,
@@ -285,111 +297,9 @@ module.exports = router;
 CONTROLLER/USER.JS NOTES
 ===============================================================================
 
-PURPOSE OF controller/user.js
-----------------------------
-
-This file contains all user-related routes (controllers).
-
-Examples:
-- User Registration
-- Email Activation
-- Login
-- Logout
-- Load Current User
-- Profile Update
-- Password Update
-etc.
-
-Flow:
-
-Frontend
-    |
-    ▼
-Route Request
-    |
-    ▼
-controller/user.js
-    |
-    ├────────► Model (MongoDB)
-    ├────────► JWT
-    ├────────► Multer
-    ├────────► Send Mail
-    ├────────► Authentication Middleware
-    └────────► Response
 
 
-===============================================================================
-REGISTRATION FLOW (IMPORTANT)
-===============================================================================
 
-User fills registration form
-        |
-        ▼
-POST /create-user
-        |
-        ▼
-upload.single("file")
-        |
-        ▼
-Profile Image Saved in uploads/
-        |
-        ▼
-Read req.body
-        |
-        ▼
-Check if email already exists
-        |
-        ├────────► Yes
-        │              |
-        │              ▼
-        │      Delete uploaded image
-        │              |
-        │              ▼
-        │      Return Error
-        │
-        ▼ No
-Create normal JavaScript user object
-        |
-        ▼
-Create Activation JWT
-        |
-        ▼
-Create Activation URL
-        |
-        ▼
-Send Email
-        |
-        ▼
-Registration finished
-(User is NOT saved in MongoDB yet)
-
-
-===============================================================================
-IMPORTANT CONCEPT
-User Object is NOT saved yet
-===============================================================================
-
-During registration:
-
-const user = {
-    name,
-    email,
-    password,
-    avatar
-}
-
-This is ONLY a normal JavaScript object.
-
-It is NOT:
-
-❌ MongoDB Document
-❌ Mongoose Document
-
-It only exists temporarily in memory.
-
-MongoDB still has NO user.
-
-The actual database insertion happens only after email verification.
 
 
 ===============================================================================
@@ -429,27 +339,6 @@ This token contains:
 }
 
 
-===============================================================================
-WHY CREATE ACTIVATION URL?
-===============================================================================
-
-activationToken
-
-↓
-
-ABC123XYZ
-
-
-activationUrl
-
-↓
-
-http://localhost:3000/activation/ABC123XYZ
-
-
-The email contains this URL.
-
-User clicks this link to verify the account.
 
 
 ===============================================================================
@@ -536,322 +425,34 @@ Send Cookie
 
 
 ===============================================================================
-IMPORTANT CONFUSION #1
-How does jwt.verify() work if user is NOT in MongoDB?
+IMPORTANT CONFUSION 
+Why do we check "user already exists" in both create-user and activation?
 ===============================================================================
 
-Answer:
+Step-by-step story
+1. Person A submits the signup form with email asma@example.com.
+create-user route runs. It checks: "does asma@example.com already exist in the database?" — No. Good, continue.
+2. The server does not save the user in the database yet! It only creates an activationToken (a JWT containing the user's info) and emails an activation link to them.
+3. At this point, the user is NOT in the database at all. They only exist as data hidden inside that email link.
+4. Why can duplicates still happen?
 
-jwt.verify() NEVER checks MongoDB.
+Scenario A — Two signups before activation:
 
-It only checks the JWT itself.
+1. Person A signs up with asma@example.com → gets an activation email → doesn't click it yet.
+2. Meanwhile, Person A (or someone else) signs up again with the same email asma@example.com.
+3. In create-user, the check User.findOne({email}) still finds nothing, because the first signup was never saved to the database — it's just sitting as an unclicked email link!
+4. So now two activation emails exist, both valid for 5 minutes, both containing user data for the same email.
 
-It performs these checks:
+Scenario B — Clicking activation twice, or two tokens both valid:
 
-1. Is token signed with correct secret?
+1. Person A clicks the first activation email → activation route runs → checks User.findOne({email}) → not found → creates the user in DB successfully.
+2. Now Person A (by mistake, or because they had two tabs open) clicks the second activation email (from the duplicate signup in Scenario A) too.
+3. Without the check in activation, this would try to User.create(...) again with the same email — creating a duplicate account, or causing a MongoDB error if email has a unique index.
 
-2. Has token been modified?
+So, in short:
 
-3. Has token expired?
-
-If everything is valid,
-
-it returns the original payload stored inside the JWT.
-
-Example:
-
-jwt.sign(user, SECRET)
-
-↓
-
-Token
-
-↓
-
-jwt.verify(token, SECRET)
-
-↓
-
-Returns:
-
-{
-    name,
-    email,
-    password,
-    avatar
-}
-
-No database query happens here.
-
-
-===============================================================================
-IMPORTANT CONFUSION #2
-Does jwt.verify() compare received token with the original token?
-===============================================================================
-
-NO.
-
-Backend NEVER stores the activation token.
-
-After sending the email,
-
-backend forgets the token.
-
-There is NO code like:
-
-savedToken = activationToken
-
-or
-
-ActivationToken.create(...)
-
-Nothing is stored.
-
-Instead,
-
-jwt.verify()
-
-recalculates the token signature using the same secret.
-
-If calculated signature matches the signature inside token,
-
-the token is authentic.
-
-Otherwise,
-
-verification fails.
-
-
-===============================================================================
-JWT SIGNATURE FLOW
-===============================================================================
-
-jwt.sign(user, SECRET)
-
-↓
-
-Payload
-+
-SECRET
-
-↓
-
-Digital Signature Created
-
-↓
-
-Token Sent
-
---------------------------------
-
-Later
-
-jwt.verify(token, SECRET)
-
-↓
-
-Extract Payload
-
-↓
-
-Recalculate Signature
-
-↓
-
-Signature Matches?
-
-YES
-
-↓
-
-Return Payload
-
-NO
-
-↓
-
-Throw Error
-
-
-===============================================================================
-IMPORTANT CONFUSION #3
-Why check User.findOne(email) AFTER jwt.verify()?
-===============================================================================
-
-jwt.verify()
-
-DOES NOT check database.
-
-It only verifies JWT.
-
-After verification,
-
-backend manually checks MongoDB:
-
-User.findOne({email})
-
-Purpose:
-
-To make sure user doesn't already exist.
-
-This is completely separate from JWT verification.
-
-
-===============================================================================
-ACTIVATION ROUTE
-===============================================================================
-
-POST /user/activation
-
-Purpose:
-
-1. Receive activation token
-
-2. Verify token
-
-3. Extract user information
-
-4. Check duplicate email
-
-5. Save user into MongoDB
-
-6. Automatically login user
-
-7. Send login JWT cookie
-
-
-===============================================================================
-TWO DIFFERENT JWT TOKENS
-===============================================================================
-
-1)
-
-Activation JWT
-
-Created By:
-
-createActivationToken()
-
-Purpose:
-
-Temporarily stores user information until email verification.
-
-Lifetime:
-
-5 Minutes
-
---------------------------------------------------
-
-2)
-
-Login JWT
-
-Created By:
-
-user.getJwtToken()
-
-inside
-
-sendToken()
-
-Purpose:
-
-Keeps user logged in.
-
-Stored inside cookies.
-
-Lifetime:
-
-JWT_EXPIRES (7d in this project)
-
-
-These are TWO completely different JWTs.
-
-
-===============================================================================
-catchAsyncErrors vs try-catch
-===============================================================================
-
-catchAsyncErrors
-
-already catches rejected promises and thrown errors.
-
-Example:
-
-router.post(
-    "...",
-    catchAsyncErrors(async(...)=>{
-
-    })
-)
-
-Inside this async function,
-
-errors are automatically forwarded to:
-
-next(error)
-
-↓
-
-middleware/error.js
-
-
-Therefore,
-
-using another
-
-try{
-
-}
-catch(){
-
-}
-
-inside the same function is generally redundant.
-
-Many developers either:
-
-✔ use catchAsyncErrors
-
-OR
-
-✔ use try-catch
-
-Using both usually isn't necessary.
-
-In this project,
-
-the author used both, but catchAsyncErrors alone would be enough.
-
-
-===============================================================================
-LOGIN
-===============================================================================
-
-Login Flow
-
-Email + Password
-
-↓
-
-Find User
-
-↓
-
-comparePassword()
-
-↓
-
-Generate Login JWT
-
-↓
-
-Store Cookie
-
-↓
-
-User Logged In
-
+- In create-user:	Stops someone from signing up again with an email that is already a real, saved account in the database
+- In activation:	Stops duplicate saving when someone clicks an old/duplicate activation link, since between signup and activation, the same email could have been used to sign up more than once, or the same link clicked twice
 
 ===============================================================================
 GET USER (USER PERSISTENCE)
@@ -1071,38 +672,4 @@ Without these,
 req.cookies.token
 
 will be undefined.
-
-
-===============================================================================
-FILES CONNECTED TO controller/user.js
-===============================================================================
-
-controller/user.js
-
-│
-
-├──── model/user.js
-│      Database operations
-│
-├──── multer.js
-│      Upload images
-│
-├──── sendMail.js
-│      Send activation email
-│
-├──── jwtToken.js
-│      Create login JWT + cookie
-│
-├──── auth.js
-│      Verify login cookie
-│
-├──── ErrorHandler.js
-│      Create custom errors
-│
-├──── catchAsyncErrors.js
-│      Catch async errors
-│
-└──── error.js
-       Sends error response
-
 ===============================================================================*/

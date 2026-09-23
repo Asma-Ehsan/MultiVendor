@@ -21,11 +21,25 @@ const Signup = () => {
     setAvatar(file);
   };
 
+  /*
+* JSON: Good for text/data, but can't send raw files.
+* FormData: Used when sending **text + files** together.
+* It creates a `multipart/form-data` request.
+* Multer reads this format and handles the uploaded files.
+
+- "file" is the key that must match upload.single("file").
+- multipart/form-data tells the server the request contains files.
+- Multer processes the request:
+    * Text fields → req.body
+    * File → req.file
+- The key in .append("file", ...) must match the backend key.
+  */
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const config = { headers: { "Content-Type": "multipart/form-data" } };
     const newForm = new FormData();
-    newForm.append("file", avatar);
+    newForm.append("file", avatar); //.append(key, value)
     newForm.append("name", name);
     newForm.append("email", email);
     newForm.append("password", password);
@@ -190,3 +204,38 @@ const Signup = () => {
 };
 
 export default Signup;
+
+/*
+The problem this solves
+
+When a user picks a file using <input type="file">, JavaScript gives you a File object — this is just raw data sitting in the browser's memory. It is not a normal image URL like https://example.com/photo.jpg that an <img src="..."> tag can directly understand and display.
+
+So, how do you preview the image before it's even uploaded to your server? You need to turn that raw File object into something the <img> tag can read.
+
+What URL.createObjectURL() does
+- It's a built-in browser function.
+- You give it a File (or Blob) object — in your case, avatar (the selected file, captured earlier by handleFileInputChange).
+- It creates a temporary, local, fake URL — something that looks like: blob:http://localhost:3000/1234-5678-abcd
+- This special blob: URL points directly to the file sitting in the browser's memory, not to any real server.
+- The <img src="..."> tag can understand this blob: URL and displays the image using it.
+
+Real-life example: Imagine you just took a photo on your phone but haven't uploaded it anywhere yet. URL.createObjectURL() is like getting an instant temporary preview thumbnail right there in your phone's gallery — it's not on the internet yet, it's just showing you the raw file that's sitting on your device.
+
+Where does avatar come from?
+
+const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    setAvatar(file);
+};
+
+- When the user picks a file in the <input type="file">, e.target.files[0] gives the actual File object.
+- It's saved into avatar state using setAvatar(file).
+
+The flow
+1. User clicks "Upload a file" and picks an image.
+2. handleFileInputChange captures the file and saves it in avatar state.
+3. Since avatar is no longer null, React re-renders, and now avatar ? (...) is true.
+4. URL.createObjectURL(avatar) creates a temporary local preview URL.
+5. The <img> tag shows this preview immediately, without needing internet or your backend at all.
+6. Later, when the form is submitted (handleSubmit), the actual file (avatar) is sent to your backend via FormData, uploaded to Cloudinary, and a real, permanent URL is saved in MongoDB.
+*/

@@ -12,6 +12,11 @@ export const userReducer = createReducer(initialState, (builder) => {
         .addCase("LoadUserSuccess", (state, action) => {
             state.isAuthenticated = true;
             state.loading = false;
+            
+            // Reducer receives state and action(the object that was dispatched,i.e., { type: "LoadUserSuccess", payload: data.user })
+            // action.payload contains the user data.
+            // state.user = action.payload` stores that user data in Redux under `user`.
+
             state.user = action.payload;
         })
         .addCase("LoadUserFail", (state, action) => {

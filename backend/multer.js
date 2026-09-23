@@ -1,11 +1,12 @@
 const multer = require("multer");
 
+//Creates a storage engine that keeps files in memory (RAM) instead of disk.
 const storage = multer.memoryStorage();
 
 exports.upload = multer({
-    storage,
+    storage, //tells multer to use the memory storage engine we just created.
     limits: {
-        fileSize: 5 * 1024 * 1024,
+        fileSize: 5 * 1024 * 1024, //sets a maximum file size: 5 * 1024 * 1024 bytes = 5 MB.
     }
 });
 
@@ -30,345 +31,26 @@ This file configures Multer to:
 - Save them into the uploads folder.
 - Give each file a unique filename.
 
-===========================================
-Flow
-===========================================
-
-Client
-    |
-    ▼
-Select Image
-    |
-    ▼
-Submit Form
-    |
-    ▼
-Express Route
-    |
-    ▼
-upload Middleware (Multer)
-    |
-    ▼
-Save File in uploads/
-    |
-    ▼
-Controller Executes
-
-Note:
-The controller runs only AFTER Multer has successfully saved the uploaded file.
 
 ===========================================
-multer.diskStorage()
+multer.memoryStorage() / .diskStorage();
 ===========================================
 
-Code:
-
-const storage = multer.diskStorage({...});
-
-diskStorage() is a function provided by Multer which tells Multer: store uploaded files on the server's disk/file system.
-
-Purpose:
-
-Creates a storage configuration.
-
-It tells Multer:
-
-1. Where should the uploaded file be stored?
-2. What should the uploaded file be named?
-
-diskStorage() DOES NOT save the file.
-
-It only defines the rules for saving files.
-
-===========================================
-destination()
-===========================================
-
-Code:
-
-destination: function(req, file, cb){
-
-}
-
-Purpose:
-
-Decides where uploaded files should be stored.
-
-Parameters:
-
-req
-- Express request object.
-
-file
-- Information about the uploaded file.
-
-Example:
-
-{
-    fieldname: "avatar",
-    originalname: "profile.jpg",
-    mimetype: "image/jpeg",
-    size: 24567
-}
-
-cb
-- Callback function provided by Multer.
-- Used to tell Multer the next step.
-
--------------------------------------------
-
-Code:
-
-cb(null, "uploads");
-
-Callback format:
-
-cb(error, value)
-
-First parameter:
-
-null
-
-Means:
-No error occurred.
-
-Second parameter:
-
-"uploads"
-
-Means:
-
-Store uploaded files inside:
-
-uploads/
-
-Example:
-
-Project
-
-backend/
-    uploads/
-
-Uploaded files will be saved in:
-
-backend/uploads/
-
-===========================================
-filename()
-===========================================
-
-Code:
-
-filename: function(req, file, cb){
-
-}
-
-Purpose:
-
-Decides the name of the uploaded file.
-
-Without this function:
-
-If two users upload:
-
-profile.png
-
-the second upload could overwrite the first one.
-
-Therefore, a unique filename is generated.
-
-===========================================
-uniqueSuffix
-===========================================
-
-Code:
-
-const uniqueSuffix =
-Date.now() + "-" +
-Math.round(Math.random() * 1e9);
-
-Purpose:
-
-Creates a unique value for every uploaded file.
-
--------------------------------------------
-
-Date.now()
-
-Returns the current timestamp in milliseconds.
-
-Example:
-
-1721041200000
-
--------------------------------------------
-
-Math.random()
-
-Returns a random decimal number.
-
-Example:
-
-0.583472
-
--------------------------------------------
-
-Math.random() * 1e9
-
-1e9 means:
-
-1 × 10^9
-
-= 1,000,000,000
-
-Example result:
-
-583472918.29
-
--------------------------------------------
-
-Math.round()
-
-Rounds the number to the nearest integer.
-
-Example:
-
-583472918
-
--------------------------------------------
-
-Final uniqueSuffix:
-
-1721041200000-583472918
-
-===========================================
-Original Filename
-===========================================
-
-Code:
-
-const filename =
-file.originalname.split(".")[0];
-
-Suppose user uploads:
-
-cat.png
-
-file.originalname
-
-returns:
-
-cat.png
-
-split(".")
-
-returns:
-
-[
-    "cat",
-    "png"
-]
-
-Taking index [0]:
-
-filename
-
-becomes:
-
-cat
-
-===========================================
-Final Filename
-===========================================
-
-Code:
-
-cb(
-    null,
-    filename + "-" + uniqueSuffix + ".png"
-);
-
-Suppose:
-
-filename = cat
-
-uniqueSuffix = 1721041200000-583472918
-
-Final filename:
-
-cat-1721041200000-583472918.png
-
-This unique filename prevents uploaded files from replacing each other.
-
--------------------------------------------
-
-Note:
-
-The code always adds ".png" to the filename.
-
-Therefore, every uploaded file is saved with a .png extension regardless of its original extension.
-
-===========================================
-Creating Upload Middleware
-===========================================
-
-Code:
-
-exports.upload = multer({
-    storage: storage
-});
-
-Purpose:
-
-Creates a Multer middleware using the storage configuration.
-
-Now it can be imported into route files.
-
-Example:
-
-const { upload } = require("../multer");
-
-Used in routes:
-
-router.post(
-    "/create-user",
-    upload.single("avatar"),
-    createUser
-);
-
-Flow:
-
-Client Uploads Image
-        |
-        ▼
-upload.single("avatar")
-        |
-        ▼
-Multer Saves File
-        |
-        ▼
-Controller Executes
-
-===========================================
-Connection with Other Files
-===========================================
-
-Connection with app.js
-
-app.use(
-    "/uploads",
-    express.static(path.join(__dirname, "uploads"))
-);
-
-This makes the uploads folder publicly accessible.
-
-If Multer saves:
-
-uploads/cat-1721041200000-583472918.png
-
-It can be accessed in the browser using:
-
-http://localhost:8000/uploads/cat-1721041200000-583472918.png
-
-===========================================
+Multer gives you two storage choices:
+
+1. diskStorage — saves the uploaded file directly onto your server's hard disk as an actual file.
+
+2. memoryStorage — keeps the uploaded file in RAM (memory), as a Buffer (raw binary data), and does not save it to disk at all.
+
+==========================================
+Flow (full picture, request journey)
+
+1. User picks images in a form and submits.
+2. Request arrives with Content-Type: multipart/form-data.
+3. Multer (upload.array("images")) intercepts it, reads the files, and stores them as buffers in RAM. It attaches them to req.files.
+4. Control passes to your controller function.
+5. Controller loops over req.files, calls uploadToCloudinary(file.buffer, "products") for each one.
+6. uploadToCloudinary streams each buffer to Cloudinary.
+7. Cloudinary returns public_id and secure_url.
+8. Your controller saves these URLs into MongoDB.
 */

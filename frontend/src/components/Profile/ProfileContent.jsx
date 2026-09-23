@@ -102,14 +102,14 @@ const ProfileContent = ({ active }) => {
               </div>
             </div>
           </div>
-          {/* <br /> */}
+
           <br />
           <div className="w-full px-5">
             {/* Form */}
-            <form onSubmit={handleSubmit} aria-required={true}>
+            <form onSubmit={handleSubmit}>
               <div className="w-full block 800px:flex pb-3">
+                {/* Full Name */}
                 <div className="w-[100%] 800px:w-[50%]">
-                  {/* Full Name */}
                   <label className="block pb-2">Full Name</label>
                   <input
                     type="text"
@@ -187,7 +187,7 @@ const ProfileContent = ({ active }) => {
         </div>
       )}
 
-      {/* Refund  */}
+      {/* UserInbox */}
       {active === 4 && (
         <div>
           <UserInbox active={active}/>
@@ -615,7 +615,7 @@ const Address = () => {
             </h1>
             <div className="w-full">
               {/* Form */}
-              <form aria-required onSubmit={handleSubmit} className="w-full">
+              <form onSubmit={handleSubmit} className="w-full">
                 <div className="w-full block p-4">
                   {/* country */}
                   <div className="w-full pb-2">

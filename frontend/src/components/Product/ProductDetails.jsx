@@ -117,6 +117,7 @@ const ProductDetails = ({ data }) => {
     products &&
     products.reduce((acc, product) => acc + product.reviews.length, 0);
 
+  // Two nested `reduce()` calls: outer loops through products, inner loops through each product's reviews.
   const totalRatings =
     products &&
     products.reduce(

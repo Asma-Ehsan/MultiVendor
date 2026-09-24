@@ -29,8 +29,8 @@ const AllProducts = () => {
       field: "Stock",
       headerName: "Stock",
       type: "number",
-      minWidth: 80,
-      flex: 0.5,
+      minWidth: 80, //smallest width in pixels.
+      flex: 0.5, //it is share of the free space
     },
     {
       field: "sold",
@@ -45,6 +45,7 @@ const AllProducts = () => {
       type: "number",
       minWidth: 100,
       flex: 0.8,
+      // disables sorting for that column, so clicking its header won't reorder the rows.
       sortable: false,
       renderCell: (params) => {
         return (
@@ -68,6 +69,7 @@ const AllProducts = () => {
       renderCell: (params) => {
         return (
           <>
+          {/* params get the id from your row array: id: item._id, */}
             <Button onClick={() => handleDelete(params.id)}>
               <AiOutlineDelete size={20} />
             </Button>
@@ -94,17 +96,19 @@ const AllProducts = () => {
         <Loader />
       ) : (
         <div className="w-full mx-8 pt-1 mt-10 bg-white">
+          {/* DataGrid is a ready-made table component from the library @mui/x-data-grid */}
           <DataGrid
             rows={row}
             columns={columns}
-            pageSizeOptions={[10]}
+            pageSizeOptions={[10]} // the user can only choose 10 rows per page.
             initialState={{
               pagination: {
+                // sets the starting state: page 0 (the first page) with 10 rows.
                 paginationModel: { pageSize: 10, page: 0 },
               },
             }}
-            disableSelectionOnClick
-            autoHeight
+            disableRowSelectionOnClick //to stop rows from being selected when clicked.
+            autoHeight //makes the table as tall as its rows
           />
         </div>
       )}

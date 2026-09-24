@@ -53,6 +53,22 @@ router.get("/get-coupon-value/:name", catchAsyncError(async(req,res,next) => {
     } catch (error) {
          return next(new ErrorHandler(error, 400));
     }
+}));
+
+//delete coupon COde
+router.delete("/delete-coupon/:id", isSeller, catchAsyncError(async(req, res, next) => {
+    try {
+        const couponCode = await CoupounCode.findByIdAndDelete(req.params.id);
+        
+        if(!couponCode) return next(new ErrorHandler("Coupn Code does't not exist!", 400));
+
+        res.status(201).json({
+            success:true,
+            message: "Coupon Code deleted successfully!"
+        })
+    } catch (error) {
+         return next(new ErrorHandler(error, 400));
+    }
 }))
 
 module.exports = router

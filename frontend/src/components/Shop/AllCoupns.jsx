@@ -38,11 +38,12 @@ const AllCoupons = () => {
     })
   }, [dispatch])
 
-  const handleDelete = (id) => {
-    dispatch(deleteProduct(id));
+  const handleDelete = async (id) => {
+    axios.delete(`${server}/coupon/delete-coupon/${id}`,{withCredentials: true}).then((res) => {
+      toast.success("Coupon code deleted succesfully!")
+    })
     window.location.reload();
   };
-
   const handleSubmit = async(e) => {
     e.preventDefault();
 

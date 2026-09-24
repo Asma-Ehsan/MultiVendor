@@ -54,6 +54,9 @@ const CreateProduct = () => {
   const handleImageChange = (e) => {
     e.preventDefault();
 
+    // When the user picks pictures, this line collects them into a normal list (array) so you can store them in state.
+    // e.target.files is the list of files the user picked
+    // Array.from(...) turns that list into a array.
     let files = Array.from(e.target.files);
     setImages((prevImages) => [...prevImages, ...files]);
   };

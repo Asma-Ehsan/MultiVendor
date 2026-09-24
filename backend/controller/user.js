@@ -215,12 +215,17 @@ router.put("/update-avatar", isAuthenticated, upload.single("image"), catchAsync
 // update user address
 router.put("/update-user-addresses", isAuthenticated, catchAsyncErrors(async(req, res, next) => {
     try {
+        // finding the logged-in user in MongoDB using their id
         const user = await User.findById(req.user.id);
         const sameTypeAddress = user.addresses.find((address) => address.addressType === req.body.addressType);
         if(sameTypeAddress) return next(new ErrorHandler(`${req.body.addressType} address already exists`));
+        
+        // checking whether the frontend sent an _id that matches an old address
         const existAddress = user.addresses.find(address => address._id === req.body._id);
+
         if(existAddress){
-            Object.assign(existAddress, req.body);
+            //it copies all properties from req.body into existAddress, overwriting any that already exist. This updates the existing address with the new data.
+            Object.assign(existAddress, req.body); //Object.assign(target, source);
         }else{
             // add the new address to the array
             user.addresses.push(req.body);

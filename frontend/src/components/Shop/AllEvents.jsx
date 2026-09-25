@@ -83,7 +83,7 @@ const AllEvents = () => {
                 paginationModel: { pageSize: 10, page: 0 },
             },
         }}
-        disableSelectionOnClick
+        disableRowSelectionOnClick
         autoHeight
             />
     </div>

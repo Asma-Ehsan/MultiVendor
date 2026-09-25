@@ -29,6 +29,7 @@ const DashboardHeader = () => {
               color="#555"
               size={30}
               className="mx-5 cursor-pointer"
+              title="Discount Codes"
             />
           </Link>
           <Link to="/dashboard-events" className="800px:block hidden">
@@ -36,6 +37,7 @@ const DashboardHeader = () => {
               color="#555"
               size={30}
               className="mx-5 cursor-pointer"
+              title="All Events"
             />
           </Link>
           <Link to="/dashboard-products" className="800px:block hidden">
@@ -43,16 +45,19 @@ const DashboardHeader = () => {
               color="#555"
               size={30}
               className="mx-5 cursor-pointer"
+              title="All Products"
             />
           </Link>
           <Link to="/dashboard-orders" className="800px:block hidden">
-            <FiPackage color="#555" size={30} className="mx-5 cursor-pointer" />
+            <FiPackage color="#555" size={30} className="mx-5 cursor-pointer"
+            title="All Orders" />
           </Link>
           <Link to="/dashboard-messages" className="800px:block hidden">
             <BiMessageSquareDetail
               color="#555"
               size={30}
               className="mx-5 cursor-pointer"
+              title="All Messages"
             />
           </Link>
           <Link to={`/shop/${seller._id}`}>

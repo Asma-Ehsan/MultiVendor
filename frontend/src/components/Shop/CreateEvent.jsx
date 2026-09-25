@@ -8,7 +8,7 @@ import { createevent } from "../../redux/actions/event";
 
 const CreateEvent = () => {
   const { seller } = useSelector((state) => state.seller);
-    const { success, error } = useSelector((state) => state.events);
+  const { success, error } = useSelector((state) => state.events);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -66,17 +66,19 @@ const CreateEvent = () => {
     const startDate = new Date(e.target.value);
     const minEndDate = new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000);
     setStartDate(startDate);
+    // setEndDate(null) → clears the end date because changing the start date may make the previous end date invalid.
     setEndDate(null);
-    document.getElementById("end-date").min = minEndDate.toISOString().slice(
-      0,
-      10
-    );
+    // getiing the min property of End Date input field through it's id "end-date" and assign it minEndDate and then converte the date object into string + slice
+    document.getElementById("end-date").min = minEndDate.toISOString().slice( 0, 10 );
   };
 
   const handleEndDateChange = (e) => {
+    // Converts the selected value to a Date and saves it in state.
     const endDate = new Date(e.target.value);
     setEndDate(endDate);
   };
+
+  // .toISOString() converts that Date object into a text string, and .slice(0, 10) extracts `YYYY-MM-DD`, the format required by <input type="date">
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -92,6 +94,7 @@ const CreateEvent = () => {
       {/* create event form */}
       <form onSubmit={handleSubmit}>
         <br />
+        {/* Name */}
         <div>
           <label className="pb-2">
             Name <span className="text-red-500">*</span>
@@ -106,6 +109,8 @@ const CreateEvent = () => {
           />
         </div>
         <br />
+
+        {/* Description */}
         <div>
           <label className="pb-2">
             Description <span className="text-red-500">*</span>
@@ -123,6 +128,8 @@ const CreateEvent = () => {
           ></textarea>
         </div>
         <br />
+
+        {/* Category */}
         <div>
           <label className="pb-2">
             Category <span className="text-red-500">*</span>
@@ -142,6 +149,8 @@ const CreateEvent = () => {
           </select>
         </div>
         <br />
+
+        {/* Tags */}
         <div>
           <label className="pb-2">Tags</label>
           <input
@@ -154,6 +163,8 @@ const CreateEvent = () => {
           />
         </div>
         <br />
+
+        {/* Original Price */}
         <div>
           <label className="pb-2">Original Price</label>
           <input
@@ -166,6 +177,8 @@ const CreateEvent = () => {
           />
         </div>
         <br />
+
+        {/* Discount Price */}
         <div>
           <label className="pb-2">
             Price (With Discount) <span className="text-red-500">*</span>
@@ -180,6 +193,8 @@ const CreateEvent = () => {
           />
         </div>
         <br />
+
+        {/* Product Stock */}
         <div>
           <label className="pb-2">
             Product Stock <span className="text-red-500">*</span>
@@ -195,6 +210,8 @@ const CreateEvent = () => {
           />
         </div>
         <br />
+
+        {/* Event Start Date */}
         <div>
           <label className="pb-2">
             Event Start Date <span className="text-red-500">*</span>
@@ -211,6 +228,8 @@ const CreateEvent = () => {
           />
         </div>
         <br />
+
+        {/* Event End Date */}
         <div>
           <label className="pb-2">
             Event End Date <span className="text-red-500">*</span>
@@ -227,6 +246,8 @@ const CreateEvent = () => {
           />
         </div>
         <br />
+
+        {/* Event Images Upload */}
         <div>
           <label className="pb-2">
             Upload Images <span className="text-red-500">*</span>
@@ -243,15 +264,6 @@ const CreateEvent = () => {
             <label htmlFor="upload">
               <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
             </label>
-            {/* {images &&
-              images.map((i) => (
-                <img
-                  src={i}
-                  key={i}
-                  alt=""
-                  className="h-[120px] w-[120px] object-cover m-2"
-                />
-              ))} */}
               {images &&
               images.map((i) => (
                 <img

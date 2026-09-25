@@ -134,7 +134,7 @@ const CreateProduct = () => {
         <br />
         {/* Original Price */}
         <div>
-          <label className="pb-2">Original Price<span className="text-red-500">*</span></label>
+          <label className="pb-2">Original Price <span className="text-red-500">*</span> </label>
           <input
             type="number"
             name="price"

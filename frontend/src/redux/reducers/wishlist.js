@@ -1,11 +1,12 @@
 import {createReducer} from "@reduxjs/toolkit";
 
-//it will check if there is any wishlist items in local storage or not, if yes then it will return the wishlist items from local storage(which is stired in actions) otherwise it will return an empty array
+//it will check if there is any wishlist items in local storage or not, if yes, JSON.parse(...) converts that saved text back into a real JavaScript array/object (opposite of stringify).(which is stired in actions) otherwise it will return an empty array
 const initialState = {
     wishlist: localStorage.getItem("wishlistItems") ? JSON.parse(localStorage.getItem("wishlistItems")): [],
 }
 
 export const wishlistReducer = createReducer(initialState, (builder) => {
+    // builder define what happens for each different action type.
     builder
     .addCase("addToWishlist", (state, action) => {
         const item = action.payload;
@@ -15,7 +16,6 @@ export const wishlistReducer = createReducer(initialState, (builder) => {
             // item already in wishlist — replace it (e.g. to update qty) instead of duplicating
             return {
                 ...state,
-                // wishlist: [...state.wishlist, item],
                 wishlist: state.wishlist.map((i) => (i._id === isItemExists._id ? item : i)),
             };
         }else{

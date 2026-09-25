@@ -15,7 +15,10 @@ const ProductDetailsPage = () => {
   const [searchParams] = useSearchParams();
   const eventData = searchParams.get("isEvent");
 
-  // useParam wil get the product name with "-" : "iphone-14-pro-max" but in productData it is stored without "-", so to replace "-" from " "
+  // This is a React Router hook that lets you read the query parameters from the URL — the part after the ? in a link. 
+  // /product/123?isEvent=true
+  // The part ?isEvent=true is a "query parameter." isEvent is the key, true is the value.
+  
   useEffect(() => {
     if (eventData !== null) {
       const data = allEvents && allEvents.find((i) => i._id === id);

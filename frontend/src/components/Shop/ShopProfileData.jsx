@@ -15,10 +15,13 @@ const ShopProfileData = ({ isOwner }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) return; //Checks for a valid shop ID. If none exists, stop and do nothing.
     dispatch(getAllProductsShop(id));
     dispatch(getAllEventsShop(id));
   }, [dispatch, id]);
+
+  // .map() gets each product's reviews array, creating an array of arrays. i.e. [ [reviewA, reviewB] ]
+  // .flat() merges them into one single reviews array i.e. [reviewA, reviewB, reviewC]
 
   const allReviews =
     products && products.map((product) => product.reviews).flat();
@@ -77,23 +80,6 @@ const ShopProfileData = ({ isOwner }) => {
 
       {/* If active === 1 */}
       <br />
-      {/* {active === 1 && (
-        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
-          {products &&
-            products.map((i, index) => {
-              const transformed = {
-                ...i,
-                image_Url: i.images.map((filename) => ({
-                  url: `${backend_url}uploads/${filename}`,
-                })),
-              };
-              return (
-                <ProductCard data={transformed} key={index} isShop={true} />
-              );
-            })}
-        </div>
-      )} */}
-
       {active === 1 && (
         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
           {products &&
@@ -112,7 +98,6 @@ const ShopProfileData = ({ isOwner }) => {
                 <ProductCard
                   data={i}
                   key={index}
-                  isShop={true}
                   isEvent={true}
                 />
               ))
@@ -143,7 +128,7 @@ const ShopProfileData = ({ isOwner }) => {
                   </div>
                   <p className="font-[400] text-[#000000a7]">{item?.comment}</p>
                   <p className="text-[#000000a7] text-[14px]">
-                    {item.createdAt || "2 days ago"}
+                    {item.createdAt ? item.createdAt.slice(0, 10) : null}
                   </p>
                 </div>
               </div>

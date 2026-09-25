@@ -19,6 +19,7 @@ import { addToCart } from "../../redux/actions/cart";
 import Ratings from "./Ratings";
 import axios from "axios";
 
+// this data contains details of the product which is clicked by the user
 const ProductDetails = ({ data }) => {
   const { products } = useSelector((state) => state.products);
   const { cart } = useSelector((state) => state.cart);
@@ -33,6 +34,7 @@ const ProductDetails = ({ data }) => {
 
   useEffect(() => {
     if (data?.shop?._id) {
+      // to get products.length in shop info section
       dispatch(getAllProductsShop(data.shop._id));
     }
   }, [dispatch, data?.shop?._id]);
@@ -106,12 +108,12 @@ const ProductDetails = ({ data }) => {
     }
   };
 
-  // CHANGED: read product images from the backend shape (data.images)
+  //if there are images in data, then map them to get their URLs using the getImageUrl function. If there are no images, use an empty array.
   const productImages = (data?.images || []).map(getImageUrl);
   const mainImage = productImages[select] || productImages[0] || "";
-  // CHANGED: read seller avatar from the shop object returned by the backend
+
   const shopAvatar =
-    data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";
+    data?.shop?.avatar?.url || "";
 
   const totalReviewsLength =
     products &&
@@ -137,7 +139,7 @@ const ProductDetails = ({ data }) => {
               {/* Left Side */}
               <div className="w-full 800px:w-[45%]">
                 <div className="w-full h-[400px] flex items-center justify-center bg-gray-50 rounded-lg border overflow-hidden">
-                {/* CHANGED: show the main selected image */}
+
                 <img
                   src={mainImage || "https://via.placeholder.com/300x300"}
                   alt={data.name}
@@ -145,21 +147,20 @@ const ProductDetails = ({ data }) => {
                 />
                 </div>
 
-                {/* CHANGED: show thumbnails from the backend image array */}
                 {productImages.length > 0 ? (
                   <div className="w-full flex gap-3 mt-4">
                     {productImages.map((image, index) => (
-                      <div className="h-[80px] w-[80px] flex items-center justify-center bg-gray-50 rounded-md border overflow-hidden cursor-pointer" 
-                      key={index}
-                      onClick={() => setSelect(index)}>
-                          <img
-                        src={image}
-                        alt=""
-                        className={`w-full h-full object-cover transition ${
+                      <div className={`h-[80px] w-[80px] flex items-center justify-center bg-gray-50 rounded-md border overflow-hidden cursor-pointer ${
                           select === index
                             ? "ring-2 ring-teal-500"
                             : ""
                         }`}
+                      key={index}
+                      onClick={() => setSelect(index)}>
+                        <img
+                        src={image}
+                        alt=""
+                        className={`w-full h-full object-cover transition`}
                       />
                       </div>
                     ))}
@@ -177,9 +178,7 @@ const ProductDetails = ({ data }) => {
                     {data.discountPrice ?? data.discount_price ?? 0}$
                   </h4>
                   <h3 className={`${styles.price}`}>
-                    {(data.originalPrice ?? data.price)
-                      ? (data.originalPrice ?? data.price + "$")
-                      : null}
+                    {data?.originalPrice ? data.originalPrice + "$" : null}
                   </h3>
                 </div>
 
@@ -238,7 +237,6 @@ const ProductDetails = ({ data }) => {
 
                 {/* seller info */}
                 <div className="flex items-center pt-8">
-                  {/* CHANGED: show seller avatar from the backend shop object */}
                   <Link to={`/shop/preview/${data?.shop?._id}`}>
                     <img
                       src={shopAvatar || "https://via.placeholder.com/50"}
@@ -292,13 +290,14 @@ const ProductDetailsInfo = ({
 }) => {
   const [active, setActive] = useState(1);
 
-  // CHANGED: use the same shop avatar logic in the seller info section
   const shopAvatar =
-    data?.shop?.avatar?.url || data?.shop?.shop_avatar?.url || "";
+    data?.shop?.avatar?.url || "";
 
   return (
     <div className="bg-[#f5f6fb] px-3 800px:px-10 py-2 rounded">
       <div className="w-full flex justify-between border-b pt-10 pb-2">
+        
+        {/* Product Details */}
         <div className="relative">
           <h5
             className="text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
@@ -310,6 +309,8 @@ const ProductDetailsInfo = ({
             <div className={`${styles.active_indicator}`} />
           ) : null}
         </div>
+        
+        {/* Product Reviews */}
         <div className="relative">
           <h5
             className="text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
@@ -321,6 +322,8 @@ const ProductDetailsInfo = ({
             <div className={`${styles.active_indicator}`} />
           ) : null}
         </div>
+
+        {/* Seller Information */}
         <div className="relative">
           <h5
             className="text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
@@ -376,7 +379,6 @@ const ProductDetailsInfo = ({
         <div className="w-full block 800px:flex p-5">
           <div className="w-full 800px:w-[50%]">
             <div className="flex items-center">
-              {/* CHANGED: show seller avatar from the backend shop object */}
               <Link to={`/shop/preview/${data?.shop?._id}`}>
                 <img
                   src={shopAvatar}

@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../components/Layout/Footer";
 import Header from "../components/Layout/Header";
 import styles from "../styles/styles";
 
 const FAQPage = () => {
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  },[])
   return (
     <div>
       <Header activeHeading={5} />

@@ -5,15 +5,16 @@ import styles from "../../../styles/styles";
 const Hero = () => {
   return (
     <div
-      className={`relative min-h-[70vh] 800px:min-h-[80vh] w-full bg-no-repeat ${styles.noramlFlex}`}
+    // relative min-h-[70vh] 800px:min-h-[80vh] w-full bg-no-repeat bg-cover bg-center ${styles.noramlFlex}
+      className={`relative min-h-[70vh] 800px:min-h-[80vh] w-full bg-no-repeat bg-cover bg-center ${styles.noramlFlex}`}
       style={{
         backgroundImage:
-          "url(https://themes.rslahmed.dev/rafcart/assets/images/banner-2.jpg)",
+          "url(https://media.istockphoto.com/id/1405360635/photo/contemporary-white-beige-interior-with-wall-panel-sofa-and-decor-3d-render-illustration-mockup.webp?a=1&b=1&s=612x612&w=0&k=20&c=1E2OuELgU0_pvuYaEHjYUxIXjjdcsamIRCMx0kWPsQU=)",
       }}
     >
       <div className={`${styles.section} w-[90%] 800px:w-[60%]`}>
         <h1
-          className={`text-[35px] leading-[1.2] 800px:text-[60px] text-[#3d3a3a] font-[600] capitalize`}
+          className={`text-[35px] leading-[1.2] 800px:text-[60px] text-[#080808] font-[600] capitalize`}
         >
           Best Collection for <br /> home Decoration
         </h1>

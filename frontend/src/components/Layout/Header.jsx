@@ -81,36 +81,41 @@ const Header = ({ activeHeading }) => {
             />
             {searchData && searchData.length !== 0 ? (
               <>
-              {/* inset-0 = top:0, left:0, right:0, bottom:0) */}
-               <div className="fixed inset-0 z-30" onClick={() => {
-                setOpenSearchBox(false);
-                setSearchData(null);
-                setSearchTerm("");
-                }}/>
+                {/* inset-0 = top:0, left:0, right:0, bottom:0) */}
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => {
+                    setOpenSearchBox(false);
+                    setSearchData(null);
+                    setSearchTerm("");
+                  }}
+                />
                 <div className="absolute top-full left-0 mt-1 w-full max-h-[60vh] overflow-y-auto bg-white shadow-lg rounded-md z-40 p-2">
-                {searchData &&
-                  searchData.map((i, index) => {
-                    return (
-                      <Link
-                        to={`/product/${i._id}`}
-                        key={index}
-                        onClick={() => {
-                          setSearchData(null);
-                          setSearchTerm("");
-                        }}
-                      >
-                        <div className="w-full flex items-center py-2 px-1 hover:bg-gray-100 rounded">
-                          <img
-                            src={getImageUrl(i.images && i.images[0])}
-                            alt=""
-                            className="w-[40px] h-[40px] mr-[10px] object-cover rounded  border-[#55555563] border-[1px]"
-                          />
-                          <h1>{i.name}</h1>
-                        </div>
-                      </Link>
-                    );
-                  })}
-              </div>
+                  {searchData &&
+                    searchData.map((i, index) => {
+                      return (
+                        <Link
+                          to={`/product/${i._id}`}
+                          key={index}
+                          onClick={() => {
+                            setSearchData(null);
+                            setSearchTerm("");
+                          }}
+                        >
+                          <div className="w-full flex items-center py-2 px-1 hover:bg-gray-100 rounded">
+                            <img
+                              src={getImageUrl(i.images && i.images[0])}
+                              alt=""
+                              className="w-[40px] h-[40px] mr-[10px] object-cover rounded  border-[#55555563] border-[1px]"
+                            />
+                            <h1>
+                              {i.name}
+                            </h1>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                </div>
               </>
             ) : null}
           </div>
@@ -151,10 +156,17 @@ const Header = ({ activeHeading }) => {
                 onClick={() => setDropDown(!dropDown)}
               />
               {dropDown ? (
-                <DropDown
+                <>
+                 <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => {
+                    setDropDown(false);
+                  }}/>
+                    <DropDown
                   categoriesData={categoriesData}
                   setDropDown={setDropDown}
                 />
+                </>
               ) : null}
             </div>
           </div>
@@ -215,11 +227,29 @@ const Header = ({ activeHeading }) => {
             </div>
 
             {/* cart popup */}
-            {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+            {openCart ? (
+              <>
+              <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => {
+                    setOpenCart(false);
+                  }}/>
+                  <Cart setOpenCart={setOpenCart} />
+              </>
+              ) : null}
 
             {/* wishlist popup */}
             {openWishList ? (
-              <Wishlist setOpenWishlist={setOpenWishlist} />
+              <>
+               <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => {
+                    setOpenWishlist(false);
+                  }}
+                />
+                <Wishlist setOpenWishlist={setOpenWishlist} />
+              </>
+              
             ) : null}
           </div>
         </div>
@@ -290,27 +320,42 @@ const Header = ({ activeHeading }) => {
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
-                {searchData && (
+                {searchData && searchData.length !== 0 ? (
                   <div className="absolute bg-[#fff] z-10 shadow w-full left-0 p-3">
-                    {searchData.map((i) => {
-                      const d = i.name;
-
-                      const Product_name = d.replace(/\s+/g, "-");
-                      return (
-                        <Link to={`/product/${Product_name}`}>
-                          <div className="flex items-center">
-                            <img
-                              src={i.image_Url[0]?.url}
-                              alt=""
-                              className="w-[50px] mr-2"
+                    {searchData &&
+                      searchData.map((i, index) => {
+                        return (
+                          <>
+                            <div
+                              className="fixed inset-0 z-30"
+                              onClick={() => {
+                                setOpenSearchBox(false);
+                                setSearchData(null);
+                                setSearchTerm("");
+                              }}
                             />
-                            <h5>{i.name}</h5>
-                          </div>
-                        </Link>
-                      );
-                    })}
+                            <Link
+                              to={`/product/${i._id}`}
+                              key={index}
+                              onClick={() => {
+                                setSearchData(null);
+                                setSearchTerm("");
+                              }}
+                            >
+                              <div className="w-full flex items-center py-2 px-1 hover:bg-gray-100 rounded">
+                                <img
+                                  src={getImageUrl(i.images && i.images[0])}
+                                  alt=""
+                                  className="w-[40px] h-[40px] mr-[10px] object-cover rounded  border-[#55555563] border-[1px]"
+                                />
+                                <h5 className="line-clamp-2">{i.name}</h5>
+                              </div>
+                            </Link>
+                          </>
+                        );
+                      })}
                   </div>
-                )}
+                ) : null}
               </div>
 
               {/* Nav Items */}

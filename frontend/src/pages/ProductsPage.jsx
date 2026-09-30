@@ -16,7 +16,6 @@ const ProductsPage = () => {
   useEffect(() => {
     if (categoryData === null) {
       const d = allProducts;
-      // allProducts && allProducts.sort((a, b) => a.sold_out - b.sold_out);
       setData(d);
     } else {
       const d =

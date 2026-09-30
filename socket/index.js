@@ -8,6 +8,9 @@ require("dotenv").config({
 });
 
 const app = express();
+
+// Wraps the Express app in Node's HTTP server because Socket.io needs a raw HTTP server to attach to.
+
 const server = http.createServer(app);
 
 const allowedOrigins = [
@@ -16,11 +19,14 @@ const allowedOrigins = [
   "http://localhost:3000",
 ].filter(Boolean);
 
+//the purpose of .filter(Boolean) is to remove any undefined or falsy values from the array. This ensures that only valid origins are included in the allowedOrigins list. for example, if process.env.FRONTEND_URL is not set, it will be undefined and .filter(Boolean) will remove it from the array. This prevents potential issues with CORS configuration by ensuring that only valid origins are considered.
+
 const corsOptions = {
   origin: allowedOrigins,
   credentials: true,
 };
 
+//takes the raw server and attaches the socket.io server to it, now io becomes the main manager for all socket connections.
 const io = socketIO(server, {
   cors: corsOptions,
 });
@@ -32,7 +38,8 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// in this users array, we will have 2 users (i.e sender & receiver)
+// in this users array, we will have 2 types of users (i.e sender & receiver)
+// this [] Tracks everyone currently connected to the socket server
 let users = [];
 
 const addUser = (userId, socketId) => {
@@ -40,7 +47,7 @@ const addUser = (userId, socketId) => {
     users.push({ userId, socketId });
 };
 
-//it works is when you leave the chat then it"ll remove you from socket
+//it works is when you leave the chat(closes tab, loses internet, etc) then it"ll remove you from socket
 const removeUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
 };
@@ -49,7 +56,7 @@ const getUser = (receiverId) => {
   return users.find((user) => user.userId === receiverId);
 };
 
-// Define a message object with seen property
+// Define a message object with seen property false
 const createMessage = ({ senderId, receiverId, text, images }) => ({
   senderId,
   receiverId,
@@ -58,11 +65,14 @@ const createMessage = ({ senderId, receiverId, text, images }) => ({
   seen: false,
 });
 
+// io = the WHOLE server, talking to EVERYONE. 
+// socket = ONE specific connected person only.
+
 io.on("connection", (socket) => {
-  //when socket will connect:
+  //io.on("connection", ...) runs whenever a user connects, giving a new socket for that user's connection.
   console.log(`a user is connected`);
 
-  //take userId and socketId from user
+//  Frontend emits "addUser".The server receives it, adds the user to the users list((using socket.id, the auto-generated connection ID for this exact browser tab),
   socket.on("addUser", (userId) => {
     addUser(userId, socket.id);
     io.emit("getUsers", users);
@@ -73,6 +83,8 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", ({ senderId, receiverId, text, images }) => {
     const message = createMessage({ senderId, receiverId, text, images });
+
+    // check if the receiver is currently online, and get their live socketId.
     const user = getUser(receiverId);
 
     //store the messages in the `messages` object
@@ -83,6 +95,9 @@ io.on("connection", (socket) => {
     }
 
     //send the message to the receiver
+    // io.to(socketId) targets one specific connection, 
+    // then .emit("getMessage", message) sends the message only to that receiver.
+
     io.to(user?.socketId).emit("getMessage", message);
   });
 
@@ -119,6 +134,7 @@ io.on("connection", (socket) => {
   //when socket will disconnected
   socket.on("disconnect", () => {
     console.log(`User disconnected`);
+    // Removes them from the online users list, then broadcasts the updated list to everyone
     removeUser(socket.id);
     io.emit("getUsers", users);
   });

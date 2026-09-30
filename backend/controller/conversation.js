@@ -39,7 +39,11 @@ router.post("/create-new-conversation",  catchAsyncErrors(async(req, res, next) 
 //get seller conversation
 router.get("/get-all-conversation-seller/:id", isSeller, catchAsyncErrors(async(req, res, next) => {
     try {
-        const conversations = await Conversation.find({members: {
+        const conversations = await Conversation.find({
+            // Why not just members: req.params.id?
+            // members is array and id is string, cann't compare array with string, so $in tells MongoDB to check if the ID exists inside that array.
+            members: {
+            // [req.params.id] → puts the ID in an array because $in expects an array of values to check.
             $in: [req.params.id],
         }}).sort({updatedAt: -1, createdAt: -1});
 

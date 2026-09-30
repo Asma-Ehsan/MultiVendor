@@ -10,12 +10,14 @@ export const wishlistReducer = createReducer(initialState, (builder) => {
     builder
     .addCase("addToWishlist", (state, action) => {
         const item = action.payload;
-        // check if the item is already in the wishlist or not
+        // check if the item is already in the wishlist or not. 
+        //.find() checks if a matching item exists and returns it if found.It does not change the array.
         const isItemExists = state.wishlist.find((i) => i._id === item._id); 
         if(isItemExists){
             // item already in wishlist — replace it (e.g. to update qty) instead of duplicating
             return {
                 ...state,
+                // .map() rebuilds the array item-by-item, replacing the matching old item with the new one while keeping the others unchanged.
                 wishlist: state.wishlist.map((i) => (i._id === isItemExists._id ? item : i)),
             };
         }else{

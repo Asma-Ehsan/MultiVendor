@@ -10,7 +10,7 @@ import { AiFillStar, AiOutlineMessage, AiOutlineStar } from "react-icons/ai";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const OrderDetails = () => {
+const UserOrderDetails = () => {
   const { orders } = useSelector((state) => state.order);
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -252,4 +252,4 @@ const OrderDetails = () => {
   );
 };
 
-export default OrderDetails;
+export default UserOrderDetails;

@@ -116,6 +116,7 @@ const UserInbox = ({active}) => {
       conversationId: currentChat._id,
     };
 
+    // receiver is seller here as sender is user
     const receiverId = currentChat.members.find(
       (member) => member !== user._id,
     );

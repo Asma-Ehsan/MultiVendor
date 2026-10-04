@@ -60,7 +60,7 @@ router.delete("/delete-coupon/:id", isSeller, catchAsyncError(async(req, res, ne
     try {
         const couponCode = await CoupounCode.findByIdAndDelete(req.params.id);
         
-        if(!couponCode) return next(new ErrorHandler("Coupn Code does't not exist!", 400));
+        if(!couponCode) return next(new ErrorHandler("Coupon Code does't not exist!", 400));
 
         res.status(201).json({
             success:true,

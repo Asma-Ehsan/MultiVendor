@@ -25,7 +25,7 @@ const AllCoupons = () => {
 
   const dispatch = useDispatch();
 
-;  useEffect(() => {
+  useEffect(() => {
     setIsLoading(true);
     axios.get(`${server}/coupon/get-coupon/${seller._id}`, {
       withCredentials:true,
@@ -75,8 +75,6 @@ const AllCoupons = () => {
       flex: 0.8,
       sortable: false,
       renderCell: (params) => {
-        const d = params.row.name;
-        const product_name = d.replace(/\s+/g, "-");
         return (
           <>
             <Button onClick={() => handleDelete(params.id)}>
@@ -140,7 +138,7 @@ const AllCoupons = () => {
                   Create Coupon code
                 </h5>
                 {/* create coupoun code */}
-                <form onSubmit={handleSubmit} aria-required={true}>
+                <form onSubmit={handleSubmit}>
                   <br />
                   <div>
                     <label className="pb-2">

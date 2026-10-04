@@ -10,6 +10,7 @@ require("dotenv").config({
 const app = express();
 
 // Wraps the Express app in Node's HTTP server because Socket.io needs a raw HTTP server to attach to.
+//Socket.io needs the real HTTP server, not just Express, because it works directly with the server to keep connections open.
 
 const server = http.createServer(app);
 
@@ -42,12 +43,16 @@ app.get("/", (req, res) => {
 // this [] Tracks everyone currently connected to the socket server
 let users = [];
 
+//socketId: whenever a user connects to the socket server, socket.io automatically generates a unique ID for that connection only. This ID is used to identify and communicate with that specific connection.
+// // socketId tells the server which active connection belongs to the user right now.
+
 const addUser = (userId, socketId) => {
   !users.some((user) => user.userId === userId) &&
     users.push({ userId, socketId });
 };
 
 //it works is when you leave the chat(closes tab, loses internet, etc) then it"ll remove you from socket
+
 const removeUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
 };
@@ -65,14 +70,24 @@ const createMessage = ({ senderId, receiverId, text, images }) => ({
   seen: false,
 });
 
-// io = the WHOLE server, talking to EVERYONE. 
+// io = the WHOLE server, talking to all open connections at once. 
 // socket = ONE specific connected person only.
 
+//socket.emit("eventName", data) sends a message to the specific connection that sent the message to the server. This is useful for sending a response back to the sender only.socket.emit() always means "send to whoever JUST triggered this code"
+
+//io.emit("eventName", data) sends a message to everyone connected to the socket server.
+
+//io.to(socketId).emit("eventName", data) sends a message to one specific connection, identified by socketId.
+
+//When someone connects, Socket.io gives you a "socket" object (pass in io.on as the parameter) for that one person.
+
+//The important idea is: io.on("connection", (socket) => {...}) runs once for each person who connects.
+
 io.on("connection", (socket) => {
-  //io.on("connection", ...) runs whenever a user connects, giving a new socket for that user's connection.
+  //io.on("connection", ...) runs whenever a user connects, giving a new socket for that user's connection. user is connected to the socket server
   console.log(`a user is connected`);
 
-//  Frontend emits "addUser".The server receives it, adds the user to the users list((using socket.id, the auto-generated connection ID for this exact browser tab),
+  //  Frontend emits "addUser".The server receives it, adds the user to the users list((using socket.id, the auto-generated connection ID for this exact browser tab),
   socket.on("addUser", (userId) => {
     addUser(userId, socket.id);
     io.emit("getUsers", users);
@@ -101,33 +116,34 @@ io.on("connection", (socket) => {
     io.to(user?.socketId).emit("getMessage", message);
   });
 
-  socket.on("messageSeen", ({ senderId, receiverId, messageId }) => {
-    const user = getUser(senderId);
+  // socket.on("messageSeen", ({ senderId, receiverId, messageId }) => {
+  //   const user = getUser(senderId);
 
-    //update the seen flag for the message
-    if (messages[senderId]) {
-      const message = messages[senderId].find(
-        (message) =>
-          message.receiverId === receiverId && message.id === messageId,
-      );
-      if (message) {
-        message.seen = true;
+  //   //update the seen flag for the message
+  //   if (messages[senderId]) {
+  //     const message = messages[senderId].find(
+  //       (message) =>
+  //         message.receiverId === receiverId && message.id === messageId,
+  //     );
+  //     if (message) {
+  //       message.seen = true;
 
-        //send a message seen event to the sender
-        io.to(user?.socketId).emit("messageSeen", {
-          senderId,
-          receiverId,
-          messageId,
-        });
-      }
-    }
-  });
+  //       //send a message seen event to the sender
+  //       io.to(user?.socketId).emit("messageSeen", {
+  //         senderId,
+  //         receiverId,
+  //         messageId,
+  //       });
+  //     }
+  //   }
+  // });
 
   //update and get last message
+  
   socket.on("updateLastMessage", ({ lastMessage, lastMessageId }) => {
     io.emit("getLastMessage", {
       lastMessage,
-      lastMessageId,
+      lastMessageId //the ID of whoever sent it,
     });
   });
 

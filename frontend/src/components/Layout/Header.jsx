@@ -229,11 +229,6 @@ const Header = ({ activeHeading }) => {
             {/* cart popup */}
             {openCart ? (
               <>
-              <div
-                  className="fixed inset-0 z-30"
-                  onClick={() => {
-                    setOpenCart(false);
-                  }}/>
                   <Cart setOpenCart={setOpenCart} />
               </>
               ) : null}
@@ -241,12 +236,6 @@ const Header = ({ activeHeading }) => {
             {/* wishlist popup */}
             {openWishList ? (
               <>
-               <div
-                  className="fixed inset-0 z-30"
-                  onClick={() => {
-                    setOpenWishlist(false);
-                  }}
-                />
                 <Wishlist setOpenWishlist={setOpenWishlist} />
               </>
               

@@ -12,25 +12,46 @@ import styles from "../../styles/styles";
 
 const ENDPOINT =
 process.env.REACT_APP_SOCKET_URL || "https://multivendor-socket.bonto.run";
+/*
+socketIO: connects to a socket server, and gives back an object which can be used to communicate with server
+
+{ transports: ["websocket"] }
+
+This is a configuration setting that tells Socket.io how to make the connection.
+
+* "websocket" = a real, always-open connection.
+* Socket.io can also use polling, where the browser keeps asking the server for new data.
+* By default, Socket.io may start with polling and then switch to WebSocket.
+* transports: ["websocket"] tells Socket.io to skip polling and use WebSocket directly.
+
+Why an array []?
+Because you can allow multiple methods, for example: ["websocket", "polling"]
+
+But ["websocket"] means only WebSocket is allowed.
+*/
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInbox = ({active}) => {
   const { user } = useSelector((state) => state.user);
-  const [conversations, setConversations] = useState([]);
-  const [arivalMessage, setArivalMessage] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [currentChat, setCurrentChat] = useState(null);
-  const [newMessage, setNewMessage] = useState("");
+  const [conversations, setConversations] = useState([]); //the full list of this user's conversations
+  const [arivalMessage, setArivalMessage] = useState(null); //a temporary holding spot for a message that JUST arrived via socket
+  const [messages, setMessages] = useState([]); //all messages belonging to the CURRENTLY open chat.
+  const [currentChat, setCurrentChat] = useState(null); //which conversation is currently open
+  const [newMessage, setNewMessage] = useState(""); //whatever text the user is currently typing in the input box.
   const [open, setOpen] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [onlineUsers, setOnelineUsers] = useState([]);
-  const [activeStatus, setActiveStatus] = useState(false);
-  const location = useLocation();
+  const [userData, setUserData] = useState(null); //info about the OTHER person in the currently open chat (the seller) — their name, avatar, etc.
+  const [onlineUsers, setOnelineUsers] = useState([]); //the full online-users list received from the socket server (getUsers event) — used to show green/gray dots.
+  const [activeStatus, setActiveStatus] = useState(false); //whether the person in the CURRENTLY open chat specifically is online right now.
+  const location = useLocation(); //React Router's hook for reading info about the current page/URL
+
+
+  //useEffect(..., [])→ installs the listener **once** when the component loads.
+  //socketId.on("getMessage", ...) → registers the function to run every time `getMessage` event is received from the socket server.
 
   useEffect(() => {
     socketId.on("getMessage", (data) => {
       setArivalMessage({
-        sender: data.sendId,
+        sender: data.senderId,
         text: data.text,
         createdAt: Date.now(),
       });
@@ -43,7 +64,9 @@ const UserInbox = ({active}) => {
       setMessages((prev) => [...prev, arivalMessage]);
   }, [arivalMessage, currentChat]);
 
+  //get list of conversations that user has
   useEffect(() => {
+    // If the user's ID isn't available yet, stop here and don't send the request.
     if (!user?._id) return;
     axios
       .get(`${server}/conversation/get-all-conversation-user/${user._id}`, {
@@ -55,7 +78,9 @@ const UserInbox = ({active}) => {
       .catch((error) => {
         toast.error(error.response.data.message);
       });
-  }, [user, messages]);
+  }, 
+  //messages in the dependency array means: whenever messages change, re-run this effect and refresh the conversation list so the latest message preview is updated.
+  [user, messages]); 
 
   // get messages
   useEffect(() => {
@@ -83,6 +108,8 @@ const UserInbox = ({active}) => {
     }
   }, [user]);
 
+  //to get the sho
+  // p info to display its name and avatar
   useEffect(() => {
     const conversationId = location?.state?.conversationId;
     if(!conversationId || !conversations.length) return;
@@ -108,8 +135,10 @@ const UserInbox = ({active}) => {
 
   //create new message
   const sendMessageHandler = async (e) => {
+    // Stops the page from doing a full reload
     e.preventDefault();
 
+    // object is being prepared for the database save
     const message = {
       sender: user._id,
       text: newMessage,
@@ -144,6 +173,7 @@ const UserInbox = ({active}) => {
     }
   };
 
+  // update last message handler
   const updateLastMessage = async () => {
     socketId.emit("updateLastMessage", {
       lastMessage: newMessage,
@@ -177,15 +207,15 @@ const UserInbox = ({active}) => {
           {conversations &&
             conversations.map((item, index) => (
               <MessageList
-                data={item}
-                key={index}
-                index={index}
-                setOpen={setOpen}
-                setCurrentChat={setCurrentChat}
-                me={user._id}
-                userData={userData}
-                setUserData={setUserData}
-                online={onlineCheck(item)}
+                data={item} //conversation's full data
+                key={index} 
+                index={index} //row's position in the list
+                setOpen={setOpen} //lets MessageList open the chat when clicked
+                setCurrentChat={setCurrentChat} // lets MessageList set WHICH chat is now open
+                me={user._id} // current logged-in user's own ID
+                userData={userData} //seller's data of currently selected chat
+                setUserData={setUserData} // to update seller's data
+                online={onlineCheck(item)} //call onlineCheck of seller
                 setActiveStatus={setActiveStatus}
               />
             ))}
@@ -223,7 +253,9 @@ const MessageList = ({
   setActiveStatus,
 }) => {
   const [active, setActive] = useState(0);
-  const [user, setUser] = useState([]);
+
+  // userData in the parent contains info for only the currently open chat. But MessageList shows multiple users, so each row needs its own user data and ID to display the correct name and avatar. so this user state is for the seller in this specific row of the list, not the currently open chat.
+  const [user, setUser] = useState([]); //here user refers to each seller
   const navigate = useNavigate();
 
   const handleClick = (id) => {
@@ -250,8 +282,8 @@ const MessageList = ({
     <div
       className={`w-full flex p-3 my-[1px] px-3 ${active === index ? "bg-[#00000010]" : "bg-transparent"}   cursor-pointer`}
       onClick={(e) =>
-        setActive(index) ||
-        handleClick(data._id) ||
+        setActive(index) || //highlights this row visually.
+        handleClick(data._id) || //navigates (adds the ID to the URL) and sets open to true.
         setCurrentChat(data) ||
         setUserData(user) ||
         setActiveStatus(online)

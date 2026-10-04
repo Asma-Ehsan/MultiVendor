@@ -10,6 +10,24 @@ import { GrGallery } from "react-icons/gr";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
 
+/*
+socketIO: connects to a socket server, and gives back an object which can be used to communicate with server
+
+{ transports: ["websocket"] }
+
+This is a configuration setting that tells Socket.io how to make the connection.
+
+* "websocket" = a real, always-open connection.
+* Socket.io can also use polling, where the browser keeps asking the server for new data.
+* By default, Socket.io may start with polling and then switch to WebSocket.
+* transports: ["websocket"] tells Socket.io to skip polling and use WebSocket directly.
+
+Why an array []?
+Because you can allow multiple methods, for example: ["websocket", "polling"]
+
+But ["websocket"] means only WebSocket is allowed.
+*/
+
 const ENDPOINT =
   process.env.REACT_APP_SOCKET_URL || "https://multivendor-socket.bonto.run";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
@@ -29,7 +47,7 @@ const ShopInbox = () => {
   useEffect(() => {
     socketId.on("getMessage", (data) => {
       setArivalMessage({
-        sender: data.sendId,
+        sender: data.senderId,
         text: data.text,
         createdAt: Date.now(),
       });

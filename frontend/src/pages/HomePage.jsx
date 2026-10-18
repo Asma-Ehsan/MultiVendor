@@ -13,7 +13,7 @@ const HomePage = () => {
     window.scrollTo(0,0);
   })
   return (
-    <div>
+    <div className="bg-background font-jakarta">
       <Header activeHeading={1}/>
       <Hero/>
       <Categories/>

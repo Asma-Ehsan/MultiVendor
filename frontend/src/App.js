@@ -17,6 +17,7 @@ import {loadStripe} from "@stripe/stripe-js";
 
 const App = () => {
   const [stripeApikey, setStripeApikey] = useState("");
+  
   async function getStipeApikey() {
      try {
     const { data } = await axios.get(`${server}/payment/stripeapikey`);
@@ -36,6 +37,8 @@ const App = () => {
   return (
     <BrowserRouter>
     {stripeApikey && (
+    // loadStripe(key) starts Stripe in the browser.
+    // <Elements> is a wrapper. Everything inside it can use Stripe's card boxes.
       <Elements stripe={loadStripe(stripeApikey)}>
         <Routes>
          <Route

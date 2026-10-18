@@ -88,204 +88,227 @@ const CreateEvent = () => {
         .slice(0, 10)
     : today;
 
+  const inputStyle =
+  "mt-2 w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high text-body-md font-body-md text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200";
+  const labelStyle = "font-label-md text-label-md text-on-surface";
   return (
-    <div className="w-[90%] 800px:w-[50%] bg-white  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
-      <h5 className="text-[30px] font-Poppins text-center">Create Event</h5>
-      {/* create event form */}
-      <form onSubmit={handleSubmit}>
-        <br />
-        {/* Name */}
-        <div>
-          <label className="pb-2">
-            Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={name}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your event product name..."
-          />
-        </div>
-        <br />
+  <div className="w-full min-w-0 p-space-md 800px:p-space-lg">
+    <div className="max-w-3xl mx-auto">
+      {/* ---------- Page heading ---------- */}
+      <div className="mb-space-md">
+        <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
+          Marketing
+        </span>
+        <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+          Create Event
+        </h2>
+        <p className="font-body-md text-body-md text-secondary mt-1">
+          Set up a new event or flash sale for your customers.
+        </p>
+      </div>
 
-        {/* Description */}
-        <div>
-          <label className="pb-2">
-            Description <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            cols="30"
-            required
-            rows="8"
-            type="text"
-            name="description"
-            value={description}
-            className="mt-2 appearance-none block w-full pt-2 px-3 border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter your event product description..."
-          ></textarea>
-        </div>
-        <br />
-
-        {/* Category */}
-        <div>
-          <label className="pb-2">
-            Category <span className="text-red-500">*</span>
-          </label>
-          <select
-            className="w-full mt-2 border h-[35px] rounded-[5px]"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="Choose a category">Choose a category</option>
-            {categoriesData &&
-              categoriesData.map((i) => (
-                <option value={i.title} key={i.title}>
-                  {i.title}
-                </option>
-              ))}
-          </select>
-        </div>
-        <br />
-
-        {/* Tags */}
-        <div>
-          <label className="pb-2">Tags</label>
-          <input
-            type="text"
-            name="tags"
-            value={tags}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setTags(e.target.value)}
-            placeholder="Enter your event product tags..."
-          />
-        </div>
-        <br />
-
-        {/* Original Price */}
-        <div>
-          <label className="pb-2">Original Price</label>
-          <input
-            type="number"
-            name="price"
-            value={originalPrice}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setOriginalPrice(e.target.value)}
-            placeholder="Enter your event product price..."
-          />
-        </div>
-        <br />
-
-        {/* Discount Price */}
-        <div>
-          <label className="pb-2">
-            Price (With Discount) <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="price"
-            value={discountPrice}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setDiscountPrice(e.target.value)}
-            placeholder="Enter your event product price with discount..."
-          />
-        </div>
-        <br />
-
-        {/* Product Stock */}
-        <div>
-          <label className="pb-2">
-            Product Stock <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="price"
-            required
-            value={stock}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={(e) => setStock(e.target.value)}
-            placeholder="Enter your event product stock..."
-          />
-        </div>
-        <br />
-
-        {/* Event Start Date */}
-        <div>
-          <label className="pb-2">
-            Event Start Date <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="date"
-            name="price"
-            id="start-date"
-            value={startDate ? startDate.toISOString().slice(0, 10) : ""}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={handleStartDateChange}
-            min={today}
-            placeholder="Enter your event product stock..."
-          />
-        </div>
-        <br />
-
-        {/* Event End Date */}
-        <div>
-          <label className="pb-2">
-            Event End Date <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="date"
-            name="price"
-            id="end-date"
-            value={endDate ? endDate.toISOString().slice(0, 10) : ""}
-            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            onChange={handleEndDateChange}
-            min={minEndDate}
-            placeholder="Enter your event product stock..."
-          />
-        </div>
-        <br />
-
-        {/* Event Images Upload */}
-        <div>
-          <label className="pb-2">
-            Upload Images <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="file"
-            name=""
-            id="upload"
-            className="hidden"
-            multiple
-            onChange={handleImageChange}
-          />
-          <div className="w-full flex items-center flex-wrap">
-            <label htmlFor="upload">
-              <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
-            </label>
-              {images &&
-              images.map((i) => (
-                <img
-                  src={URL.createObjectURL(i)}
-                  key={i}
-                  alt=""
-                  className="h-[120px] w-[120px] object-cover m-2"
-                />
-              ))}
-          </div>
-          <br />
+      {/* ---------- Card ---------- */}
+      <div className="bg-surface-container-lowest rounded-2xl border border-surface-container shadow-sm p-space-md sm:p-space-lg">
+        {/* create event form */}
+        <form onSubmit={handleSubmit} className="space-y-space-md">
+          {/* Name */}
           <div>
+            <label className={labelStyle}>
+              Name <span className="text-error">*</span>
+            </label>
             <input
-              type="submit"
-              value="Create"
-              className="mt-2 cursor-pointer appearance-none text-center block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              type="text"
+              name="name"
+              value={name}
+              className={inputStyle}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your event product name..."
             />
           </div>
-        </div>
-      </form>
+
+          {/* Description */}
+          <div>
+            <label className={labelStyle}>
+              Description <span className="text-error">*</span>
+            </label>
+            <textarea
+              cols="30"
+              required
+              rows="6"
+              type="text"
+              name="description"
+              value={description}
+              className={`${inputStyle} resize-y`}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter your event product description..."
+            ></textarea>
+          </div>
+
+          {/* Category + Tags */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div>
+              <label className={labelStyle}>
+                Category <span className="text-error">*</span>
+              </label>
+              <select
+                className={inputStyle}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="Choose a category">Choose a category</option>
+                {categoriesData &&
+                  categoriesData.map((i) => (
+                    <option value={i.title} key={i.title}>
+                      {i.title}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div>
+              <label className={labelStyle}>Tags</label>
+              <input
+                type="text"
+                name="tags"
+                value={tags}
+                className={inputStyle}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="Enter your event product tags..."
+              />
+            </div>
+          </div>
+
+          {/* Original Price + Discount Price */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div>
+              <label className={labelStyle}>Original Price</label>
+              <input
+                type="number"
+                name="price"
+                value={originalPrice}
+                className={inputStyle}
+                onChange={(e) => setOriginalPrice(e.target.value)}
+                placeholder="Enter your event product price..."
+              />
+            </div>
+
+            <div>
+              <label className={labelStyle}>
+                Price (With Discount) <span className="text-error">*</span>
+              </label>
+              <input
+                type="number"
+                name="price"
+                value={discountPrice}
+                className={inputStyle}
+                onChange={(e) => setDiscountPrice(e.target.value)}
+                placeholder="Enter your event product price with discount..."
+              />
+            </div>
+          </div>
+
+          {/* Product Stock */}
+          <div>
+            <label className={labelStyle}>
+              Product Stock <span className="text-error">*</span>
+            </label>
+            <input
+              type="number"
+              name="price"
+              required
+              value={stock}
+              className={inputStyle}
+              onChange={(e) => setStock(e.target.value)}
+              placeholder="Enter your event product stock..."
+            />
+          </div>
+
+          {/* Event Start Date + End Date */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div>
+              <label className={labelStyle}>
+                Event Start Date <span className="text-error">*</span>
+              </label>
+              <input
+                type="date"
+                name="price"
+                id="start-date"
+                value={startDate ? startDate.toISOString().slice(0, 10) : ""}
+                className={inputStyle}
+                onChange={handleStartDateChange}
+                min={today}
+              />
+            </div>
+
+            <div>
+              <label className={labelStyle}>
+                Event End Date <span className="text-error">*</span>
+              </label>
+              <input
+                type="date"
+                name="price"
+                id="end-date"
+                value={endDate ? endDate.toISOString().slice(0, 10) : ""}
+                className={inputStyle}
+                onChange={handleEndDateChange}
+                min={minEndDate}
+              />
+            </div>
+          </div>
+
+          {/* Event Images Upload */}
+          <div>
+            <label className={labelStyle}>
+              Upload Images <span className="text-error">*</span>
+            </label>
+            <input
+              type="file"
+              name=""
+              id="upload"
+              className="hidden"
+              multiple
+              onChange={handleImageChange}
+            />
+
+            {/* Click this box to open the file picker */}
+            <label
+              htmlFor="upload"
+              className="group mt-2 flex flex-col items-center justify-center gap-1 w-full py-8 rounded-2xl border-2 border-dashed border-outline-variant bg-surface-container-low text-secondary hover:bg-primary-fixed/40 hover:border-primary hover:text-primary cursor-pointer transition-all duration-200"
+            >
+              <AiOutlinePlusCircle
+                size={32}
+                className="transition-transform duration-200 group-hover:scale-110"
+              />
+              <span className="font-label-md text-label-md">Click to upload images</span>
+              <span className="font-body-sm text-body-sm">You can choose more than one</span>
+            </label>
+
+            {/* Image previews */}
+            {images && images.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-space-sm mt-space-md">
+                {images.map((i) => (
+                  <img
+                    src={URL.createObjectURL(i)}
+                    key={i}
+                    alt=""
+                    className="w-full aspect-square object-cover rounded-xl border border-surface-container hover:scale-105 transition-transform duration-200"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Submit */}
+          <input
+            type="submit"
+            value="Create"
+            className="w-full px-6 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface font-label-md text-label-md hover:bg-primary transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
+          />
+        </form>
+      </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default CreateEvent;

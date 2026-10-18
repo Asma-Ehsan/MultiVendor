@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import styles from "../../styles/styles.js";
-import { Link, useNavigate } from "react-router-dom";
+import { IoIosArrowForward } from "react-icons/io";
+import { Link } from "react-router-dom";
 import { RxAvatar } from "react-icons/rx";
 import axios from "axios";
 import { server } from "../../server.js";
 import { toast } from "react-toastify";
+import logo from "../../Assests/images/logo.png";
 
 const ShopCreate = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -25,7 +25,7 @@ const ShopCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const config = { headers: { "Content-Type": "multipart/formData" } };
+    const config = { headers: { "Content-Type": "multipart/form-data" } };
     const newForm = new FormData();
     newForm.append("file", avatar);
     newForm.append("name", name);
@@ -53,34 +53,54 @@ const ShopCreate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-surface-container-low via-surface to-surface-container-lowest flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 font-jakarta">
+      {/* soft color circles in the background */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 -right-32 w-80 h-80 rounded-full bg-tertiary-fixed/40 blur-3xl pointer-events-none"></div>
+
+      {/* Logo + heading */}
+      <div className="relative sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center">
+          <Link to="/">
+            <img
+              src={logo}
+              alt="ShopNest"
+              className="h-14 w-auto object-contain transition-transform duration-200 hover:scale-105"
+            />
+          </Link>
+        </div>
+        <h2 className="mt-6 text-center text-headline-lg-mobile md:text-headline-lg text-on-surface tracking-tight">
           Register as a seller
         </h2>
+        <p className="mt-1 text-center text-body-md text-secondary">
+          Open your shop on ShopNest and start selling.
+        </p>
       </div>
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-[35rem]">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          
+
+      {/* Form card */}
+      <div className="relative mt-8 sm:mx-auto sm:w-full sm:max-w-[35rem]">
+        <div className="bg-surface-container-lowest py-8 px-5 sm:px-10 rounded-3xl border border-surface-container/80 shadow-[0_12px_36px_-12px_rgba(70,72,212,0.14)]">
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-           
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+          >
             {/* name placeholder */}
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-label-md text-on-surface-variant"
               >
                 Shop Name
               </label>
-              <div className="mt-1">
+              <div className="mt-1.5">
                 <input
-                  type="name"
+                  type="text"
                   name="name"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="appearance-none block w-full px-4 py-2.5 text-body-md bg-surface-container-low hover:bg-surface-container focus:bg-surface-container-lowest text-on-surface placeholder:text-secondary rounded-xl border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200"
                 />
               </div>
             </div>
@@ -89,11 +109,11 @@ const ShopCreate = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-label-md text-on-surface-variant"
               >
                 Email address
               </label>
-              <div className="mt-1">
+              <div className="mt-1.5">
                 <input
                   type="email"
                   name="email"
@@ -101,7 +121,7 @@ const ShopCreate = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="appearance-none block w-full px-4 py-2.5 text-body-md bg-surface-container-low hover:bg-surface-container focus:bg-surface-container-lowest text-on-surface placeholder:text-secondary rounded-xl border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200"
                 />
               </div>
             </div>
@@ -110,19 +130,19 @@ const ShopCreate = () => {
             <div>
               <label
                 htmlFor="number"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-label-md text-on-surface-variant"
               >
                 Phone Number
               </label>
-              <div className="mt-1">
+              <div className="mt-1.5">
                 <input
                   type="number"
                   name="phone-number"
-                  autoComplete="email"
+                  autoComplete="tel"
                   required
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="appearance-none block w-full px-4 py-2.5 text-body-md bg-surface-container-low hover:bg-surface-container focus:bg-surface-container-lowest text-on-surface placeholder:text-secondary rounded-xl border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200"
                 />
               </div>
             </div>
@@ -131,18 +151,18 @@ const ShopCreate = () => {
             <div>
               <label
                 htmlFor="address"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-label-md text-on-surface-variant"
               >
                 Address
               </label>
-              <div className="mt-1">
+              <div className="mt-1.5">
                 <input
-                  type="address"
+                  type="text"
                   name="address"
                   required
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="appearance-none block w-full px-4 py-2.5 text-body-md bg-surface-container-low hover:bg-surface-container focus:bg-surface-container-lowest text-on-surface placeholder:text-secondary rounded-xl border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200"
                 />
               </div>
             </div>
@@ -151,18 +171,18 @@ const ShopCreate = () => {
             <div>
               <label
                 htmlFor="number"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-label-md text-on-surface-variant"
               >
                 Zip Code
               </label>
-              <div className="mt-1">
+              <div className="mt-1.5">
                 <input
                   type="number"
                   name="zipcode"
                   required
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="appearance-none block w-full px-4 py-2.5 text-body-md bg-surface-container-low hover:bg-surface-container focus:bg-surface-container-lowest text-on-surface placeholder:text-secondary rounded-xl border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200"
                 />
               </div>
             </div>
@@ -171,11 +191,11 @@ const ShopCreate = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-label-md text-on-surface-variant"
               >
                 Password
               </label>
-              <div className="mt-1 relative">
+              <div className="mt-1.5 relative">
                 <input
                   type={visible ? "text" : "password"}
                   name="password"
@@ -183,18 +203,18 @@ const ShopCreate = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="appearance-none block w-full pl-4 pr-11 py-2.5 text-body-md bg-surface-container-low hover:bg-surface-container focus:bg-surface-container-lowest text-on-surface placeholder:text-secondary rounded-xl border border-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200"
                 />
                 {visible ? (
                   <AiOutlineEye
-                    className="absolute right-2 top-2 cursor-pointer"
-                    size={25}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-secondary hover:text-primary transition-colors"
+                    size={22}
                     onClick={() => setVisible(false)}
                   />
                 ) : (
                   <AiOutlineEyeInvisible
-                    className="absolute right-2 top-2 cursor-pointer"
-                    size={25}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-secondary hover:text-primary transition-colors"
+                    size={22}
                     onClick={() => setVisible(true)}
                   />
                 )}
@@ -202,13 +222,13 @@ const ShopCreate = () => {
             </div>
 
             {/* Upload profile image */}
-            <div>
+            <div className="sm:col-span-2">
               <label
                 htmlFor="avatar"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-label-md text-on-surface-variant"
               ></label>
-              <div className="mt-2 flex items-center">
-                <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
+              <div className="mt-1 flex items-center">
+                <span className="inline-block h-12 w-12 rounded-full overflow-hidden ring-2 ring-primary-fixed bg-surface-container-low shrink-0">
                   {avatar ? (
                     <img
                       src={URL.createObjectURL(avatar)}
@@ -216,12 +236,12 @@ const ShopCreate = () => {
                       className="h-full w-full object-cover rounded-full"
                     />
                   ) : (
-                    <RxAvatar className="h-8 w-8" />
+                    <RxAvatar className="h-12 w-12 text-outline" />
                   )}
                 </span>
                 <label
                   htmlFor="file-input"
-                  className="ml-5 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className="ml-4 flex items-center justify-center px-4 py-2 rounded-xl border border-surface-variant/60 bg-surface-container text-label-md text-on-surface cursor-pointer hover:bg-primary-fixed hover:text-primary transition-all duration-200"
                 >
                   <span>Upload a file</span>
                   <input
@@ -233,23 +253,30 @@ const ShopCreate = () => {
                     className="sr-only"
                   />
                 </label>
+                <span className="ml-3 text-body-sm text-secondary">
+                  JPG or PNG
+                </span>
               </div>
             </div>
 
             {/* button */}
-            <div>
+            <div className="sm:col-span-2">
               <button
                 type="submit"
-                className="group relative w-full h-[40px] flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="group w-full h-12 flex justify-center items-center gap-1 px-4 rounded-xl text-label-md text-on-primary bg-primary hover:bg-primary-container shadow-md hover:shadow-lg transition-all duration-300"
               >
-                Submit
+                <span>Submit</span>
+                <IoIosArrowForward className="transition-transform duration-200 group-hover:translate-x-1" />
               </button>
             </div>
 
-            {/* Not having account? */}
-            <div className={`${styles.noramlFlex} w-full`}>
+            {/* Already have an account? */}
+            <div className="sm:col-span-2 flex items-center justify-center w-full text-body-md text-secondary">
               <h4>Already have an account?</h4>
-              <Link to="/shop-login" className="text-blue-600 pl-2">
+              <Link
+                to="/shop-login"
+                className="text-primary font-semibold pl-2 hover:underline"
+              >
                 Sign In
               </Link>
             </div>

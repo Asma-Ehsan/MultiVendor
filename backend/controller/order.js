@@ -24,6 +24,7 @@ router.post("/create-order", catchAsyncErrors(async(req, res, next) => {
 
         //create an order for each shop
         const orders = [];
+        // The loop goes through each box (each shop).
         for(const [shopId,items] of shopItemsMap){
             const order = await Order.create({cart: items,shippingAddress, user, totalPrice, paymentInfo });
             orders.push(order);

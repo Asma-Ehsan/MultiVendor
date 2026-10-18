@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import Ratings from "../Product/Ratings";
 import { getAllEventsShop } from "../../redux/actions/event";
+import { AiOutlineArrowRight } from "react-icons/ai";
 
 const ShopProfileData = ({ isOwner }) => {
   const { products } = useSelector((state) => state.products);
@@ -27,120 +28,127 @@ const ShopProfileData = ({ isOwner }) => {
     products && products.map((product) => product.reviews).flat();
 
   return (
-    <div className="w-full">
-      <div className="flex w-full items-center justify-between">
-        <div className="w-full flex">
-          {/* Shop Products */}
-          <div className="flex items-center" onClick={() => setActive(1)}>
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 1 ? "text-red-500" : "text-[#333]"
-              } cursor-pointer pr-[20px]`}
-            >
-              Shop Products
-            </h5>
-          </div>
+  <div className="w-full">
+    {/* Tabs + Dashboard button */}
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+      <div className="flex flex-wrap items-center gap-space-sm">
+        {/* Shop Products */}
+        <button
+          type="button"
+          onClick={() => setActive(1)}
+          className={`px-5 py-2.5 rounded-xl font-label-md text-label-md transition-all duration-200 ${
+            active === 1
+              ? "bg-primary text-on-primary shadow-md"
+              : "bg-surface-container-lowest text-on-surface-variant border border-surface-container hover:bg-surface-container-high hover:text-on-surface"
+          }`}
+        >
+          Shop Products
+        </button>
 
-          {/*  Running Events */}
-          <div className="flex items-center" onClick={() => setActive(2)}>
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 2 ? "text-red-500" : "text-[#333]"
-              } cursor-pointer pr-[20px]`}
-            >
-              Running Events
-            </h5>
-          </div>
+        {/*  Running Events */}
+        <button
+          type="button"
+          onClick={() => setActive(2)}
+          className={`px-5 py-2.5 rounded-xl font-label-md text-label-md transition-all duration-200 ${
+            active === 2
+              ? "bg-primary text-on-primary shadow-md"
+              : "bg-surface-container-lowest text-on-surface-variant border border-surface-container hover:bg-surface-container-high hover:text-on-surface"
+          }`}
+        >
+          Running Events
+        </button>
 
-          {/* Shop Reviews */}
-          <div className="flex items-center" onClick={() => setActive(3)}>
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 3 ? "text-red-500" : "text-[#333]"
-              } cursor-pointer pr-[20px]`}
-            >
-              Shop Reviews
-            </h5>
-          </div>
-        </div>
-
-        {/* Dashboard Button */}
-        <div>
-          {isOwner && (
-            <div>
-              <Link to="/dashboard">
-                <div className={`${styles.button} !rounded-[4px] h-[42px]`}>
-                  <span className="text-[#fff]">Go Dashboard</span>
-                </div>
-              </Link>
-            </div>
-          )}
-        </div>
+        {/* Shop Reviews */}
+        <button
+          type="button"
+          onClick={() => setActive(3)}
+          className={`px-5 py-2.5 rounded-xl font-label-md text-label-md transition-all duration-200 ${
+            active === 3
+              ? "bg-primary text-on-primary shadow-md"
+              : "bg-surface-container-lowest text-on-surface-variant border border-surface-container hover:bg-surface-container-high hover:text-on-surface"
+          }`}
+        >
+          Shop Reviews
+        </button>
       </div>
 
-      {/* If active === 1 */}
-      <br />
-      {active === 1 && (
-        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
-          {products &&
-            products.map((i, index) => (
-              <ProductCard data={i} key={index} isShop={true} />
-            ))}
-        </div>
-      )}
-
-      {/* If active === 2 */}
-      {active === 2 && (
-        <div className="w-full">
-          <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
-            {events && events.length > 0 ? (
-              events.map((i, index) => (
-                <ProductCard
-                  data={i}
-                  key={index}
-                  isEvent={true}
-                />
-              ))
-            ) : (
-              <div className="w-full col-span-full h-[60vh] flex items-center justify-center">
-                <p className="text-center text-[20px]">No events found!</p>
-              </div>
-            )}
+      {/* Dashboard Button */}
+      {isOwner && (
+        <Link to="/dashboard" className="self-start md:self-auto">
+          <div className="group px-6 py-2.5 rounded-xl bg-inverse-surface text-inverse-on-surface hover:bg-primary font-label-md text-label-md transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2">
+            <span>Go Dashboard</span>
+            <AiOutlineArrowRight
+              size={16}
+              className="transition-transform duration-200 group-hover:translate-x-1"
+            />
           </div>
-        </div>
-      )}
-
-      {/* If active === 3 */}
-      {active === 3 && (
-        <div className="w-full">
-          {allReviews.length > 0 ?
-            allReviews.map((item, index) => (
-              <div className="w-full flex my-4 items-center">
-                <img
-                  src={`${item?.user?.avatar.url}`}
-                  className="w-[50px] h-[50px] rounded-full border-[#1b1b1b38] border-[2px]"
-                  alt=""
-                />
-                <div className="p-2">
-                  <div className="flex w-full items-center">
-                    <h1 className="font-[600] pr-3">{item.user.name}</h1>
-                    <Ratings rating={item.rating} />
-                  </div>
-                  <p className="font-[400] text-[#000000a7]">{item?.comment}</p>
-                  <p className="text-[#000000a7] text-[14px]">
-                    {item.createdAt ? item.createdAt.slice(0, 10) : null}
-                  </p>
-                </div>
-              </div>
-            ))  : (
-               <div className="w-full col-span-full h-[60vh] flex items-center justify-center">
-                <p className="text-center text-[20px]">No reviews found!</p>
-              </div>
-            )}
-        </div>
+        </Link>
       )}
     </div>
-  );
+
+    {/* If active === 1 */}
+    {active === 1 && (
+      <div className="mt-space-lg grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-gutter mb-12">
+        {products &&
+          products.map((i, index) => (
+            <ProductCard data={i} key={index} isShop={true} />
+          ))}
+      </div>
+    )}
+
+    {/* If active === 2 */}
+    {active === 2 && (
+      <div className="mt-space-lg grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-gutter mb-12">
+        {events && events.length > 0 ? (
+          events.map((i, index) => (
+            <ProductCard
+              data={i}
+              key={index}
+              isEvent={true}
+            />
+          ))
+        ) : (
+          <div className="col-span-full py-16 text-center bg-surface-container-lowest rounded-2xl border border-surface-container">
+            <p className="font-body-lg text-body-lg text-secondary">No events found!</p>
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* If active === 3 */}
+    {active === 3 && (
+      <div className="mt-space-lg space-y-space-md mb-12">
+        {allReviews.length > 0 ?
+          allReviews.map((item, index) => (
+            <div
+              key={index}
+              className="flex items-start gap-4 p-5 bg-surface-container-lowest rounded-2xl border border-surface-container shadow-sm hover:shadow-md transition-shadow duration-300"
+            >
+              <img
+                src={`${item?.user?.avatar.url}`}
+                className="w-12 h-12 rounded-full object-cover ring-2 ring-primary-fixed shrink-0"
+                alt=""
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap w-full items-center gap-x-3">
+                  <h1 className="font-label-md text-label-md text-on-surface font-semibold">{item.user.name}</h1>
+                  <Ratings rating={item.rating} />
+                </div>
+                <p className="font-body-md text-body-md text-secondary mt-1 break-words">{item?.comment}</p>
+                <p className="font-body-sm text-body-sm text-outline mt-1">
+                  {item.createdAt ? item.createdAt.slice(0, 10) : null}
+                </p>
+              </div>
+            </div>
+          ))  : (
+            <div className="py-16 text-center bg-surface-container-lowest rounded-2xl border border-surface-container">
+              <p className="font-body-lg text-body-lg text-secondary">No reviews found!</p>
+            </div>
+          )}
+      </div>
+    )}
+  </div>
+);
 };
 
 export default ShopProfileData;

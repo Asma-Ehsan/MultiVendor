@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import CartData from "./CartData/CartData";
 import PaymentInfo from "./PaymentInfo/PaymentInfo";
 import {
-  CardNumberElement,
-  CardCvcElement,
-  CardExpiryElement,
-  useElements,
-  useStripe,
+  CardNumberElement, //is used later to find the card number box.
+  useElements, //gives you the card boxes on the screen.
+  useStripe, //gives you the Stripe tool.
 } from "@stripe/react-stripe-js";
-import { PaypalScriptProvider, PaypalButtons } from "@paypal/react-paypal-js";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -17,24 +14,27 @@ import { toast } from "react-toastify";
 
 const Payment = () => {
   const [orderData, setOrderData] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); //says if the PayPal popup is open
 
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const stripe = useStripe();
-  const elements = useElements();
+  const stripe = useStripe(); //gives you the Stripe tool.
+  const elements = useElements(); //elements are the Stripe tools.
 
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
     setOrderData(orderData);
   }, []);
 
+  // data and actions are given by PayPal.
   const createOrder = (data, actions) => {
+    // actions.order.create(...) tells PayPal: "A customer wants to pay this amount."
     return actions.order
       .create({
+        // It is the list of things being bought.
         purchase_units: [
           {
-            description: "Sunflower",
+            description: "E-shop order", //text PayPal shows the customer
             amount: {
               currency_code: "USD",
               value: orderData?.totalPrice,
@@ -46,16 +46,22 @@ const Payment = () => {
         },
       })
       .then((orderId) => {
+        // PayPal gives back an order ID. We return it, and PayPal uses it to open its login popup.
         return orderId;
       });
   };
 
   const onApprove = async (data, actions) => {
-    return actions.order.capture().then(function (details) {
+    // actions.order.capture() takes the money.
+    return actions.order.capture().then(
+      // .then(function (details) {...}) runs when the capture finishes. details has all the payment information.
+      function (details) {
       const { payer } = details;
-      let paymentInfo = payer;
+      let paymentInfo = payer; //takes out only the payer part. It has the buyer's name, email and payer_id.
+
+      // "only continue if we really got payer info."
       if (paymentInfo !== undefined) {
-        paypalPaymentHandler(paymentInfo);
+        paypalPaymentHandler(paymentInfo); //is our own function that saves the order.
       }
     });
   };
@@ -85,6 +91,9 @@ const Payment = () => {
   };
 
   const paymentData = {
+    // This is what we send to the backend for Stripe.
+    // Stripe wants the amount in the smallest money unit (cents or paise), not in full units. So $80 becomes 8000. That's why we multiply by 100.
+
     amount: Math.round(orderData?.totalPrice * 100),
   };
 
@@ -95,6 +104,7 @@ const Payment = () => {
     totalPrice: orderData?.totalPrice,
   };
 
+  // payment with credit card using Stripe
   const paymentHandler = async (e) => {
     e.preventDefault();
     try {
@@ -111,8 +121,13 @@ const Payment = () => {
       );
 
       const client_secret = data.client_secret;
+
+      // If Stripe hasn't loaded yet, stop here.
       if (!stripe || !elements) return;
+
       const result = await stripe.confirmCardPayment(client_secret, {
+        // We also point to the card box with elements.getElement(CardNumberElement).
+        // Stripe reads the card details by itself and tries to charge the card.
         payment_method: {
           card: elements.getElement(CardNumberElement),
         },
@@ -166,10 +181,13 @@ const Payment = () => {
       });
   };
 
-  return (
-    <div className="w-full flex flex-col items-center py-8">
-      <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
-        <div className="w-full 800px:w-[65%]">
+// Everything above it (useState, useEffect, handlers, etc.) stays the same.
+return (
+  <div className="w-full font-jakarta">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left column: payment methods */}
+        <div className="lg:col-span-8">
           <PaymentInfo
             user={user}
             open={open}
@@ -180,12 +198,14 @@ const Payment = () => {
             cashOnDeliveryHandler={cashOnDeliveryHandler}
           />
         </div>
-        <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
+
+        {/* Right column: order summary */}
+        <div className="lg:col-span-4">
           <CartData orderData={orderData} />
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
-
 export default Payment;

@@ -113,142 +113,172 @@ const ProductDetailsCart = ({ setOpen, data }) => {
   const averageRating = totalReviewsLength > 0 ? (totalRatings / totalReviewsLength).toFixed(1) : 0;
 
   return (
-    <div className="bg-[#fff]">
-      {data ? (
-        <div className="fixed w-full h-screen top-0 left-0 bg-[#00000030] z-40 flex items-center justify-center" 
+  <div>
+    {data ? (
+      // Dark overlay. z-[100] puts it ABOVE the fixed header (z-50)
+      <div
+        className="fixed inset-0 z-[100] flex overflow-y-auto bg-inverse-surface/60 p-4 backdrop-blur-sm sm:p-6"
         onClick={() => setOpen(false)}
-        >
-          <div className="w-[90%] 800px:w-[60%] h-[90vh] overflow-y-scroll 800px:h-[75vh] bg-white rounded-md shadow-sm relative p-4 " 
+      >
+        {/* Card. m-auto centers it, even on small screens */}
+        <div
+          className="relative m-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-surface-container bg-surface-container-lowest shadow-2xl"
           onClick={(e) => e.stopPropagation()}
+        >
+          {/* Close button */}
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={() => setOpen(false)}
+            className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-low text-secondary transition-colors hover:bg-surface-container-high hover:text-on-surface"
           >
-            {/* Cross button */}
-            <RxCross1
-              size={30}
-              className="absolute right-3 top-3 z-50"
-              onClick={() => setOpen(false)}
-            />
-            <div className="block w-full 800px:flex ">
-              {/* Left Side */}
-              <div className="w-full 800px:w-[50%] ">
-                <div className="w-full h-[300px] flex items-center justify-center bg-gray-50 rounded-lg border overflow-hidden">
-                  <img
-                    src={getImageUrl(data.images && data.images[0])}
-                    alt={data?.name || "product"}
-                    className="max-w-full max-h-full object-contain"
-                  />
-                </div>
+            <RxCross1 size={16} />
+          </button>
 
-                {/* Shop info */}
-                <div className="flex items-center pt-4">
-                  <Link to={`/shop/preview/${data?.shop?._id}`}>
-                  <img
-                    src={data?.shop?.avatar?.url}
-                    alt=""
-                    className="w-[50px] h-[50px] rounded-full mr-2 "
-                  />
-                  </Link>
-                  <div className="">
-                    <Link to={`/shop/preview/${data?.shop?._id}`}>
-                      <h3 className={`${styles.shop_name} !pb-1`}>
-                        {" "}
-                        {data?.shop?.name}{" "}
-                      </h3>
-                    </Link>
-                    <h5 className="pb-3 pt-0 text-[15px]"> ({averageRating}/5) ratings </h5>
-                  </div>
-                </div>
-
-                {/* Button to send a message to seller */}
-                <div
-                  className={`${styles.button} bg-[#000] mt-4 rounded-[4px] h-11 `}
-                  onClick={handleMessageSubmit}
-                >
-                  <span className="text-[#fff] flex items-center">
-                    Send Message <AiOutlineMessage className="ml-1" />
-                  </span>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-12">
+            {/* ================= LEFT SIDE ================= */}
+            <section className="flex flex-col justify-between border-b border-surface-container bg-gradient-to-b from-surface-container-low to-surface-container-lowest p-5 sm:p-6 md:col-span-5 md:border-b-0 md:border-r">
+              {/* Product image */}
+              <div className="group flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-surface-container bg-surface-container-lowest shadow-sm">
+                <img
+                  src={getImageUrl(data.images && data.images[0])}
+                  alt={data?.name || "product"}
+                  className="h-full w-full object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-105"
+                />
               </div>
 
-              {/* Right Side */}
-              <div className="w-full 800px:[50%] pt-5 pl-[18px] pr-[5px]">
-                {/* Product info */}
-                <h1 className={`${styles.productTitle} text-[20px]`}>
-                  {data.name}
-                </h1>
-                <p>{data.description}</p>
-                <div className="flex pt-3 justify-between">
-                  <div className="flex">
-                    <h4 className={`${styles.productDiscountPrice}`}>
-                      {data.discountPrice} $
-                    </h4>
-                    <span className={`${styles.price}`}>
-                      {data.originalPrice ? data.originalPrice + " $" : null}
-                    </span>
+              {/* Shop info + Send message */}
+              <div className="mt-6 flex items-center justify-between gap-3 border-t border-surface-container pt-5">
+                <div className="flex min-w-0 items-center gap-3">
+                  <Link to={`/shop/preview/${data?.shop?._id}`}>
+                    <img
+                      src={data?.shop?.avatar?.url}
+                      alt=""
+                      className="h-11 w-11 shrink-0 rounded-full border border-surface-container object-cover"
+                    />
+                  </Link>
+                  <div className="min-w-0">
+                    <Link to={`/shop/preview/${data?.shop?._id}`}>
+                      <h3 className="truncate font-label-md text-label-md font-bold text-on-surface transition-colors hover:text-primary">
+                        {data?.shop?.name}
+                      </h3>
+                    </Link>
+                    <h5 className="font-body-sm text-body-sm text-secondary">
+                      ({averageRating}/5) ratings
+                    </h5>
                   </div>
-                  {/* Sold out */}
-                  <h5 className="text-[16px] text-[red] pr-5">
-                    ({data.sold_out}) sold out
-                  </h5>
                 </div>
 
-                <div className="flex items-center justify-between mt-12 pr-3">
-                  {/* " + " and " - "" buttons */}
-                  <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={handleMessageSubmit}
+                  className="flex shrink-0 items-center gap-1.5 rounded-xl border border-surface-variant bg-surface-container-lowest px-3 py-2 font-label-md text-label-md text-on-surface shadow-sm transition-all duration-200 hover:bg-inverse-surface hover:text-inverse-on-surface"
+                >
+                  Send Message <AiOutlineMessage size={16} />
+                </button>
+              </div>
+            </section>
+
+            {/* ================= RIGHT SIDE ================= */}
+            <section className="flex flex-col justify-between p-5 sm:p-8 md:col-span-7">
+              <div>
+                {/* Title (pr-10 keeps it away from the close button) */}
+                <h1 className="pr-10 font-headline-md text-headline-md leading-snug tracking-tight text-on-surface">
+                  {data.name}
+                </h1>
+
+                {/* Sold out badge */}
+                <div className="mt-3">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-error/20 bg-error-container/70 px-2.5 py-0.5 font-label-sm text-label-sm text-on-error-container">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-error"></span>
+                    ({data.sold_out}) sold out
+                  </span>
+                </div>
+
+                {/* Description (scrolls if long) */}
+                <p className="mt-4 max-h-56 overflow-y-auto whitespace-pre-line pr-1 font-body-md text-body-md leading-relaxed text-secondary">
+                  {data.description}
+                </p>
+              </div>
+
+              {/* Price + buttons */}
+              <div className="mt-6 border-t border-surface-container pt-5">
+                <div className="mb-4 flex items-baseline gap-3">
+                  <h4 className="font-price-lg text-[28px] font-extrabold tracking-tight text-on-surface">
+                    {data.discountPrice} $
+                  </h4>
+                  <span className="font-body-lg text-body-lg font-semibold text-outline line-through">
+                    {data.originalPrice ? data.originalPrice + " $" : null}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {/* " - " and " + " buttons */}
+                  <div className="inline-flex items-center rounded-xl border border-surface-container bg-surface-container-low p-1 shadow-sm">
                     <button
-                      className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 h-[40px] shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
+                      type="button"
                       onClick={decrementCount}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500 font-bold text-white transition-colors hover:bg-teal-600"
                     >
                       -
                     </button>
-                    <span className="bg-gray-200 text-gray-800 font-medium px-4 h-[40px] flex items-center justify-center">
+                    <span className="w-10 select-none text-center font-label-md text-label-md font-bold text-on-surface">
                       {count}
                     </span>
                     <button
-                      className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-r px-4 h-[40px] shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
+                      type="button"
                       onClick={incrementCount}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500 font-bold text-white transition-colors hover:bg-teal-600"
                     >
                       +
                     </button>
                   </div>
 
-                  {/* Heart icons */}
-                  <div>
-                    {click ? (
-                      <AiFillHeart
-                        size={30}
-                        className="cursor-pointer"
-                        onClick={() => removeFromWishListHandler(data)}
-                        color={click ? "red" : "#333"}
-                        title="Remove from wishlist"
-                      />
-                    ) : (
-                      <AiOutlineHeart
-                        size={30}
-                        className="cursor-pointer"
-                        onClick={() => addToWIshListHandler(data)}
-                        color={click ? "red" : "#333"}
-                        title="Add to wishlist"
-                      />
-                    )}
-                  </div>
-                </div>
+                  {/* Add to cart */}
+                  <button
+                    type="button"
+                    onClick={() => addToCartHandler(data._id)}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-inverse-surface px-5 py-3 font-label-md text-label-md text-inverse-on-surface shadow-md transition-all duration-200 hover:bg-primary hover:shadow-lg active:scale-[0.99]"
+                  >
+                    <AiOutlineShoppingCart size={18} />
+                    Add to cart
+                  </button>
 
-                {/* Add to cart icon */}
-                <div
-                  className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center`}
-                  onClick={() => addToCartHandler(data._id)}
-                >
-                  <span className="text-[#fff] flex items-center">
-                    Add to cart <AiOutlineShoppingCart className="ml-1" />
-                  </span>
+                  {/* Heart */}
+                  {click ? (
+                    <button
+                      type="button"
+                      title="Remove from wishlist"
+                      onClick={() => removeFromWishListHandler(data)}
+                      className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-500 transition-colors hover:bg-rose-100"
+                    >
+                      <AiFillHeart
+                        size={24}
+                        className="transition-transform group-hover:scale-110"
+                      />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      title="Add to wishlist"
+                      onClick={() => addToWIshListHandler(data)}
+                      className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-500 transition-colors hover:bg-rose-100"
+                    >
+                      <AiOutlineHeart
+                        size={24}
+                        className="transition-transform group-hover:scale-110"
+                      />
+                    </button>
+                  )}
                 </div>
               </div>
-            </div>
+            </section>
           </div>
         </div>
-      ) : null}
-    </div>
-  );
+      </div>
+    ) : null}
+  </div>
+);
 };
 
 export default ProductDetailsCart;

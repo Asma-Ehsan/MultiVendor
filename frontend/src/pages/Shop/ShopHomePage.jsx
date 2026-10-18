@@ -1,22 +1,24 @@
-import React from 'react'
-import styles from '../../styles/styles'
 import ShopInfo from "../../components/Shop/ShopInfo";
 import ShopProfileData from "../../components/Shop/ShopProfileData";
 
 const ShopHomePage = () => {
   return (
-    <div className={`${styles.section} bg-[#f5f5f5]`}>
-         <div className="w-full flex py-10 justify-between">
-          <div className="w-[25%] bg-[#fff] rounded-[4px] shadow-sm overflow-y-scroll h-[90vh] sticky top-10 left-0 z-10">
-            {/* isOwner is a plain boolean literal, not a variable */}
-            <ShopInfo isOwner={true} /> 
+    <div className="min-h-screen bg-background">
+      <div className="max-w-[1320px] mx-auto w-full px-margin-mobile lg:px-margin py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left: shop info card (sticks while you scroll on big screens) */}
+          <div className="lg:col-span-3 lg:sticky lg:top-6">
+            <ShopInfo isOwner={true} />
           </div>
-          <div className="w-[72%] rounded-[4px]">
+
+          {/* Right: tabs */}
+          <div className="lg:col-span-9 min-w-0">
             <ShopProfileData isOwner={true} />
           </div>
-         </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default ShopHomePage

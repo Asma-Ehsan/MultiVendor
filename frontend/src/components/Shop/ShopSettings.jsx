@@ -57,55 +57,69 @@ const ShopSettings = () => {
     })
   };
 
+  const inputStyle =
+  "mt-2 w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high text-body-md font-body-md text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200";
+  const labelStyle = "font-label-md text-label-md text-on-surface";
+
   return (
-    <div className="w-full min-h-screen flex flex-col items-center">
-      <div className="flex w-full 800px:w-[80%] flex-col justify-center my-5">
-        <div className="w-full flex items-center justify-center">
-          {/*Profile Image */}
+  <div className="w-full min-w-0 p-space-md 800px:p-space-lg">
+    <div className="max-w-3xl mx-auto">
+      {/* ---------- Page heading ---------- */}
+      <div className="mb-space-md">
+        <span className="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">
+          Store Management
+        </span>
+        <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+          Shop Settings
+        </h2>
+        <p className="font-body-md text-body-md text-secondary mt-1">
+          Update your shop picture and contact details.
+        </p>
+      </div>
+
+      {/* ---------- Card ---------- */}
+      <div className="bg-surface-container-lowest rounded-2xl border border-surface-container shadow-sm p-space-md sm:p-space-lg">
+        {/* Profile Image */}
+        <div className="flex justify-center mb-space-lg">
           <div className="relative">
             <img
               src={avatar ? avatar : `${seller.avatar?.url}`}
               alt=""
-              className="w-[200px] h-[200px] rounded-full cursor-pointer"
+              className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover ring-4 ring-primary-fixed"
             />
-            <div className="w-[30px] h-[30px] bg-[#E3E9EE] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[10px] right-[15px]">
-              <input
-                type="file"
-                id="image"
-                className="hidden"
-                onChange={handleImage}
-              />
-              <label htmlFor="image">
-                <AiOutlineCamera />
-              </label>
-            </div>
+            <input
+              type="file"
+              id="image"
+              className="hidden"
+              onChange={handleImage}
+            />
+            <label
+              htmlFor="image"
+              className="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center cursor-pointer shadow-md hover:bg-primary-container hover:scale-110 transition-all duration-200"
+            >
+              <AiOutlineCamera size={18} />
+            </label>
           </div>
         </div>
 
         {/* shop info */}
-        <form
-          className="flex flex-col items-center"
-          onSubmit={updateHandler}
-        >
+        <form className="space-y-space-md" onSubmit={updateHandler}>
           {/* Name */}
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
-            <div className="w-full pl-[3%]">
-              <label className="block pb-2">Shop Name</label>
-            </div>
+          <div>
+            <label className={labelStyle}>Shop Name</label>
             <input
               type="name"
               placeholder={`${seller.name}`}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={inputStyle}
               required
             />
           </div>
+
           {/* Shop Description */}
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
-            <div className="w-full pl-[3%]">
-              <label className="block pb-2">Shop description</label>
-            </div>
+          <div>
+            <label className={labelStyle}>Shop description</label>
             <input
               type="name"
               placeholder={`${
@@ -115,65 +129,61 @@ const ShopSettings = () => {
               }`}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={inputStyle}
             />
           </div>
+
           {/* Shop Address */}
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
-            <div className="w-full pl-[3%]">
-              <label className="block pb-2">Shop Address</label>
-            </div>
+          <div>
+            <label className={labelStyle}>Shop Address</label>
             <input
               type="name"
               placeholder={seller?.address}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
+              className={inputStyle}
               required
             />
           </div>
-          {/* Shop Phone Number */}
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
-            <div className="w-full pl-[3%]">
-              <label className="block pb-2">Shop Phone Number</label>
+
+          {/* Phone + Zip */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+            <div>
+              <label className={labelStyle}>Shop Phone Number</label>
+              <input
+                type="number"
+                placeholder={seller?.phoneNumber}
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className={inputStyle}
+                required
+              />
             </div>
-            <input
-              type="number"
-              placeholder={seller?.phoneNumber}
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
-              required
-            />
-          </div>
-          {/* Shop Zip Code */}
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
-            <div className="w-full pl-[3%]">
-              <label className="block pb-2">Shop Zip Code</label>
+
+            <div>
+              <label className={labelStyle}>Shop Zip Code</label>
+              <input
+                type="number"
+                placeholder={seller?.zipCode}
+                value={zipCode}
+                onChange={(e) => setZipcode(e.target.value)}
+                className={inputStyle}
+                required
+              />
             </div>
-            <input
-              type="number"
-              placeholder={seller?.zipCode}
-              value={zipCode}
-              onChange={(e) => setZipcode(e.target.value)}
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
-              required
-            />
           </div>
+
           {/* Submit Button */}
-          <div className="w-[100%] flex items-center flex-col 800px:w-[50%] mt-5">
-            <input
-              type="submit"
-              value="Update Shop"
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0`}
-              required
-              readOnly
-            />
-          </div>
+          <input
+            type="submit"
+            value="Update Shop"
+            className="w-full px-6 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface font-label-md text-label-md hover:bg-primary transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
+          />
         </form>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default ShopSettings;

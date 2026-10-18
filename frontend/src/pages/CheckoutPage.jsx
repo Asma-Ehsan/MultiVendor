@@ -6,7 +6,7 @@ import Checkout from "../components/Checkout/Checkout"
 
 const CheckoutPage = () => {
   return (
-    <div>
+    <div className="bg-background min-h-screen">
         <Header/>
         <br />
         <br />

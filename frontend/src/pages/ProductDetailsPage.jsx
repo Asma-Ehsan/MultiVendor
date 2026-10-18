@@ -30,7 +30,7 @@ const ProductDetailsPage = () => {
     window.scrollTo(0, 0);
   }, [allProducts, id, allEvents]);
   return (
-    <div>
+    <div className="bg-background min-h-screen">
       <Header />
       <ProductDetails data={data} />
       {!eventData && <>{data && <SuggestedProduct data={data} />}</>}

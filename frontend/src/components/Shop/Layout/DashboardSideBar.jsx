@@ -9,201 +9,143 @@ import { Link } from "react-router-dom";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { HiOutlineReceiptRefund } from "react-icons/hi";
 
+// Style used by every menu item
+const itemBase =
+  "group flex items-center justify-center 800px:justify-start gap-space-sm px-space-sm py-2.5 rounded-xl transition-all duration-200";
+const itemActive = "bg-primary-container text-on-primary-container";
+const itemIdle =
+  "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface";
+
+// Style for icons and text
+const iconStyle =
+  "shrink-0 transition-transform duration-200 group-hover:scale-110";
+const textStyle = "hidden 800px:block font-body-md text-body-md";
+
+// Style for group titles
+const groupTitle =
+  "hidden 800px:block px-space-sm pt-space-md pb-space-xs font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider";
+const groupLine = "800px:hidden border-surface-container my-space-sm";
+
 const DashboardSideBar = ({ active }) => {
   return (
-    <div className="w-full h-[90vh] bg-white shadow-sm overflow-y-scroll sticky top-0 left-0 z-10">
-      {/* single item */}
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard" className="w-full flex items-center">
-          <RxDashboard
-            size={30}
-            color={`${active === 1 ? "crimson" : "#555"}`}
-            title="Dashboard"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 1 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Dashboard
-          </h5>
-        </Link>
-      </div>
+    <aside className="w-full sticky top-20 left-0 z-10 h-[calc(100vh-5rem)] overflow-y-auto bg-surface-container-lowest border-r border-surface-container shadow-[0_1px_8px_rgba(0,0,0,0.04)] px-space-sm py-space-md">
+      <nav className="space-y-space-xs">
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-orders" className="w-full flex items-center">
-          <FiShoppingBag
-            size={30}
-            color={`${active === 2 ? "crimson" : "#555"}`}
-            title="All Orders"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 2 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            All Orders
-          </h5>
-        </Link>
-      </div>
+        {/* ---------- Store Hub ---------- */}
+        <p className={groupTitle}>Store Hub</p>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-products" className="w-full flex items-center">
-          <FiPackage size={30} color={`${active === 3 ? "crimson" : "#555"}`}
-          title="All Products" />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 3 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            All Products
-          </h5>
+        <Link
+          to="/dashboard"
+          title="Dashboard"
+          className={`${itemBase} ${active === 1 ? itemActive : itemIdle}`}
+        >
+          <RxDashboard size={22} className={iconStyle} />
+          <span className={textStyle}>Dashboard</span>
         </Link>
-      </div>
 
-      <div className="w-full flex items-center p-4">
+        <Link
+          to="/dashboard-orders"
+          title="All Orders"
+          className={`${itemBase} ${active === 2 ? itemActive : itemIdle}`}
+        >
+          <FiShoppingBag size={22} className={iconStyle} />
+          <span className={textStyle}>All Orders</span>
+        </Link>
+
+        <Link
+          to="/dashboard-products"
+          title="All Products"
+          className={`${itemBase} ${active === 3 ? itemActive : itemIdle}`}
+        >
+          <FiPackage size={22} className={iconStyle} />
+          <span className={textStyle}>All Products</span>
+        </Link>
+
         <Link
           to="/dashboard-create-product"
-          className="w-full flex items-center"
+          title="Create Product"
+          className={`${itemBase} ${active === 4 ? itemActive : itemIdle}`}
         >
-          <AiOutlineFolderAdd
-            size={30}
-            color={`${active === 4 ? "crimson" : "#555"}`}
-            title="Create Product"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 4 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Create Product
-          </h5>
+          <AiOutlineFolderAdd size={22} className={iconStyle} />
+          <span className={textStyle}>Create Product</span>
         </Link>
-      </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-events" className="w-full flex items-center">
-          <MdOutlineLocalOffer
-            size={30}
-            color={`${active === 5 ? "crimson" : "#555"}`}
-            title="All Events"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 5 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            All Events
-          </h5>
+        {/* ---------- Marketing & Events ---------- */}
+        <hr className={groupLine} />
+        <p className={groupTitle}>Marketing &amp; Events</p>
+
+        <Link
+          to="/dashboard-events"
+          title="All Events"
+          className={`${itemBase} ${active === 5 ? itemActive : itemIdle}`}
+        >
+          <MdOutlineLocalOffer size={22} className={iconStyle} />
+          <span className={textStyle}>All Events</span>
         </Link>
-      </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-create-event" className="w-full flex items-center">
-          <VscNewFile
-            size={30}
-            color={`${active === 6 ? "crimson" : "#555"}`}
-            title="Create Event"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 6 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Create Event
-          </h5>
+        <Link
+          to="/dashboard-create-event"
+          title="Create Event"
+          className={`${itemBase} ${active === 6 ? itemActive : itemIdle}`}
+        >
+          <VscNewFile size={22} className={iconStyle} />
+          <span className={textStyle}>Create Event</span>
         </Link>
-      </div>
 
-      <div className="w-full flex items-center p-4">
+        <Link
+          to="/dashboard-coupouns"
+          title="Discount Codes"
+          className={`${itemBase} ${active === 9 ? itemActive : itemIdle}`}
+        >
+          <AiOutlineGift size={22} className={iconStyle} />
+          <span className={textStyle}>Discount Codes</span>
+        </Link>
+
+        {/* ---------- Finances & Communication ---------- */}
+        <hr className={groupLine} />
+        <p className={groupTitle}>Finances &amp; Communication</p>
+
         <Link
           to="/dashboard-withdraw-money"
-          className="w-full flex items-center"
+          title="Withdraw Money"
+          className={`${itemBase} ${active === 7 ? itemActive : itemIdle}`}
         >
-          <CiMoneyBill
-            size={30}
-            color={`${active === 7 ? "crimson" : "#555"}`}
-            title="Withdraw Money"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 7 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Withdraw Money
-          </h5>
+          <CiMoneyBill size={22} className={iconStyle} />
+          <span className={textStyle}>Withdraw Money</span>
         </Link>
-      </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-messages" className="w-full flex items-center">
-          <BiMessageSquareDetail
-            size={30}
-            color={`${active === 8 ? "crimson" : "#555"}`}
-            title="All Messages"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 8 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Shop Inbox
-          </h5>
+        <Link
+          to="/dashboard-refunds"
+          title="Refunds"
+          className={`${itemBase} ${active === 10 ? itemActive : itemIdle}`}
+        >
+          <HiOutlineReceiptRefund size={22} className={iconStyle} />
+          <span className={textStyle}>Refunds</span>
         </Link>
-      </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-coupouns" className="w-full flex items-center">
-          <AiOutlineGift
-            size={30}
-            color={`${active === 9 ? "crimson" : "#555"}`}
-            title="Discount Codes"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 9 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Discount Codes
-          </h5>
+        <Link
+          to="/dashboard-messages"
+          title="All Messages"
+          className={`${itemBase} ${active === 8 ? itemActive : itemIdle}`}
+        >
+          <BiMessageSquareDetail size={22} className={iconStyle} />
+          <span className={textStyle}>Shop Inbox</span>
         </Link>
-      </div>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/dashboard-refunds" className="w-full flex items-center">
-          <HiOutlineReceiptRefund
-            size={30}
-            color={`${active === 10 ? "crimson" : "#555"}`}
-            title="Refunds"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 10 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Refunds
-          </h5>
-        </Link>
-      </div>
+        {/* ---------- Store Management ---------- */}
+        <hr className={groupLine} />
+        <p className={groupTitle}>Store Management</p>
 
-      <div className="w-full flex items-center p-4">
-        <Link to="/settings" className="w-full flex items-center">
-          <CiSettings
-            size={30}
-            color={`${active === 11 ? "crimson" : "#555"}`}
-            title="Settings"
-          />
-          <h5
-            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 11 ? "text-[crimson]" : "text-[#555]"
-            }`}
-          >
-            Settings
-          </h5>
+        <Link
+          to="/settings"
+          title="Settings"
+          className={`${itemBase} ${active === 11 ? itemActive : itemIdle}`}
+        >
+          <CiSettings size={22} className={iconStyle} />
+          <span className={textStyle}>Settings</span>
         </Link>
-      </div>
-    </div>
+      </nav>
+    </aside>
   );
 };
-
 export default DashboardSideBar;

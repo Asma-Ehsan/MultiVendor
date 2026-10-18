@@ -5,10 +5,10 @@ import DashboardHero from "../../components/Shop/DashboardHero.jsx";
 
 const ShopDashboardPage = () => {
   return (
-        <div>
+        <div className="min-h-screen bg-background">
           <DashboardHeader />
-          <div className="flex items-start justify-between w-full">
-            <div className="w-[80px] 800px:w-[330px]">
+          <div className="flex items-start w-full">
+            <div className="w-[80px] 800px:w-[280px] shrink-0">
               <DashboardSideBar active={1} />
             </div>
             <DashboardHero />

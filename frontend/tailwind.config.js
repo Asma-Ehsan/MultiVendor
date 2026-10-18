@@ -1,21 +1,112 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: ["./src/**/*.{html,js,jsx}"], //tells Tailwind where classes are used
-    theme: {
-      fontFamily: {
-        Roboto: ["Roboto", "sans-serif"],
-        Poppins: ['Poppins', "sans-serif"],
+  content: ["./src/**/*.{html,js,jsx}"], // tells Tailwind where classes are used
+  theme: {
+    fontFamily: {
+      Roboto: ["Roboto", "sans-serif"],
+      Poppins: ["Poppins", "sans-serif"],
+    },
+    extend: {
+      screens: {
+        "1000px": "1050px",
+        "1100px": "1110px",
+        "800px": "800px",
+        "1300px": "1300px",
+        "400px": "400px",
       },
-      extend: {
-        screens: {
-          "1000px": "1050px",
-          "1100px": "1110px",
-          "800px": "800px",
-          "1300px": "1300px",
-          "400px":"400px"
-        },
+
+      colors: {
+        "on-error-container": "#93000a",
+        "on-error": "#ffffff",
+        "inverse-on-surface": "#eaf1ff",
+        "on-surface": "#0b1c30",
+        "on-primary": "#ffffff",
+        "tertiary-fixed": "#ffddb8",
+        "tertiary-container": "#a36700",
+        "surface-container-low": "#eff4ff",
+        "on-secondary-fixed": "#131b2e",
+        "on-tertiary-fixed": "#2a1700",
+        "error-container": "#ffdad6",
+        "on-tertiary": "#ffffff",
+        "surface-tint": "#494bd6",
+        "on-secondary-fixed-variant": "#3f465c",
+        secondary: "#565e74",
+        "on-tertiary-container": "#fffbff",
+        background: "#f8f9ff",
+        "secondary-fixed-dim": "#bec6e0",
+        "secondary-container": "#dae2fd",
+        "on-secondary": "#ffffff",
+        "surface-variant": "#d3e4fe",
+        "inverse-surface": "#213145",
+        surface: "#f8f9ff",
+        "surface-container": "#e5eeff",
+        tertiary: "#825100",
+        "surface-container-lowest": "#ffffff",
+        "on-tertiary-fixed-variant": "#653e00",
+        "secondary-fixed": "#dae2fd",
+        "primary-fixed-dim": "#c0c1ff",
+        "surface-container-highest": "#d3e4fe",
+        "on-primary-fixed-variant": "#2f2ebe",
+        primary: "#4648d4",
+        "inverse-primary": "#c0c1ff",
+        "on-primary-fixed": "#07006c",
+        outline: "#767586",
+        error: "#ba1a1a",
+        "surface-bright": "#f8f9ff",
+        "primary-container": "#6063ee",
+        "on-primary-container": "#fffbff",
+        "on-secondary-container": "#5c647a",
+        "outline-variant": "#c7c4d7",
+        "on-surface-variant": "#464554",
+        "primary-fixed": "#e1e0ff",
+        "tertiary-fixed-dim": "#ffb95f",
+        "on-background": "#0b1c30",
+        "surface-container-high": "#dce9ff",
+        "surface-dim": "#cbdbf5",
+      },
+
+      spacing: {
+        "space-sm": "0.5rem",
+        "margin-mobile": "1rem",
+        margin: "2rem",
+        "space-xs": "0.25rem",
+        "space-md": "1rem",
+        "space-lg": "1.5rem",
+        gutter: "1.25rem",
+        "space-xl": "2.5rem",
+        "gutter-mobile": "0.75rem",
+      },
+
+      fontFamily: {
+        jakarta: ["Plus Jakarta Sans", "sans-serif"],
+        "headline-lg": ["Plus Jakarta Sans"],
+        "headline-md": ["Plus Jakarta Sans"],
+        "body-sm": ["Plus Jakarta Sans"],
+        "label-md": ["Plus Jakarta Sans"],
+        "headline-sm": ["Plus Jakarta Sans"],
+        "body-lg": ["Plus Jakarta Sans"],
+        "display-hero": ["Plus Jakarta Sans"],
+        "display-hero-mobile": ["Plus Jakarta Sans"],
+        "body-md": ["Plus Jakarta Sans"],
+        "label-sm": ["Plus Jakarta Sans"],
+        "price-lg": ["Plus Jakarta Sans"],
+      },
+
+      fontSize: {
+        "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "700" }],
+        "headline-md": ["22px", { lineHeight: "28px", fontWeight: "700" }],
+        "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+        "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }],
+        "label-md": ["13px", { lineHeight: "16px", fontWeight: "600" }],
+        "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+        "display-hero-mobile": ["36px", { lineHeight: "44px", fontWeight: "800" }],
+        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+        "display-hero": ["56px", { lineHeight: "64px", fontWeight: "800" }],
+        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+        "label-sm": ["11px", { lineHeight: "14px", fontWeight: "700" }],
+        "price-lg": ["20px", { lineHeight: "24px", fontWeight: "800" }],
       },
     },
-    plugins: [], //add extra Tailwind features
-  };
-  
+  },
+  plugins: [], // add extra Tailwind features
+};

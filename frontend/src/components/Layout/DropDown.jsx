@@ -1,6 +1,5 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import styles from '../../styles/styles';
+import { IoIosArrowForward } from "react-icons/io";
 
 const DropDown = ({categoriesData, setDropDown}) => {
     const navigate = useNavigate();
@@ -10,26 +9,28 @@ const DropDown = ({categoriesData, setDropDown}) => {
         window.location.reload();
     }
   return (
-    <div className="pb-4 w-[270px] bg-[#fff] absolute z-30 rounded-b-md shadow-sm">
+    <div className="absolute top-full left-0 mt-2 w-[260px] max-h-[70vh] overflow-y-auto py-2 bg-surface-container-lowest border border-surface-container rounded-2xl shadow-xl z-30 font-jakarta">
       {categoriesData &&
         categoriesData.map((i, index) => (
           <div
             key={index}
-            className={`${styles.noramlFlex} hover:bg-gray-100 rounded`}
+            className="group flex items-center gap-3 mx-2 px-2 py-2 rounded-xl cursor-pointer hover:bg-primary-fixed/60 transition-colors duration-200"
             onClick={() => submitHandle(i)}
           >
-            <img
-              src={i.image_Url}
-              style={{
-                width: "25px",
-                height: "25px",
-                objectFit: "contain",
-                marginLeft: "10px",
-                userSelect: "none",
-              }}
-              alt=""
+            <div className="w-9 h-9 shrink-0 rounded-lg bg-surface-container-low group-hover:bg-surface-container-lowest flex items-center justify-center transition-colors duration-200">
+              <img
+                src={i.image_Url}
+                className="w-6 h-6 object-contain select-none group-hover:scale-110 transition-transform duration-200"
+                alt=""
+              />
+            </div>
+            <h3 className="flex-1 text-body-md font-semibold text-on-surface group-hover:text-primary cursor-pointer select-none transition-colors duration-200">
+              {i.title}
+            </h3>
+            <IoIosArrowForward
+              size={16}
+              className="text-primary opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
             />
-            <h3 className="m-3 cursor-pointer select-none">{i.title}</h3>
           </div>
         ))}
     </div>

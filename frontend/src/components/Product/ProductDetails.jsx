@@ -131,155 +131,170 @@ const ProductDetails = ({ data }) => {
   const averageRating = totalReviewsLength > 0 ? (totalRatings / totalReviewsLength).toFixed(1) : 0;
 
   return (
-    <div className="bg-white">
-      {data ? (
-        <div className={` ${styles.section} w-[90%] 800px:w-[80%]`}>
-          <div className="w-full py-5">
-            <div className="block w-full 800px:flex gap-5">
-              {/* Left Side */}
-              <div className="w-full 800px:w-[45%]">
-                <div className="w-full h-[400px] flex items-center justify-center bg-gray-50 rounded-lg border overflow-hidden">
-
+  <div className="bg-background">
+    {data ? (
+      <div className="mx-auto w-full max-w-[1320px] px-margin-mobile py-space-lg lg:px-margin">
+        {/* ===== Main card ===== */}
+        <div className="rounded-3xl border border-surface-container bg-surface-container-lowest p-space-md shadow-[0_8px_30px_rgba(11,28,48,0.05)] sm:p-space-lg">
+          <div className="grid grid-cols-1 gap-space-lg lg:grid-cols-12">
+            {/* ---------- Left side: images ---------- */}
+            <div className="lg:col-span-5">
+              <div className="group flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-surface-container bg-[#f5f8ff]">
                 <img
                   src={mainImage || "https://via.placeholder.com/300x300"}
                   alt={data.name}
-                  className="max-w-full max-h-full object-contain"
+                  className="h-full w-full object-contain p-4 transition-transform duration-500 ease-out group-hover:scale-105"
                 />
-                </div>
-
-                {productImages.length > 0 ? (
-                  <div className="w-full flex gap-3 mt-4">
-                    {productImages.map((image, index) => (
-                      <div className={`h-[80px] w-[80px] flex items-center justify-center bg-gray-50 rounded-md border overflow-hidden cursor-pointer ${
-                          select === index
-                            ? "ring-2 ring-teal-500"
-                            : ""
-                        }`}
-                      key={index}
-                      onClick={() => setSelect(index)}>
-                        <img
-                        src={image}
-                        alt=""
-                        className={`w-full h-full object-cover transition`}
-                      />
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
               </div>
 
-              {/* Right Side */}
-              <div className="w-full 800px:w-[55%] pt-5">
-                {/* Product Info */}
-                <h1 className={`${styles.productTitle}`}>{data.name}</h1>
-                <p>{data.description}</p>
-                <div className="flex pt-3">
-                  <h4 className={`${styles.productDiscountPrice}`}>
-                    {data.discountPrice ?? data.discount_price ?? 0}$
-                  </h4>
-                  <h3 className={`${styles.price}`}>
-                    {data?.originalPrice ? data.originalPrice + "$" : null}
-                  </h3>
-                </div>
-
-                {/* increment decrement button */}
-                <div>
-                  <div className="flex items-center justify-between mt-12 pr-3">
-                    <div className="flex items-center">
-                      <button
-                        className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-l px-4 h-[40px] shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                        onClick={decrementCount}
-                      >
-                        -
-                      </button>
-                      <span className="bg-gray-200 text-gray-800 font-medium px-4 h-[40px] flex items-center justify-center">
-                        {count}
-                      </span>
-                      <button
-                        className="bg-gradient-to-r from-teal-400 to-teal-500 text-white font-bold rounded-r px-4 h-[40px] shadow-lg hover:opacity-75 transition duration-300 ease-in-out"
-                        onClick={incrementCount}
-                      >
-                        +
-                      </button>
+              {productImages.length > 0 ? (
+                <div className="mt-space-md grid grid-cols-4 gap-space-sm">
+                  {productImages.map((image, index) => (
+                    <div
+                      className={`flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-xl border bg-[#f5f8ff] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                        select === index
+                          ? "border-primary ring-2 ring-primary"
+                          : "border-surface-container"
+                      }`}
+                      key={index}
+                      onClick={() => setSelect(index)}
+                    >
+                      <img
+                        src={image}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
                     </div>
-                    {/* Heart Icon */}
-                    <div>
-                      {click ? (
-                        <AiFillHeart
-                          size={30}
-                          className="cursor-pointer"
-                          onClick={() => removeFromWishListHandler(data)}
-                          color={click ? "red" : "#333"}
-                          title="Remove from wishlist"
-                        />
-                      ) : (
-                        <AiOutlineHeart
-                          size={30}
-                          className="cursor-pointer"
-                          onClick={() => addToWIshListHandler(data)}
-                          color={click ? "red" : "#333"}
-                          title="Add to wishlist"
-                        />
-                      )}
-                    </div>
-                  </div>
+                  ))}
                 </div>
+              ) : null}
+            </div>
 
-                {/* add to cart button */}
-                <div
-                  className={`${styles.button} !mt-6 rounded-[4px] !h-11 flex items-center`}
-                  onClick={() => addToCartHandler(data._id)}
-                >
-                  <span className="text-white flex items-center">
-                    Add to cart <AiOutlineShoppingCart className="ml-1" />{" "}
+            {/* ---------- Right side: info ---------- */}
+            <div className="flex flex-col lg:col-span-7">
+              <h1 className="font-headline-lg text-headline-lg tracking-tight text-on-surface">
+                {data.name}
+              </h1>
+
+              <p className="mt-space-sm whitespace-pre-line font-body-lg text-body-lg leading-relaxed text-secondary">
+                {data.description}
+              </p>
+
+              {/* Price */}
+              <div className="mt-space-md flex items-baseline gap-3">
+                <h4 className="font-price-lg text-[32px] font-extrabold tracking-tight text-on-surface">
+                  {data.discountPrice ?? data.discount_price ?? 0}$
+                </h4>
+                <h3 className="font-body-lg text-body-lg font-semibold text-outline line-through">
+                  {data?.originalPrice ? data.originalPrice + "$" : null}
+                </h3>
+              </div>
+
+              {/* Quantity + Add to cart + Heart */}
+              <div className="mt-space-lg flex flex-wrap items-center gap-3">
+                <div className="inline-flex items-center rounded-xl border border-surface-container bg-surface-container-low p-1 shadow-sm">
+                  <button
+                    type="button"
+                    onClick={decrementCount}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-500 font-bold text-white transition-colors hover:bg-teal-600"
+                  >
+                    -
+                  </button>
+                  <span className="w-12 select-none text-center font-label-md text-label-md font-bold text-on-surface">
+                    {count}
                   </span>
+                  <button
+                    type="button"
+                    onClick={incrementCount}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-500 font-bold text-white transition-colors hover:bg-teal-600"
+                  >
+                    +
+                  </button>
                 </div>
 
-                {/* seller info */}
-                <div className="flex items-center pt-8">
+                <button
+                  type="button"
+                  onClick={() => addToCartHandler(data._id)}
+                  className="flex min-w-[160px] flex-1 items-center justify-center gap-2 rounded-xl bg-inverse-surface px-6 py-3 font-label-md text-label-md text-inverse-on-surface shadow-md transition-all duration-200 hover:bg-primary hover:shadow-lg active:scale-[0.99]"
+                >
+                  <AiOutlineShoppingCart size={18} />
+                  Add to cart
+                </button>
+
+                {click ? (
+                  <button
+                    type="button"
+                    title="Remove from wishlist"
+                    onClick={() => removeFromWishListHandler(data)}
+                    className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-500 transition-colors hover:bg-rose-100"
+                  >
+                    <AiFillHeart
+                      size={24}
+                      className="transition-transform group-hover:scale-110"
+                    />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    title="Add to wishlist"
+                    onClick={() => addToWIshListHandler(data)}
+                    className="group flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-500 transition-colors hover:bg-rose-100"
+                  >
+                    <AiOutlineHeart
+                      size={24}
+                      className="transition-transform group-hover:scale-110"
+                    />
+                  </button>
+                )}
+              </div>
+
+              {/* Seller card */}
+              <div className="mt-space-lg flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-surface-container bg-surface-container-low/70 p-space-md">
+                <div className="flex min-w-0 items-center gap-3">
                   <Link to={`/shop/preview/${data?.shop?._id}`}>
                     <img
                       src={shopAvatar || "https://via.placeholder.com/50"}
                       alt=""
-                      className="w-[50px] h-[50px] mr-2 rounded-full  border-[#55555563] border-[1px]"
+                      className="h-12 w-12 shrink-0 rounded-full border border-surface-variant object-cover"
                     />
                   </Link>
-                  <div className="pr-8">
+                  <div className="min-w-0">
                     <Link to={`/shop/preview/${data?.shop?._id}`}>
-                      <h3 className={`${styles.shop_name} pb-1 pt-1`}>
+                      <h3 className="truncate font-label-md text-label-md font-bold text-on-surface transition-colors hover:text-primary">
                         {data?.shop?.name || "Seller"}
                       </h3>
                     </Link>
-                    <h5 className="pb-3 text-[15px]">
+                    <h5 className="font-body-sm text-body-sm text-secondary">
                       ({averageRating}/5) Ratings
                     </h5>
                   </div>
-
-                  <div
-                    className={`${styles.button} bg-[#6443d1] !mt-4 rounded !h-11`}
-                    onClick={handleMessageSubmit}
-                  >
-                    <span className="text-white flex items-center">
-                      Send Message <AiOutlineMessage className="ml-1" />
-                    </span>
-                  </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleMessageSubmit}
+                  className="flex items-center gap-1.5 rounded-xl border border-surface-variant bg-surface-container-lowest px-4 py-2 font-label-md text-label-md text-on-surface shadow-sm transition-all duration-200 hover:bg-inverse-surface hover:text-inverse-on-surface"
+                >
+                  Send Message <AiOutlineMessage size={16} />
+                </button>
               </div>
             </div>
           </div>
+        </div>
 
+        {/* ===== Tabs section (your old component, same props) ===== */}
+        <div className="mt-space-xl">
           <ProductDetailsInfo
             data={data}
             products={products}
             totalReviewsLength={totalReviewsLength}
             averageRating={averageRating}
           />
-          <br />
-          <br />
         </div>
-      ) : null}
-    </div>
-  );
+      </div>
+    ) : null}
+  </div>
+);
 };
 
 const ProductDetailsInfo = ({
@@ -294,146 +309,163 @@ const ProductDetailsInfo = ({
     data?.shop?.avatar?.url || "";
 
   return (
-    <div className="bg-[#f5f6fb] px-3 800px:px-10 py-2 rounded">
-      <div className="w-full flex justify-between border-b pt-10 pb-2">
-        
-        {/* Product Details */}
-        <div className="relative">
-          <h5
-            className="text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
-            onClick={() => setActive(1)}
-          >
-            Product Details
-          </h5>
-          {active === 1 ? (
-            <div className={`${styles.active_indicator}`} />
-          ) : null}
-        </div>
-        
-        {/* Product Reviews */}
-        <div className="relative">
-          <h5
-            className="text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
-            onClick={() => setActive(2)}
-          >
-            Product Reviews
-          </h5>
-          {active === 2 ? (
-            <div className={`${styles.active_indicator}`} />
-          ) : null}
-        </div>
+  <div className="overflow-hidden rounded-3xl border border-surface-container bg-surface-container-lowest shadow-[0_8px_30px_rgba(11,28,48,0.05)]">
+    {/* ===== Tab bar ===== */}
+    <div className="flex gap-space-lg overflow-x-auto border-b border-surface-container bg-surface-container-low/60 px-space-md sm:px-space-lg">
+      {/* Product Details */}
+      <button
+        type="button"
+        onClick={() => setActive(1)}
+        className={`whitespace-nowrap border-b-2 py-4 font-label-md text-label-md transition-colors duration-200 ${
+          active === 1
+            ? "border-primary font-bold text-primary"
+            : "border-transparent text-on-surface-variant hover:text-on-surface"
+        }`}
+      >
+        Product Details
+      </button>
 
-        {/* Seller Information */}
-        <div className="relative">
-          <h5
-            className="text-[#000] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
-            onClick={() => setActive(3)}
-          >
-            Seller Information
+      {/* Product Reviews */}
+      <button
+        type="button"
+        onClick={() => setActive(2)}
+        className={`whitespace-nowrap border-b-2 py-4 font-label-md text-label-md transition-colors duration-200 ${
+          active === 2
+            ? "border-primary font-bold text-primary"
+            : "border-transparent text-on-surface-variant hover:text-on-surface"
+        }`}
+      >
+        Product Reviews
+      </button>
+
+      {/* Seller Information */}
+      <button
+        type="button"
+        onClick={() => setActive(3)}
+        className={`whitespace-nowrap border-b-2 py-4 font-label-md text-label-md transition-colors duration-200 ${
+          active === 3
+            ? "border-primary font-bold text-primary"
+            : "border-transparent text-on-surface-variant hover:text-on-surface"
+        }`}
+      >
+        Seller Information
+      </button>
+    </div>
+
+    {/* ===== Tab 1: Product Details ===== */}
+    {active === 1 ? (
+      <div className="p-space-md sm:p-space-lg">
+        <h3 className="mb-space-sm font-headline-sm text-headline-sm text-on-surface">
+          Product Overview
+        </h3>
+        <p className="whitespace-pre-line font-body-lg text-body-lg leading-relaxed text-secondary">
+          {data.description || "No description available."}
+        </p>
+      </div>
+    ) : null}
+
+    {/* ===== Tab 2: Product Reviews ===== */}
+    {active === 2 ? (
+      <div className="flex min-h-[40vh] w-full flex-col items-center justify-center gap-space-md overflow-y-auto p-space-md sm:p-space-lg">
+        {data && data.reviews ? (
+          data.reviews.map((item, index) => (
+            <div
+              className="flex w-full items-start gap-3 rounded-2xl border border-surface-container bg-surface-container-low/60 p-space-md transition-shadow duration-300 hover:shadow-md"
+              key={item._id || index}
+            >
+              <img
+                src={item?.user?.avatar?.url}
+                alt=""
+                className="h-12 w-12 shrink-0 rounded-full border border-surface-variant object-cover"
+              />
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <h1 className="font-label-md text-label-md font-bold text-on-surface">
+                    {item?.user?.name}
+                  </h1>
+                  <Ratings rating={data?.ratings || 0} />
+                </div>
+                <p className="mt-1 font-body-md text-body-md text-secondary">
+                  {item?.comment || "No comment provided"}
+                </p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <h5 className="text-center font-body-md text-body-md text-secondary">
+            No reviews found!
           </h5>
-          {active === 3 ? (
-            <div className={`${styles.active_indicator}`} />
-          ) : null}
+        )}
+        <div className="flex w-full justify-center">
+          {data && data.reviews && data.reviews.length === 0 && (
+            <h5 className="text-center font-body-md text-body-md text-secondary">
+              No Reviews have for this product!
+            </h5>
+          )}
         </div>
       </div>
+    ) : null}
 
-      {active === 1 ? (
-        <>
-          <p className="py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
-            {data.description || "No description available."}
-          </p>
-        </>
-      ) : null}
-
-      {active === 2 ? (
-        <div className="w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll justify-center">
-          {data && data.reviews ? (
-            data.reviews.map((item, index) => (
-              <div className="w-full flex my-2" key={item._id || index}>
-                <img
-                  src={item?.user?.avatar?.url}
-                  alt=""
-                  className="w-[50px] h-[50px] rounded-full border-[#55555563] border-[1px]"
-                />
-                <div className="pl-2">
-                  <div className="w-full flex items-center">
-                    <h1 className="font-[500] mr-4">{item?.user?.name}</h1>
-                    <Ratings rating={data?.ratings || 0} />
-                  </div>
-                  <p>{item?.comment || "No comment provided"}</p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <h5 className="text-center">No reviews found!</h5>
-          )}
-          <div className="flex w-full justify-center ">
-            {data && data.reviews && data.reviews.length === 0 && (
-              <h5 className="text-center">No Reviews have for this product!</h5>
-            )}
-          </div>
-        </div>
-      ) : null}
-
-      {active === 3 ? (
-        <div className="w-full block 800px:flex p-5">
-          <div className="w-full 800px:w-[50%]">
-            <div className="flex items-center">
-              <Link to={`/shop/preview/${data?.shop?._id}`}>
-                <img
-                  src={shopAvatar}
-                  alt=""
-                  className="w-[50px] h-[50px] rounded-full border-[#55555563] border-[1px]"
-                />
-              </Link>
-              <div className="pl-3">
-                <Link to={`/shop/preview/${data?.shop._id}`}>
-                  <h3 className={`${styles.shop_name}`}>
-                    {data?.shop?.name || "Seller"}
-                  </h3>
-                </Link>
-                <h5 className="p2-3 text-[15px]">
-                  ({averageRating})/5 Ratings
-                </h5>
-              </div>
-            </div>
-            <p className="pt-2">
-              {data?.shop?.description || ""}
-            </p>
-          </div>
-
-          <div className="w-full 800px:w-[50%] mt-5 800px:mt-0 800px:flex flex-col items-end">
-            <div className="text-left">
-              <h5 className="font-[600]">
-                Joined on:{" "}
-                <span className="font-[500]">
-                  {data?.shop?.createdAt?.slice(0, 10)}
-                </span>
-              </h5>
-              <h5 className="font-[600] pt-3">
-                Total Products:{" "}
-                <span className="font-[500]">
-                  {" "}
-                  {products && products.length}
-                </span>
-              </h5>
-              <h5 className="font-[600] pt-3">
-                Total Reviews:{" "}
-                <span className="font-[500]">{totalReviewsLength}</span>
-              </h5>
+    {/* ===== Tab 3: Seller Information ===== */}
+    {active === 3 ? (
+      <div className="grid grid-cols-1 gap-space-lg p-space-md sm:p-space-lg md:grid-cols-2">
+        {/* Seller box */}
+        <div>
+          <div className="flex items-center gap-3">
+            <Link to={`/shop/preview/${data?.shop?._id}`}>
+              <img
+                src={shopAvatar}
+                alt=""
+                className="h-14 w-14 rounded-full border border-surface-variant object-cover"
+              />
+            </Link>
+            <div>
               <Link to={`/shop/preview/${data?.shop._id}`}>
-                <div
-                  className={`${styles.button} !rounded-[4px] !h-[39.5px] !mt-3`}
-                >
-                  <h4 className="text-white">Visit Shop</h4>
-                </div>
+                <h3 className="font-headline-sm text-headline-sm text-on-surface transition-colors hover:text-primary">
+                  {data?.shop?.name || "Seller"}
+                </h3>
               </Link>
+              <h5 className="font-body-sm text-body-sm text-secondary">
+                ({averageRating})/5 Ratings
+              </h5>
             </div>
           </div>
+          <p className="mt-space-sm whitespace-pre-line font-body-md text-body-md leading-relaxed text-secondary">
+            {data?.shop?.description || ""}
+          </p>
         </div>
-      ) : null}
-    </div>
-  );
+
+        {/* Seller stats */}
+        <div className="flex flex-col gap-space-sm rounded-2xl border border-surface-container bg-surface-container-low/60 p-space-md">
+          <h5 className="font-label-md text-label-md font-bold text-on-surface">
+            Joined on:{" "}
+            <span className="font-medium text-secondary">
+              {data?.shop?.createdAt?.slice(0, 10)}
+            </span>
+          </h5>
+          <h5 className="font-label-md text-label-md font-bold text-on-surface">
+            Total Products:{" "}
+            <span className="font-medium text-secondary">
+              {" "}
+              {products && products.length}
+            </span>
+          </h5>
+          <h5 className="font-label-md text-label-md font-bold text-on-surface">
+            Total Reviews:{" "}
+            <span className="font-medium text-secondary">
+              {totalReviewsLength}
+            </span>
+          </h5>
+          <Link to={`/shop/preview/${data?.shop._id}`} className="mt-space-xs">
+            <div className="flex items-center justify-center rounded-xl bg-inverse-surface px-5 py-2.5 font-label-md text-label-md text-inverse-on-surface shadow-md transition-all duration-200 hover:bg-primary hover:shadow-lg">
+              Visit Shop
+            </div>
+          </Link>
+        </div>
+      </div>
+    ) : null}
+  </div>
+);
 };
 
 export default ProductDetails;

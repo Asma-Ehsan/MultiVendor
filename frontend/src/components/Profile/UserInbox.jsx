@@ -5,7 +5,7 @@ import { format } from "timeago.js";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
+import { AiOutlineArrowRight, AiOutlineMessage, AiOutlineSend } from "react-icons/ai";
 import { GrGallery } from "react-icons/gr";
 import { getImageUrl, server } from "../../server";
 import styles from "../../styles/styles";
@@ -193,50 +193,68 @@ const UserInbox = ({active}) => {
       });
   };
 
-  return (
-    <div className="w-[90%] bg-white m-5 !mt-0 shadow-xl h-[85vh] overflow-y-scroll rounded">
-        {
-            active && (
-                <>
-                  {!open && (
+    return (
+    <div className="w-full flex flex-col h-[75vh] min-h-[480px] bg-surface-container-lowest rounded-2xl border border-surface-container shadow-sm overflow-hidden">
+      {active && (
         <>
-          <h1 className="text-center text-[30px] py-3 font-Poppins">
-            All Messages
-          </h1>
-          {/* All message list  */}
-          {conversations &&
-            conversations.map((item, index) => (
-              <MessageList
-                data={item} //conversation's full data
-                key={index} 
-                index={index} //row's position in the list
-                setOpen={setOpen} //lets MessageList open the chat when clicked
-                setCurrentChat={setCurrentChat} // lets MessageList set WHICH chat is now open
-                me={user._id} // current logged-in user's own ID
-                userData={userData} //seller's data of currently selected chat
-                setUserData={setUserData} // to update seller's data
-                online={onlineCheck(item)} //call onlineCheck of seller
-                setActiveStatus={setActiveStatus}
-              />
-            ))}
+          {!open && (
+            <>
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-surface-container flex items-center gap-3 shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shrink-0">
+                  <AiOutlineMessage size={22} />
+                </div>
+                <div>
+                  <h1 className="text-headline-md font-headline-md text-on-surface tracking-tight">
+                    All Messages
+                  </h1>
+                  <p className="text-body-md font-body-md text-secondary">
+                    Chat with sellers about your orders.
+                  </p>
+                </div>
+              </div>
+
+              {/* All message list */}
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                {conversations &&
+                  conversations.map((item, index) => (
+                    <MessageList
+                      data={item} //conversation's full data
+                      key={index}
+                      index={index} //row's position in the list
+                      setOpen={setOpen} //lets MessageList open the chat when clicked
+                      setCurrentChat={setCurrentChat} // lets MessageList set WHICH chat is now open
+                      me={user._id} // current logged-in user's own ID
+                      userData={userData} //seller's data of currently selected chat
+                      setUserData={setUserData} // to update seller's data
+                      online={onlineCheck(item)} //call onlineCheck of seller
+                      setActiveStatus={setActiveStatus}
+                    />
+                  ))}
+
+                {conversations && conversations.length === 0 && (
+                  <div className="p-10 text-center text-body-md font-body-md text-secondary">
+                    You have no messages yet.
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {open && (
+            <SellerInbox
+              setOpen={setOpen}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              sendMessageHandler={sendMessageHandler}
+              messages={messages}
+              sellerId={user._id}
+              userData={userData}
+              activeStatus={activeStatus}
+            />
+          )}
         </>
       )}
-
-      {open && (
-        <SellerInbox
-          setOpen={setOpen}
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          sendMessageHandler={sendMessageHandler}
-          messages={messages}
-          sellerId={user._id}
-          userData={userData}
-          activeStatus={activeStatus}
-        />
-      )}       
-                </>
-            )
-        }
     </div>
   );
 };
@@ -278,9 +296,13 @@ const MessageList = ({
     getUser();
   }, [me, data]);
 
-  return (
+    return (
     <div
-      className={`w-full flex p-3 my-[1px] px-3 ${active === index ? "bg-[#00000010]" : "bg-transparent"}   cursor-pointer`}
+      className={`w-full flex items-center gap-3 px-4 py-3 border-b border-surface-container/60 cursor-pointer transition-colors duration-200 ${
+        active === index
+          ? "bg-primary-fixed/50"
+          : "bg-transparent hover:bg-surface-container-low"
+      }`}
       onClick={(e) =>
         setActive(index) || //highlights this row visually.
         handleClick(data._id) || //navigates (adds the ID to the URL) and sets open to true.
@@ -289,21 +311,26 @@ const MessageList = ({
         setActiveStatus(online)
       }
     >
-      <div className="relative">
+      {/* Avatar + online dot */}
+      <div className="relative shrink-0">
         <img
           src={`${user?.avatar?.url}`}
           alt=""
-          className="w-[50px] h-[50px] rounded-full border-[#55555563] border-[1px]"
+          className="w-12 h-12 rounded-full object-cover ring-2 ring-primary-fixed"
         />
         {online ? (
-          <div className="absolute top-[2px] right-[2px] w-[12px] h-[12px] bg-green-400 rounded-full"></div>
+          <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full ring-2 ring-surface-container-lowest"></div>
         ) : (
-          <div className="absolute top-[2px] right-[2px] w-[12px] h-[12px] bg-[#c7b9b9] rounded-full"></div>
+          <div className="absolute bottom-0 right-0 w-3 h-3 bg-outline-variant rounded-full ring-2 ring-surface-container-lowest"></div>
         )}
       </div>
-      <div className="pl-3">
-        <h1 className=" text-[18px]">{user?.name}</h1>
-        <p className="text-[16px] text-[#000c]">
+
+      {/* Name + last message */}
+      <div className="min-w-0 flex-1">
+        <h1 className="text-body-md font-body-md font-semibold text-on-surface truncate">
+          {user?.name}
+        </h1>
+        <p className="text-body-sm font-body-sm text-secondary truncate">
           {data?.lastMessageId !== userData?._id
             ? "You:"
             : userData?.name?.split("")[0] + ": "}{" "}
@@ -324,89 +351,99 @@ const SellerInbox = ({
   userData,
   activeStatus,
 }) => {
-  return (
-    <div className="w-full min-h-full flex flex-col justify-between">
-      {/* message header */}
-      <div className="flex w-full p-3 items-center justify-between mt-2 shadow-sm">
-        <div className="flex">
+    return (
+    <div className="w-full flex flex-col flex-1 min-h-0">
+      {/* Message header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
           <img
             src={getImageUrl(userData?.avatar)}
             alt=""
-            className="w-[60px] h-[60px] rounded-full border-[#55555563] border-[1px]"
+            className="w-12 h-12 rounded-full object-cover ring-2 ring-primary-fixed shrink-0"
           />
-          <div className="pl-3 flex flex-col justify-center">
-            <h1 className=" text-[18px] font-[600]">{userData?.name} </h1>
-            <h1>{activeStatus ? "Active Now" : null}</h1>
+          <div className="min-w-0">
+            <h1 className="text-body-md font-body-md font-semibold text-on-surface truncate">
+              {userData?.name}
+            </h1>
+            <p className="text-label-md font-label-md text-emerald-600">
+              {activeStatus ? "Active Now" : null}
+            </p>
           </div>
         </div>
-        {/* Right Arrow */}
-        <AiOutlineArrowRight
-          size={20}
+
+        {/* Back button */}
+        <button
+          type="button"
+          aria-label="Back to messages"
           onClick={() => setOpen(false)}
-          className="cursor-pointer"
-          color="#6e6d6d"
-        />
+          className="w-10 h-10 rounded-full flex items-center justify-center text-secondary hover:bg-surface-container-low hover:text-primary transition-colors shrink-0"
+        >
+          <AiOutlineArrowRight size={20} />
+        </button>
       </div>
 
-      {/* messages */}
-      <div className="px-3 h-[65vh] py-3 overflow-y-scroll">
+      {/* Messages */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-3 bg-surface-container-low/40">
         {messages &&
           messages.map((item, index) => (
             <div
-              className={`flex w-full my-2 ${item.sender === sellerId ? "justify-end" : "justify- start"} `}
+              key={index}
+              className={`flex w-full items-end ${
+                item.sender === sellerId ? "justify-end" : "justify-start"
+              }`}
             >
               {item.sender !== sellerId && (
                 <img
                   src={`${userData?.avatar?.url}`}
                   alt=""
-                  className="w-[40px] h-[40px] rounded-full border-[#55555563] border-[1px] mr-3"
+                  className="w-9 h-9 rounded-full object-cover border border-outline-variant mr-2 shrink-0"
                 />
               )}
-            {
-              item.text !== "" && (
-                  <div>
-                <div className="w-max p-2 rounded bg-slate-200 h-min">
-                  {/* message from other side */}
-                  <div className="flex w-full">
-                    <p> {item.text} </p>
+              {item.text !== "" && (
+                <div
+                  className={`max-w-[75%] flex flex-col ${
+                    item.sender === sellerId ? "items-end" : "items-start"
+                  }`}
+                >
+                  <div
+                    className={`w-fit max-w-full px-4 py-2 text-body-md font-body-md break-words ${
+                      item.sender === sellerId
+                        ? "bg-primary text-on-primary rounded-2xl rounded-br-sm"
+                        : "bg-surface-container-lowest text-on-surface border border-surface-container rounded-2xl rounded-bl-sm"
+                    }`}
+                  >
+                    <p>{item.text}</p>
                   </div>
+                  <p className="text-[11px] text-secondary pt-1">
+                    {format(item.createdAt)}
+                  </p>
                 </div>
-                <p className="text-[12px] text-[#000000d3] pt-1">
-                  {format(item.createdAt)}
-                </p>
-              </div>
-              )
-            }
+              )}
             </div>
           ))}
       </div>
 
-      {/* Send Message input*/}
+      {/* Send Message input */}
       <form
-        className="p-3 relative w-full flex justify-between items-center"
+        className="px-4 py-3 border-t border-surface-container flex items-center gap-3 shrink-0"
         onSubmit={sendMessageHandler}
       >
-        <div className="w-[3%]">
-          <GrGallery size={21} className="cursor-pointer" color="#6e6d6d" />
-        </div>
-        <div className="w-[97%]">
-          <input
-            type="text"
-            required
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Enter your message"
-            className={`${styles.input} ml-2`}
-          />
-          <input type="submit" value="Send" className="hidden" id="send" />
-          <label htmlFor="send">
-            <AiOutlineSend
-              size={20}
-              className="absolute right-5 top-5 cursor-pointer"
-              color="#6e6d6d"
-            />
-          </label>
-        </div>
+        <GrGallery size={20} className="text-secondary cursor-pointer shrink-0" />
+        <input
+          type="text"
+          required
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="Enter your message"
+          className="flex-1 h-11 px-4 rounded-full bg-surface-container-low text-on-surface text-body-md font-body-md border border-surface-container-high focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+        />
+        <button
+          type="submit"
+          aria-label="Send"
+          className="w-11 h-11 rounded-full bg-primary hover:bg-primary-container text-on-primary flex items-center justify-center shadow-sm transition-all active:scale-95 shrink-0"
+        >
+          <AiOutlineSend size={20} />
+        </button>
       </form>
     </div>
   );

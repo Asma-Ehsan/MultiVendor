@@ -1,10 +1,11 @@
-import styles from '../../styles/styles'
 import CountDown from "./CountDown"
 import { getImageUrl } from '../../server'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { addToCart } from '../../redux/actions/cart'
+import { AiOutlineShoppingCart } from "react-icons/ai"
+import { IoIosArrowForward } from "react-icons/io"
 
 const EventCard = ({active, data}) => {
   const {cart} = useSelector((state) => state.cart);
@@ -27,34 +28,75 @@ const EventCard = ({active, data}) => {
   }
 
   return (
-    <div className={`w-full block bg-white rounded-lg ${active ? "unset" : "mb-12"} lg:flex p-2`}>
-      <div className="w-full lg:w-[50%] m-auto">
-        <img src= {getImageUrl(data?.images?.[0])} alt="" />
-      </div>
-      <div className="w-full lg:[w-50%] py-5 px-10 flex flex-col justify-center">
-        <h2 className= {`${styles.productTitle}`}> {data?.name} </h2>
-        <p> {data.description}</p>
-        <div className="flex py-2 justify-between">
-            <div className="flex">
-                <h5 className='font-[500] text-[18px] text-[#d55b45] pr-3 line-through'>{data.originalPrice} $</h5>
-                <h5 className='font-bold text-[20px] text-[#333] font-Roboto'>{data.discountPrice} $</h5>
-            </div>
-            <span className='pr-3 font-[400] text-[17px] text-[#44a55e]'>
-              {data.sold_out} sold
+    <div className={`w-full rounded-3xl bg-surface-container-lowest border border-surface-container/80 shadow-[0_8px_30px_rgba(11,28,48,0.05)] overflow-hidden ${active ? "unset" : "mb-10"} font-jakarta`}>
+      <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
+        {/* Left: event image */}
+        <div className="lg:col-span-6 relative aspect-square sm:aspect-[4/3] lg:aspect-auto lg:h-[480px] bg-surface-container-low overflow-hidden group">
+          <img
+            src= {getImageUrl(data?.images?.[0])}
+            alt=""
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+          />
+          <div className="absolute top-4 left-4 bg-surface-container-lowest/90 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-sm border border-white/60 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-tertiary"></span>
+            <span className="text-label-sm uppercase tracking-wider text-on-surface font-bold">
+              Limited Event
             </span>
+          </div>
         </div>
 
-        <CountDown data = {data} />
-        <br/>
-        <div className="flex items-center">
-          <Link to = {`/product/${data._id}?isEvent=true;`}>
-          <div className={`${styles.button} text-[#fff]`} >See Details</div>
-          </Link>
-          <div className={`${styles.button} text-[#fff] ml-5`} onClick={() => addToCartHandler(data)} > Add to cart</div>
+        {/* Right: details */}
+        <div className="lg:col-span-6 p-4 sm:p-6 lg:p-10 flex flex-col justify-center space-y-4">
+          <div className="space-y-1">
+            <span className="text-label-sm uppercase tracking-wider text-tertiary font-bold">
+              Special Offer
+            </span>
+            <h2 className="text-headline-lg-mobile md:text-headline-lg text-on-surface tracking-tight">
+              {data?.name}
+            </h2>
+            <p className="text-body-md text-secondary leading-relaxed line-clamp-4">
+              {data?.description}
+            </p>
+          </div>
+
+          {/* Price and timer box */}
+          <div className="p-4 rounded-2xl bg-surface-container-low/80 border border-surface-container flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <span className="text-label-sm text-secondary uppercase tracking-wider block font-semibold">
+                Event Price
+              </span>
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <h5 className="text-[26px] text-primary font-bold">{data?.discountPrice} $</h5>
+                <h5 className="text-body-md text-outline line-through">{data?.originalPrice} $</h5>
+              </div>
+              <span className="text-body-sm font-medium text-[#3bc177]">
+                {data?.sold_out} sold
+              </span>
+            </div>
+            <CountDown data = {data} />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex flex-wrap items-center gap-4 pt-2">
+            <button
+              type="button"
+              className="px-6 py-3 rounded-xl bg-inverse-surface text-inverse-on-surface hover:bg-primary transition-all duration-200 text-label-md shadow-md hover:shadow-lg flex items-center gap-2"
+              onClick={() => addToCartHandler(data)}
+            >
+              <AiOutlineShoppingCart size={18} />
+              <span>Add to Cart</span>
+            </button>
+            <Link
+              to = {`/product/${data._id}?isEvent=true;`}
+              className="group px-4 py-3 rounded-xl bg-surface-container text-on-surface hover:bg-surface-container-high transition-all duration-200 text-label-md flex items-center gap-1 border border-surface-variant/40"
+            >
+              <span>See Details</span>
+              <IoIosArrowForward className="transition-transform duration-200 group-hover:translate-x-1" />
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-
 export default EventCard
